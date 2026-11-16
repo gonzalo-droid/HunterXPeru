@@ -11,6 +11,8 @@ struct iOSApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                // cazadores://criminal/{hash} → Ficha
+                .onOpenURL { url in _ = DeepLinksIosKt.handleDeepLink(url: url.absoluteString) }
         }
     }
 }

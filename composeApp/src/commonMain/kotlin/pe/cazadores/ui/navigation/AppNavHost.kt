@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -13,7 +14,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navDeepLink
 import androidx.navigation.toRoute
 import org.koin.compose.koinInject
 import pe.cazadores.ads.AdsController
@@ -34,6 +34,14 @@ fun AppNavHost(
 ) {
     val backStack by navController.currentBackStackEntryAsState()
     val currentTab = backStack?.destination.topLevel()
+
+    val pendingHash by DeepLinks.pendingHash.collectAsState()
+    LaunchedEffect(pendingHash) {
+        pendingHash?.let { hash ->
+            DeepLinks.consume()
+            navController.navigate(Route.Detail(hash)) { launchSingleTop = true }
+        }
+    }
 
     Scaffold(
         containerColor = Cz.colors.bg,
@@ -82,9 +90,7 @@ fun AppNavHost(
                 )
             }
             composable<Route.Settings> { SettingsRoute() }
-            composable<Route.Detail>(
-                deepLinks = listOf(navDeepLink<Route.Detail>(basePath = "$DEEP_LINK_SCHEME://criminal")),
-            ) { entry ->
+            composable<Route.Detail> { entry ->
                 DetailRoute(hash = entry.toRoute<Route.Detail>().hash, onBack = { navController.navigateUp() })
             }
         }
