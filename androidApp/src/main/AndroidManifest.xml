@@ -5,12 +5,18 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
+        android:name=".CazadoresApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.Cazadores">
+
+        <!-- ID de prueba de Google en debug; en release sale de local.properties (ADMOB_APP_ID_ANDROID). -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="${admobAppId}" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
