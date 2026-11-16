@@ -1,0 +1,19 @@
+# Build
+.gradle/
+build/
+.kotlin/
+*.iml
+.idea/
+.DS_Store
+
+# Secretos locales (ver *.example)
+local.properties
+iosApp/Configuration/Secrets.xcconfig
+keystore.properties
+*.jks
+*.keystore
+
+# Xcode
+xcuserdata/
+*.xcuserstate
+iosApp/build/
