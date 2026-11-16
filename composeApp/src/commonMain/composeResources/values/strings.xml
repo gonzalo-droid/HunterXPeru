@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Cazadores Perú</string>
+    <string name="tab_home">Inicio</string>
+    <string name="tab_search">Buscar</string>
+    <string name="tab_saved">Guardados</string>
+    <string name="tab_settings">Ajustes</string>
 </resources>
