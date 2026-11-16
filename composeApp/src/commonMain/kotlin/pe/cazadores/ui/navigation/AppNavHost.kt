@@ -14,6 +14,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navDeepLink
 import androidx.navigation.toRoute
 import pe.cazadores.ui.screens.detail.DetailRoute
+import pe.cazadores.ui.screens.home.HomeRoute
 import pe.cazadores.ui.screens.placeholder.PlaceholderScreen
 import pe.cazadores.ui.screens.search.SearchRoute
 import pe.cazadores.ui.theme.Cz
@@ -41,7 +42,15 @@ fun AppNavHost(
         ) {
             composable<Route.Onboarding> { PlaceholderScreen("Onboarding") }
             composable<Route.Home> {
-                PlaceholderScreen("Inicio", onOpenDetail = { navController.navigate(Route.Detail(it)) })
+                HomeRoute(
+                    onOpenSearch = {
+                        navController.navigate(Route.Search(focus = true)) {
+                            popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                            launchSingleTop = true
+                        }
+                    },
+                    onOpenDetail = { navController.navigate(Route.Detail(it)) },
+                )
             }
             composable<Route.Search> { entry ->
                 SearchRoute(

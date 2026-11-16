@@ -37,6 +37,7 @@ import pe.cazadores.domain.usecase.SearchCriminalsUseCase
 import pe.cazadores.domain.usecase.ToggleFavoriteUseCase
 import pe.cazadores.resources.Res
 import pe.cazadores.ui.screens.detail.DetailViewModel
+import pe.cazadores.ui.screens.home.HomeViewModel
 import pe.cazadores.ui.screens.search.SearchViewModel
 import kotlin.time.Clock
 
@@ -79,6 +80,7 @@ val domainModule = module {
 
 val uiModule = module {
     viewModelOf(::SearchViewModel)
+    viewModelOf(::HomeViewModel)
     viewModel { (hash: String) -> DetailViewModel(hash, get(), get(), get(), get()) }
 }
 
