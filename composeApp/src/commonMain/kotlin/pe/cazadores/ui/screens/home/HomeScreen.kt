@@ -76,7 +76,7 @@ fun HomeRoute(
     actions: ExternalActions = koinInject(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    StatusBarAppearance(lightIcons = true, restoreLightIcons = Cz.colors.isDark)
+    StatusBarAppearance(lightIcons = true)
     HomeScreen(
         state = state,
         onOpenSearch = onOpenSearch,

@@ -4,18 +4,19 @@ import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 @Composable
-actual fun StatusBarAppearance(lightIcons: Boolean, restoreLightIcons: Boolean) {
+internal actual fun rememberStatusBarApplier(): (Boolean) -> Unit {
     val view = LocalView.current
-    DisposableEffect(view, lightIcons, restoreLightIcons) {
-        val window = view.context.findActivity()?.window
-        val controller = window?.let { WindowCompat.getInsetsController(it, view) }
-        controller?.isAppearanceLightStatusBars = !lightIcons
-        onDispose { controller?.isAppearanceLightStatusBars = !restoreLightIcons }
+    return remember(view) {
+        { lightIcons ->
+            view.context.findActivity()?.window?.let { window ->
+                WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !lightIcons
+            }
+        }
     }
 }
 

@@ -23,7 +23,7 @@ fun App(viewModel: AppViewModel = koinViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val ready = state as? AppUiState.Ready
     CazadoresTheme(themeMode = ready?.themeMode ?: pe.cazadores.domain.model.ThemeMode.SYSTEM) {
-        StatusBarAppearance(lightIcons = Cz.colors.isDark, restoreLightIcons = Cz.colors.isDark)
+        StatusBarAppearance(lightIcons = Cz.colors.isDark)
         if (ready == null) {
             Box(Modifier.fillMaxSize().background(Cz.colors.bg))
         } else {

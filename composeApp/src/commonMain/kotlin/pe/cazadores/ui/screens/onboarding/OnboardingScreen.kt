@@ -69,7 +69,7 @@ private val STEPS = listOf(
 /** Tres pasos sobre fondo tinta. El último insiste: no es oficial y nunca hay que enfrentarse. Sin anuncios. */
 @Composable
 fun OnboardingScreen(onFinish: () -> Unit) {
-    StatusBarAppearance(lightIcons = true, restoreLightIcons = Cz.colors.isDark)
+    StatusBarAppearance(lightIcons = true)
     val pager = rememberPagerState { STEPS.size }
     val scope = rememberCoroutineScope()
     val isLast = pager.currentPage == STEPS.lastIndex
