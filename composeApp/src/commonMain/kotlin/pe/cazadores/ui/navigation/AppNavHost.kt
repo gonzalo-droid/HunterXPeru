@@ -14,6 +14,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navDeepLink
 import androidx.navigation.toRoute
 import pe.cazadores.ui.screens.placeholder.PlaceholderScreen
+import pe.cazadores.ui.screens.search.SearchRoute
 import pe.cazadores.ui.theme.Cz
 
 @Composable
@@ -41,7 +42,12 @@ fun AppNavHost(
             composable<Route.Home> {
                 PlaceholderScreen("Inicio", onOpenDetail = { navController.navigate(Route.Detail(it)) })
             }
-            composable<Route.Search> { PlaceholderScreen("Buscar") }
+            composable<Route.Search> { entry ->
+                SearchRoute(
+                    focusSearch = entry.toRoute<Route.Search>().focus,
+                    onOpenDetail = { navController.navigate(Route.Detail(it)) },
+                )
+            }
             composable<Route.Saved> { PlaceholderScreen("Guardados") }
             composable<Route.Settings> { PlaceholderScreen("Ajustes") }
             composable<Route.Detail>(

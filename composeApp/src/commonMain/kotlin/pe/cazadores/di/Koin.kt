@@ -6,6 +6,7 @@ import kotlinx.coroutines.SupervisorJob
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
@@ -34,6 +35,7 @@ import pe.cazadores.domain.usecase.ObserveFavoritesUseCase
 import pe.cazadores.domain.usecase.SearchCriminalsUseCase
 import pe.cazadores.domain.usecase.ToggleFavoriteUseCase
 import pe.cazadores.resources.Res
+import pe.cazadores.ui.screens.search.SearchViewModel
 import kotlin.time.Clock
 
 /** Provee: AppEnvironment, HttpClientEngine, AppDatabase, DataStore y NetworkMonitor. */
@@ -73,7 +75,11 @@ val domainModule = module {
     factory { ToggleFavoriteUseCase(get(), get(), get(APP_SCOPE)) }
 }
 
-fun appModules(): List<Module> = listOf(platformModule, dataModule, domainModule)
+val uiModule = module {
+    viewModelOf(::SearchViewModel)
+}
+
+fun appModules(): List<Module> = listOf(platformModule, dataModule, domainModule, uiModule)
 
 /** Arranque único de Koin. Android lo llama desde `Application`; iOS desde `iOSApp.swift`. */
 fun initKoin(config: KoinAppDeclaration? = null) {

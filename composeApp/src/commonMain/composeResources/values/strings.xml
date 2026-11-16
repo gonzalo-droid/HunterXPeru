@@ -1,8 +1,163 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Cazadores Perú</string>
+
+    <!-- Pestañas -->
     <string name="tab_home">Inicio</string>
     <string name="tab_search">Buscar</string>
     <string name="tab_saved">Guardados</string>
     <string name="tab_settings">Ajustes</string>
+
+    <!-- Comunes -->
+    <string name="retry">Reintentar</string>
+    <string name="back">Volver</string>
+    <string name="close">Cerrar</string>
+    <string name="loading_cd">Cargando</string>
+    <string name="error_title">No se pudo cargar</string>
+    <string name="error_network">No hay conexión a internet. Revisa tu red y vuelve a intentar.</string>
+    <string name="error_timeout">El servidor del programa está tardando en responder. Intenta de nuevo en un momento.</string>
+    <string name="error_server">El servidor del programa respondió con un error. Intenta de nuevo más tarde.</string>
+    <string name="error_not_found">No encontramos esta ficha. Puede que la persona ya no esté en la lista del programa.</string>
+    <string name="offline_banner">Sin conexión · datos del %1$s</string>
+    <string name="reward_none">Sin recompensa</string>
+    <string name="reward_cd">Recompensa: %1$s</string>
+    <string name="danger_extremo">Extremo</string>
+    <string name="danger_muy_alto">Muy alto</string>
+    <string name="danger_alto">Alto</string>
+    <string name="danger_cd">Peligrosidad estimada: %1$s</string>
+    <string name="call_line">Llamar %1$s</string>
+    <string name="source_note">App no oficial. Datos públicos del Programa de Recompensas del Ministerio del Interior. Verifica en recompensas.pe.</string>
+    <string name="ad_label">Anuncio</string>
+
+    <!-- Buscar -->
+    <string name="search_title">Buscar</string>
+    <string name="search_field_label">Buscar por nombre</string>
+    <string name="search_field_placeholder">Nombre o apellido</string>
+    <string name="search_clear_cd">Borrar búsqueda</string>
+    <string name="filters_button_cd">Filtros</string>
+    <string name="filters_button_active_cd">Filtros, %1$d activos</string>
+    <string name="remove_filter_cd">Quitar filtro %1$s</string>
+    <string name="results_count">%1$s resultados</string>
+    <string name="results_count_one">1 resultado</string>
+    <string name="sort_recent">Más recientes</string>
+    <string name="sort_reward">Mayor recompensa</string>
+    <string name="sort_region">Por región</string>
+    <string name="sort_cd">Ordenar: %1$s</string>
+    <string name="empty_search_title">Sin resultados</string>
+    <string name="empty_search_body">No hay personas que coincidan con «%1$s» y los filtros elegidos.</string>
+    <string name="empty_search_body_no_query">No hay personas con los filtros elegidos.</string>
+    <string name="clear_filters">Limpiar filtros</string>
+    <string name="load_more_error">No se pudieron cargar más resultados.</string>
+    <string name="end_of_list">Fin de la lista</string>
+
+    <!-- Filtros -->
+    <string name="filters_title">Filtros</string>
+    <string name="filters_clear">Limpiar</string>
+    <string name="filters_location">Ubicación</string>
+    <string name="filters_department">Departamento</string>
+    <string name="filters_province">Provincia</string>
+    <string name="filters_all">Todos</string>
+    <string name="filters_all_f">Todas</string>
+    <string name="filters_province_needs_department">Elige primero un departamento</string>
+    <string name="filters_crime">Delito</string>
+    <string name="filters_other_crime">Otro delito…</string>
+    <string name="filters_apply">Ver resultados</string>
+    <string name="filters_apply_count">Ver %1$s resultados</string>
+    <string name="filters_value">%1$s: %2$s</string>
+
+    <!-- Ficha -->
+    <string name="detail_share">Compartir</string>
+    <string name="detail_save">Guardar</string>
+    <string name="detail_saved">Guardado</string>
+    <string name="detail_saved_msg">Guardado en tu lista</string>
+    <string name="detail_removed_msg">Quitado de tu lista</string>
+    <string name="detail_photo_cd">Foto de %1$s</string>
+    <string name="detail_id">ID %1$s</string>
+    <string name="detail_reward">Recompensa</string>
+    <string name="detail_danger">Peligrosidad</string>
+    <string name="detail_danger_note">Estimado por la app según el tipo de delito. No es una calificación oficial.</string>
+    <string name="detail_crimes">Delitos imputados</string>
+    <string name="detail_department">Departamento</string>
+    <string name="detail_province">Provincia</string>
+    <string name="detail_sex">Sexo</string>
+    <string name="detail_sex_male">Masculino</string>
+    <string name="detail_sex_female">Femenino</string>
+    <string name="detail_unknown">Sin dato</string>
+    <string name="detail_if_you_see">Si lo reconoces</string>
+    <string name="detail_if_you_see_body">1. No te acerques ni lo sigas.\n2. Anota lugar, hora y ropa.\n3. Llama a la línea gratuita desde un lugar seguro.</string>
+    <string name="detail_source">Fuente: Programa de Recompensas (MININTER) · consultado %1$s</string>
+    <string name="detail_report">Reportar por escrito</string>
+    <string name="detail_not_found_title">Ficha no encontrada</string>
+    <string name="share_text">%1$s\nRecompensa: %2$s\nSi tienes información, llama gratis al %3$s. No te acerques.\n%4$s\n(Datos públicos del Programa de Recompensas)</string>
+
+    <!-- Reportar -->
+    <string name="report_title">Reportar avistamiento</string>
+    <string name="report_subtitle">%1$s · ID %2$s</string>
+    <string name="report_call">Llamar ahora (recomendado)</string>
+    <string name="report_call_sub">Gratuito · puede ser anónimo</string>
+    <string name="report_or_write">o por escrito</string>
+    <string name="report_where">¿Dónde lo viste?</string>
+    <string name="report_where_hint">Distrito, calle o referencia</string>
+    <string name="report_when">¿Cuándo?</string>
+    <string name="report_when_hint">Ej.: hoy, 8:30 a. m.</string>
+    <string name="report_details">Detalles</string>
+    <string name="report_details_hint">Ropa, acompañantes, vehículo…</string>
+    <string name="report_send">Abrir correo con el reporte</string>
+    <string name="report_disclaimer">La app no envía ni guarda tu reporte: se abre tu app de correo con el texto listo. Las autoridades deciden si procede la recompensa.</string>
+    <string name="report_email_subject">Avistamiento: %1$s (ID %2$s)</string>
+    <string name="report_email_body">Persona: %1$s\nID: %2$s\n\nLugar: %3$s\nFecha y hora: %4$s\nDetalles: %5$s\n\n(Enviado desde la app no oficial Cazadores Perú)</string>
+
+    <!-- Inicio -->
+    <string name="home_overline">Programa de Recompensas</string>
+    <string name="home_updated">Act. %1$s</string>
+    <string name="home_search_hint">Buscar por nombre</string>
+    <string name="home_call_overline">¿Viste a alguien? Línea gratuita</string>
+    <string name="home_call_cd">Llamar a la línea gratuita %1$s</string>
+    <string name="home_stat_total">Personas buscadas</string>
+    <string name="home_stat_max">Recompensa más alta</string>
+    <string name="home_top">Mayores recompensas</string>
+    <string name="home_see_all">Ver todos</string>
+    <string name="home_rank">#%1$d</string>
+
+    <!-- Guardados -->
+    <string name="saved_title">Guardados</string>
+    <string name="saved_empty_title">Aún no guardas a nadie</string>
+    <string name="saved_empty_body">Guarda una ficha con el ícono de marcador para tenerla a mano, incluso sin conexión.</string>
+    <string name="saved_go_search">Ir a Buscar</string>
+    <string name="saved_removed">%1$s quitado de Guardados</string>
+    <string name="undo">Deshacer</string>
+    <string name="saved_remove_action">Quitar de Guardados</string>
+    <string name="saved_swipe_hint">Desliza una ficha hacia la izquierda para quitarla.</string>
+
+    <!-- Ajustes -->
+    <string name="settings_title">Ajustes</string>
+    <string name="settings_appearance">Apariencia</string>
+    <string name="settings_theme_system">Sistema</string>
+    <string name="settings_theme_light">Claro</string>
+    <string name="settings_theme_dark">Oscuro</string>
+    <string name="settings_privacy_section">Privacidad</string>
+    <string name="settings_ads_prefs">Preferencias de anuncios</string>
+    <string name="settings_privacy_policy">Política de privacidad</string>
+    <string name="settings_terms">Términos de uso</string>
+    <string name="settings_info_section">Información</string>
+    <string name="settings_source">Fuente de datos: recompensas.pe</string>
+    <string name="settings_feedback">Enviar comentarios</string>
+    <string name="settings_feedback_subject">Comentarios sobre Cazadores Perú %1$s</string>
+    <string name="settings_about">Sobre esta app</string>
+    <string name="settings_about_body">Cazadores Perú es una app independiente. No está afiliada al Ministerio del Interior ni a la Policía Nacional del Perú. Muestra datos públicos del Programa de Recompensas, que pueden cambiar sin aviso: verifica siempre en recompensas.pe. La recompensa la otorga el Estado tras validar la información.</string>
+    <string name="settings_version">Versión %1$s</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_step">Paso %1$d de %2$d</string>
+    <string name="onboarding_skip">Omitir</string>
+    <string name="onboarding_next">Siguiente</string>
+    <string name="onboarding_start">Entendido, empezar</string>
+    <string name="onboarding_1_title">Personas buscadas por el Estado</string>
+    <string name="onboarding_1_body">Consulta la lista pública del Programa de Recompensas: quiénes son, por qué delitos se les busca y cuánto ofrece el Estado por información que lleve a su captura.</string>
+    <string name="onboarding_2_title">Busca y guarda fichas</string>
+    <string name="onboarding_2_body">Filtra por nombre, departamento o delito. Guarda las fichas que te interesen para verlas incluso sin conexión.</string>
+    <string name="onboarding_3_title">Nunca te enfrentes. Llama.</string>
+    <string name="onboarding_3_body">Si reconoces a alguien, no te acerques ni lo sigas. Anota lugar y hora, y comunícate con la línea gratuita. Tu reporte puede ser anónimo.</string>
+    <string name="onboarding_note_1">Esta app no es oficial. Muestra datos públicos del Programa de Recompensas (MININTER).</string>
+    <string name="onboarding_note_2">La recompensa la otorga el Estado tras validar la información.</string>
 </resources>
