@@ -10,6 +10,8 @@ import pe.cazadores.data.local.AppDatabase
 import pe.cazadores.data.local.SETTINGS_FILE_NAME
 import pe.cazadores.data.local.buildCazadoresDatabase
 import pe.cazadores.data.local.createDataStore
+import pe.cazadores.ads.AdsController
+import pe.cazadores.ads.IosAdsController
 import pe.cazadores.domain.repository.NetworkMonitor
 import pe.cazadores.platform.ExternalActions
 import pe.cazadores.platform.IosExternalActions
@@ -26,4 +28,5 @@ actual val platformModule: Module = module {
     single { createDataStore(documentsPath(SETTINGS_FILE_NAME)) }
     single<NetworkMonitor> { IosNetworkMonitor() }
     single<ExternalActions> { IosExternalActions() }
+    single<AdsController> { IosAdsController(bridge = get(), isDebug = get<AppEnvironment>().isDebug) }
 }

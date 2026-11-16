@@ -9,7 +9,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 @Composable
-internal actual fun rememberStatusBarApplier(): (Boolean) -> Unit {
+internal actual fun rememberStatusBarApplier(): (lightIcons: Boolean) -> Unit {
     val view = LocalView.current
     return remember(view) {
         { lightIcons ->

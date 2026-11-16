@@ -4,7 +4,8 @@ import ComposeApp
 @main
 struct iOSApp: App {
     init() {
-        KoinKt.doInitKoinIos()
+        // El consentimiento no se pide aquí: Kotlin lo dispara al mostrar Inicio (ya hay una vista en pantalla).
+        IosEntryKt.startKoin(adsBridge: AdsBridge())
     }
 
     var body: some Scene {

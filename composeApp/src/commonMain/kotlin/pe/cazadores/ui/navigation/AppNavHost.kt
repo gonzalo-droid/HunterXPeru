@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -14,6 +15,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navDeepLink
 import androidx.navigation.toRoute
+import org.koin.compose.koinInject
+import pe.cazadores.ads.AdsController
 import pe.cazadores.ui.screens.detail.DetailRoute
 import pe.cazadores.ui.screens.home.HomeRoute
 import pe.cazadores.ui.screens.onboarding.OnboardingScreen
@@ -27,6 +30,7 @@ fun AppNavHost(
     startDestination: Route,
     onOnboardingFinished: () -> Unit,
     navController: NavHostController = rememberNavController(),
+    ads: AdsController = koinInject(),
 ) {
     val backStack by navController.currentBackStackEntryAsState()
     val currentTab = backStack?.destination.topLevel()
@@ -53,6 +57,8 @@ fun AppNavHost(
                 })
             }
             composable<Route.Home> {
+                // Primer momento válido para pedir consentimiento: ya pasó el onboarding y hay una vista en pantalla.
+                LaunchedEffect(Unit) { ads.start() }
                 HomeRoute(
                     onOpenSearch = {
                         navController.navigate(Route.Search(focus = true)) {

@@ -3,6 +3,25 @@
 Registro de lo que se verificó contra la API real y de las decisiones que cambian o precisan
 `docs/kmp-migration/`. La más reciente va arriba.
 
+## 2026-11-16 · Fase 5: anuncios
+
+### D7. Consentimiento antes de cualquier anuncio
+- Orden: UMP → (iOS) ATT → `MobileAds` → anuncios. Se dispara al mostrar Inicio por primera vez
+  (después del onboarding y con una vista en pantalla), nunca en el arranque de la app.
+- `AdBanner` no ocupa espacio ni pide anuncios mientras `canRequestAds` sea `false`.
+- Debug fuerza la geografía EEE para ver el formulario desde Perú. Ajustes muestra
+  "Preferencias de anuncios" solo cuando UMP lo exige (`privacyOptionsRequirementStatus == REQUIRED`).
+- iOS: GoogleMobileAds 13.13.0 y UMP 3.1.0 por SPM; Swift implementa `IosAdsBridge` y Kotlin pinta la
+  vista con `UIKitView`. Android: play-services-ads 25.5.0 y UMP 4.0.0.
+- Verificado en emulador y simulador: formulario UMP → ATT (iOS, texto en español) → banner de prueba,
+  y reapertura del formulario desde Ajustes (Android).
+
+### D8. Permisos que agrega el SDK de anuncios
+La app declara `INTERNET`, `ACCESS_NETWORK_STATE` y `AD_ID`. El manifiesto final además trae, por
+fusión con play-services-ads, `ACCESS_ADSERVICES_*` (Privacy Sandbox), `WAKE_LOCK`,
+`FOREGROUND_SERVICE` y `ACCESS_LOCAL_NETWORK`. Son normales del SDK (sin diálogo para el usuario) y
+quitarlos con `tools:node="remove"` puede romper la medición de anuncios: se dejan.
+
 ## 2026-11-16 · Fase 2: API y TLS (verificado con `curl` y en Android/iOS)
 
 ### D1. Paginación: 1-indexed al pedir, 0-indexed al responder

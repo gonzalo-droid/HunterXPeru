@@ -36,8 +36,6 @@ import pe.cazadores.domain.usecase.ObserveFavoritesUseCase
 import pe.cazadores.domain.usecase.SearchCriminalsUseCase
 import pe.cazadores.domain.usecase.ToggleFavoriteUseCase
 import pe.cazadores.resources.Res
-import pe.cazadores.ads.AdsController
-import pe.cazadores.ads.NoAdsController
 import pe.cazadores.ui.app.AppViewModel
 import pe.cazadores.ui.screens.detail.DetailViewModel
 import pe.cazadores.ui.screens.saved.SavedViewModel
@@ -70,7 +68,6 @@ val dataModule = module {
     single<FavoritesRepository> { FavoritesRepositoryImpl(get(), get(), get()) }
     single<CatalogRepository> { CatalogRepositoryImpl(get(), get(), get(), get(), get()) }
     single<SettingsRepository> { SettingsRepositoryImpl(get()) }
-    single<AdsController> { NoAdsController() }
 }
 
 val domainModule = module {
@@ -103,5 +100,5 @@ fun initKoin(config: KoinAppDeclaration? = null) {
     }
 }
 
-/** Atajo para Swift, que no ve los parámetros por defecto. */
-fun doInitKoinIos() = initKoin()
+/** Arranque desde Swift: recibe el puente de anuncios implementado en iosApp. */
+fun doInitKoinIos(extraModules: List<Module>) = initKoin { modules(extraModules) }

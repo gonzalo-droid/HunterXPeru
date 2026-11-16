@@ -12,6 +12,8 @@ import pe.cazadores.data.local.AppDatabase
 import pe.cazadores.data.local.SETTINGS_FILE_NAME
 import pe.cazadores.data.local.buildCazadoresDatabase
 import pe.cazadores.data.local.createDataStore
+import pe.cazadores.ads.AdsController
+import pe.cazadores.ads.AndroidAdsController
 import pe.cazadores.domain.repository.NetworkMonitor
 import pe.cazadores.platform.AndroidExternalActions
 import pe.cazadores.platform.ExternalActions
@@ -32,4 +34,6 @@ actual val platformModule: Module = module {
     single { createDataStore(androidContext().filesDir.resolve(SETTINGS_FILE_NAME).absolutePath) }
     single<NetworkMonitor> { AndroidNetworkMonitor(androidContext()) }
     single<ExternalActions> { AndroidExternalActions(androidContext()) }
+    single { AndroidAdsController(isDebug = get<AppEnvironment>().isDebug, scope = get(APP_SCOPE)) }
+    single<AdsController> { get<AndroidAdsController>() }
 }
