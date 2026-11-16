@@ -13,3 +13,10 @@ fun String.sentenceCase(): String {
     val lower = trim().lowercase()
     return lower.replaceFirstChar { it.uppercaseChar() }
 }
+
+/** "CORONEL PORTILLO" → "Coronel Portillo" (lugares y nombres propios). */
+fun String.titleCase(): String = trim().lowercase().split(' ').filter { it.isNotEmpty() }
+    .joinToString(" ") { word -> if (word in LOWERCASE_WORDS) word else word.replaceFirstChar { it.uppercaseChar() } }
+    .replaceFirstChar { it.uppercaseChar() }
+
+private val LOWERCASE_WORDS = setOf("de", "del", "la", "las", "los", "y")

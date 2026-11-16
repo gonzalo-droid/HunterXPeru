@@ -11,6 +11,8 @@ import pe.cazadores.data.local.SETTINGS_FILE_NAME
 import pe.cazadores.data.local.buildCazadoresDatabase
 import pe.cazadores.data.local.createDataStore
 import pe.cazadores.domain.repository.NetworkMonitor
+import pe.cazadores.platform.ExternalActions
+import pe.cazadores.platform.IosExternalActions
 import pe.cazadores.platform.IosNetworkMonitor
 import pe.cazadores.platform.documentsPath
 import kotlin.experimental.ExperimentalNativeApi
@@ -23,4 +25,5 @@ actual val platformModule: Module = module {
     single { Room.databaseBuilder<AppDatabase>(name = documentsPath(AppDatabase.FILE_NAME)).buildCazadoresDatabase() }
     single { createDataStore(documentsPath(SETTINGS_FILE_NAME)) }
     single<NetworkMonitor> { IosNetworkMonitor() }
+    single<ExternalActions> { IosExternalActions() }
 }

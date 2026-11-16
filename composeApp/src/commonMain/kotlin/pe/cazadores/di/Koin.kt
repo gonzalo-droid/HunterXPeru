@@ -6,6 +6,7 @@ import kotlinx.coroutines.SupervisorJob
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.KoinAppDeclaration
@@ -35,6 +36,7 @@ import pe.cazadores.domain.usecase.ObserveFavoritesUseCase
 import pe.cazadores.domain.usecase.SearchCriminalsUseCase
 import pe.cazadores.domain.usecase.ToggleFavoriteUseCase
 import pe.cazadores.resources.Res
+import pe.cazadores.ui.screens.detail.DetailViewModel
 import pe.cazadores.ui.screens.search.SearchViewModel
 import kotlin.time.Clock
 
@@ -77,6 +79,7 @@ val domainModule = module {
 
 val uiModule = module {
     viewModelOf(::SearchViewModel)
+    viewModel { (hash: String) -> DetailViewModel(hash, get(), get(), get(), get()) }
 }
 
 fun appModules(): List<Module> = listOf(platformModule, dataModule, domainModule, uiModule)

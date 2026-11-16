@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.stringResource
 import pe.cazadores.core.text.normalizedForMatch
 import pe.cazadores.core.text.sentenceCase
+import pe.cazadores.core.text.titleCase
 import pe.cazadores.domain.model.Catalogs
 import pe.cazadores.domain.model.SearchFilters
 import pe.cazadores.resources.Res
@@ -105,8 +106,8 @@ fun FiltersSheet(
                 Picker(
                     label = stringResource(Res.string.filters_department),
                     allLabel = stringResource(Res.string.filters_all),
-                    selected = departamentos.firstOrNull { it.id == draft.departamentoId }?.name,
-                    options = departamentos.map { it.id to it.name },
+                    selected = departamentos.firstOrNull { it.id == draft.departamentoId }?.name?.titleCase(),
+                    options = departamentos.map { it.id to it.name.titleCase() },
                     enabled = departamentos.isNotEmpty(),
                     onSelect = { id -> onChange(draft.copy(departamentoId = id, provinciaId = null)) },
                 )
@@ -118,8 +119,8 @@ fun FiltersSheet(
                     } else {
                         stringResource(Res.string.filters_all_f)
                     },
-                    selected = provincias.firstOrNull { it.id == draft.provinciaId }?.name,
-                    options = provincias.map { it.id to it.name },
+                    selected = provincias.firstOrNull { it.id == draft.provinciaId }?.name?.titleCase(),
+                    options = provincias.map { it.id to it.name.titleCase() },
                     enabled = provincias.isNotEmpty(),
                     onSelect = { id -> onChange(draft.copy(provinciaId = id)) },
                 )
@@ -199,7 +200,7 @@ private fun Picker(
     var expanded by remember { mutableStateOf(false) }
     ExposedDropdownMenuBox(expanded = expanded && enabled, onExpandedChange = { if (enabled) expanded = it }) {
         OutlinedTextField(
-            value = selected?.lowercase()?.replaceFirstChar { it.uppercase() } ?: allLabel,
+            value = selected ?: allLabel,
             onValueChange = {},
             readOnly = true,
             enabled = enabled,
@@ -232,7 +233,7 @@ private fun Picker(
             )
             options.forEach { (id, name) ->
                 DropdownMenuItem(
-                    text = { Text(name.lowercase().replaceFirstChar { it.uppercase() }, style = Cz.type.body) },
+                    text = { Text(name, style = Cz.type.body) },
                     onClick = {
                         expanded = false
                         onSelect(id)

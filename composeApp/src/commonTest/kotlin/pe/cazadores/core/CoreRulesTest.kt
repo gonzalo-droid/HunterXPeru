@@ -1,5 +1,6 @@
 package pe.cazadores.core
 
+import pe.cazadores.core.text.titleCase
 import pe.cazadores.domain.model.DangerLevel
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
@@ -55,5 +56,12 @@ class PhotoDecoderTest {
         assertNull(PhotoDecoder.decode(null))
         assertNull(PhotoDecoder.decode(""))
         assertNull(PhotoDecoder.decode("¿no es base64?"))
+    }
+}
+
+class TextFormatTest {
+    @Test fun titleCaseKeepsConnectorsLowercase() {
+        assertEquals("Coronel Portillo", "CORONEL PORTILLO".titleCase())
+        assertEquals("Madre de Dios", "MADRE DE DIOS".titleCase())
     }
 }

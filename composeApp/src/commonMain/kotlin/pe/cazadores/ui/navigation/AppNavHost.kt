@@ -13,6 +13,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navDeepLink
 import androidx.navigation.toRoute
+import pe.cazadores.ui.screens.detail.DetailRoute
 import pe.cazadores.ui.screens.placeholder.PlaceholderScreen
 import pe.cazadores.ui.screens.search.SearchRoute
 import pe.cazadores.ui.theme.Cz
@@ -53,7 +54,7 @@ fun AppNavHost(
             composable<Route.Detail>(
                 deepLinks = listOf(navDeepLink<Route.Detail>(basePath = "$DEEP_LINK_SCHEME://criminal")),
             ) { entry ->
-                PlaceholderScreen("Ficha ${entry.toRoute<Route.Detail>().hash}", onBack = navController::navigateUp)
+                DetailRoute(hash = entry.toRoute<Route.Detail>().hash, onBack = { navController.navigateUp() })
             }
         }
     }

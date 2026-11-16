@@ -59,6 +59,7 @@ import org.koin.compose.viewmodel.koinViewModel
 import pe.cazadores.ads.AD_EVERY_N_ITEMS
 import pe.cazadores.ads.AdPlacement
 import pe.cazadores.ads.InlineAdSlot
+import pe.cazadores.core.text.titleCase
 import pe.cazadores.domain.model.SortOrder
 import pe.cazadores.resources.Res
 import pe.cazadores.resources.clear_filters
@@ -312,7 +313,7 @@ private fun ActiveFilterChips(
             InputChip(
                 selected = true,
                 onClick = onRemove,
-                label = { Text(label.lowercase().replaceFirstChar { it.uppercase() }, style = Cz.type.bodySmall) },
+                label = { Text(label.titleCase(), style = Cz.type.bodySmall) },
                 trailingIcon = { Icon(CzIcons.Close, contentDescription = null, modifier = Modifier.size(16.dp)) },
                 modifier = Modifier.heightIn(min = 40.dp).semantics { contentDescription = cd },
                 shape = CazadoresShapes.chip,
