@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  API del Programa de Recompensas. Hoy el servidor envía la cadena completa, pero en el pasado
+  omitió la CA intermedia y la app Flutter respondió pineando el certificado hoja (que se renovó
+  el 2026-11-09 y la dejó sin conexión). Aquí no se pinea nada: se confía en las CA del sistema y,
+  además, en la intermedia oficial "Sectigo Public Server Authentication CA OV R36" (vence 2036),
+  descargada de su URL AIA. Si el servidor vuelve a omitirla, Android igual valida la cadena.
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="false">sispasvehapp.mininter.gob.pe</domain>
+        <trust-anchors>
+            <certificates src="system" />
+            <certificates src="@raw/sectigo_ov_r36" />
+        </trust-anchors>
+    </domain-config>
+</network-security-config>
