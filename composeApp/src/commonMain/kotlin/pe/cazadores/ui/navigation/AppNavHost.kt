@@ -1,5 +1,6 @@
 package pe.cazadores.ui.navigation
 
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -15,13 +16,16 @@ import androidx.navigation.navDeepLink
 import androidx.navigation.toRoute
 import pe.cazadores.ui.screens.detail.DetailRoute
 import pe.cazadores.ui.screens.home.HomeRoute
-import pe.cazadores.ui.screens.placeholder.PlaceholderScreen
+import pe.cazadores.ui.screens.onboarding.OnboardingScreen
+import pe.cazadores.ui.screens.saved.SavedRoute
+import pe.cazadores.ui.screens.settings.SettingsRoute
 import pe.cazadores.ui.screens.search.SearchRoute
 import pe.cazadores.ui.theme.Cz
 
 @Composable
 fun AppNavHost(
     startDestination: Route,
+    onOnboardingFinished: () -> Unit,
     navController: NavHostController = rememberNavController(),
 ) {
     val backStack by navController.currentBackStackEntryAsState()
@@ -29,6 +33,8 @@ fun AppNavHost(
 
     Scaffold(
         containerColor = Cz.colors.bg,
+        // Cada pantalla maneja sus márgenes del sistema; aquí solo se reserva la barra de pestañas.
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         bottomBar = {
             if (currentTab != null) {
                 CazadoresBottomBar(current = currentTab) { tab -> navController.navigateToTab(tab) }
@@ -40,7 +46,12 @@ fun AppNavHost(
             startDestination = startDestination,
             modifier = Modifier.padding(bottom = padding.calculateBottomPadding()),
         ) {
-            composable<Route.Onboarding> { PlaceholderScreen("Onboarding") }
+            composable<Route.Onboarding> {
+                OnboardingScreen(onFinish = {
+                    onOnboardingFinished()
+                    navController.navigate(Route.Home) { popUpTo<Route.Onboarding> { inclusive = true } }
+                })
+            }
             composable<Route.Home> {
                 HomeRoute(
                     onOpenSearch = {
@@ -58,8 +69,13 @@ fun AppNavHost(
                     onOpenDetail = { navController.navigate(Route.Detail(it)) },
                 )
             }
-            composable<Route.Saved> { PlaceholderScreen("Guardados") }
-            composable<Route.Settings> { PlaceholderScreen("Ajustes") }
+            composable<Route.Saved> {
+                SavedRoute(
+                    onOpenDetail = { navController.navigate(Route.Detail(it)) },
+                    onGoSearch = { navController.navigateToTab(TopLevel.SEARCH) },
+                )
+            }
+            composable<Route.Settings> { SettingsRoute() }
             composable<Route.Detail>(
                 deepLinks = listOf(navDeepLink<Route.Detail>(basePath = "$DEEP_LINK_SCHEME://criminal")),
             ) { entry ->

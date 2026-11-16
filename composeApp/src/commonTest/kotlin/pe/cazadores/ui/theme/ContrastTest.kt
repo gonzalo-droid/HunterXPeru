@@ -36,6 +36,8 @@ class ContrastTest {
             "onLevelMuyAlto" to (c.onLevelMuyAlto to c.levelMuyAlto),
             "onLevelAlto" to (c.onLevelAlto to c.levelAlto),
             "action/bg (texto rojo)" to (c.action to c.bg),
+            "snackbar texto" to (c.bg to c.ink),
+            "snackbar acción" to ((if (c.isDark) c.levelExtremo else c.reward) to c.ink),
         ).forEach { (name, pair) -> assertRatio("$theme $name", pair.first, pair.second, 4.5) }
 
         assertRatio("$theme lineStrong/surface", c.lineStrong, c.surface, 3.0)

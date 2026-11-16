@@ -52,8 +52,10 @@ private fun CazadoresColors.toMaterial(): ColorScheme {
         surfaceContainerHigh = surface,
         outline = lineStrong,
         outlineVariant = line,
-        inverseSurface = header,
-        inverseOnSurface = onHeader,
+        // Snackbar: contraste invertido respecto del fondo, con la acción en un color que se lea (≥ 4.5:1).
+        inverseSurface = ink,
+        inverseOnSurface = bg,
+        inversePrimary = if (isDark) levelExtremo else reward,
     )
 }
 

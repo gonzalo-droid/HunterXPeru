@@ -36,7 +36,12 @@ import pe.cazadores.domain.usecase.ObserveFavoritesUseCase
 import pe.cazadores.domain.usecase.SearchCriminalsUseCase
 import pe.cazadores.domain.usecase.ToggleFavoriteUseCase
 import pe.cazadores.resources.Res
+import pe.cazadores.ads.AdsController
+import pe.cazadores.ads.NoAdsController
+import pe.cazadores.ui.app.AppViewModel
 import pe.cazadores.ui.screens.detail.DetailViewModel
+import pe.cazadores.ui.screens.saved.SavedViewModel
+import pe.cazadores.ui.screens.settings.SettingsViewModel
 import pe.cazadores.ui.screens.home.HomeViewModel
 import pe.cazadores.ui.screens.search.SearchViewModel
 import kotlin.time.Clock
@@ -65,6 +70,7 @@ val dataModule = module {
     single<FavoritesRepository> { FavoritesRepositoryImpl(get(), get(), get()) }
     single<CatalogRepository> { CatalogRepositoryImpl(get(), get(), get(), get(), get()) }
     single<SettingsRepository> { SettingsRepositoryImpl(get()) }
+    single<AdsController> { NoAdsController() }
 }
 
 val domainModule = module {
@@ -81,6 +87,9 @@ val domainModule = module {
 val uiModule = module {
     viewModelOf(::SearchViewModel)
     viewModelOf(::HomeViewModel)
+    viewModelOf(::SavedViewModel)
+    viewModelOf(::SettingsViewModel)
+    viewModelOf(::AppViewModel)
     viewModel { (hash: String) -> DetailViewModel(hash, get(), get(), get(), get()) }
 }
 
