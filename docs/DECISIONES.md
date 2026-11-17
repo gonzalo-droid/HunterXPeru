@@ -3,7 +3,71 @@
 Registro de lo que se verificó contra la API real y de las decisiones que cambian o precisan
 `docs/kmp-migration/`. La más reciente va arriba.
 
+## 2026-11-17 · Rediseño "caza recompensas"
+
+### D19. Pantalla "Sobre este proyecto"
+- Desde Ajustes → Información. Explica por qué existe la app, la idea de comunidad atenta (reconocer y
+  avisar; **la captura la hace la Policía**, nunca te acerques), hacia dónde va y cómo apoyar.
+- Financiamiento: solo se mencionan los anuncios (no hay suscripción en la app). Datos: "vienen
+  directamente de la web oficial" (la app consulta la API; la sincronización semanal es solo Firebase, D15).
+- Comentarios vía "Calificar y comentar" (reseña en tienda); "Compartir la app" comparte el enlace de Play.
+- La tarjeta del aviso en Ajustes pasa a titularse "App no oficial" para no confundirse con esta pantalla.
+- Verificado en iPhone 16 (oscuro, normal y XL) y Android (claro, oscuro y letra 2×), incluida la hoja de compartir.
+
+### D18. Rediseño "caza recompensas" aplicado
+- Todas las pantallas usan el estilo cartel (Inicio tablón, Buscar, Filtros, Mis carteles, Ficha, Régimen
+  especial, leyenda, onboarding, Ajustes, estados vacíos). El cartel es **siempre papel**, igual en claro y
+  oscuro; solo el resto de la pantalla cambia de tema (`ContrastTest` cubre ambos).
+- Rango por monto de recompensa: clases S/A/B/C con estrellas; cortes **provisionales** (S ≥ 300 000,
+  A ≥ 100 000, B ≥ 50 000, C > 0). Sin monto no hay sello ni "S/ 0".
+- Peligrosidad estimada **solo por delito** (palabras clave; sin coincidencia: "Nivel base"), nunca por monto.
+- Postergados (ver D16): filtro por clase y posición nacional.
+- "Cerca de ti" usa el departamento elegido por la persona (DataStore); sin elegir muestra la invitación.
+- Verificación final: Android a 360 dp (release, R8) con letra 1,0/1,3/2,0 y una pasada en oscuro.
+  Defecto hallado y corregido: botón "Cerrar" de la leyenda ilegible en oscuro.
+- iOS (iPhone 16, release): Inicio, Ficha, Leyenda, Régimen, Buscar y Mis carteles con letra normal y
+  accesibilidad XL, más Inicio/Ficha en oscuro con letra ≈ 1,3× y la hoja de compartir (`ios-06`…`ios-15`).
+  Sin textos cortados ni encimados; a XL el tablón pasa a una columna y el sello baja bajo el monto.
+- **No probado:** Android a ≈ 320 dp (solo se midió 360 dp) ni iPhone SE para todas las pantallas (solo
+  Inicio; el resto se probó en iPhone 16, 393 pt de ancho). Se borraron `ios-01-att.jpg` e
+  `ios-03-ficha-deep-link.jpg` (mostraban el diseño anterior).
+
+### D17. Compartir el cartel como imagen
+- El botón Compartir de la ficha dibuja `SharePosterContent` fuera de pantalla (1080 × 1350 px, densidad
+  fija 2 y `fontScale = 1`, tema claro forzado: sale igual con cualquier tema o tamaño de letra) en un
+  `GraphicsLayer` que nunca se pinta, y comparte el PNG con el texto de siempre. Si el dibujo o la
+  codificación fallan, cae al texto solo. Si el cartel no cabe en alto, se reduce (nunca se corta).
+- La imagen lleva "No te acerques · Llama gratis 0-800-40-007" y "Imagen no oficial · verifica en recompensas.pe".
+  El Compartir espera a que la foto esté decodificada (`ensurePhotoDecoded`) antes de componer el cartel.
+- Android: `cache/share/cartel.png` (se sobrescribe) vía `FileProvider` `${applicationId}.share`.
+- iOS: `UIImage` en `UIActivityViewController`. Se agregó `NSPhotoLibraryAddUsageDescription`: sin esa
+  clave, "Guardar imagen" en la hoja cierra la app.
+
+### D16. Posición nacional de la recompensa: postergada a una versión siguiente
+El rediseño muestra el **rango de recompensa** (clase S/A/B/C con estrellas, calculado solo con
+`montoRecompensa`) y su leyenda. La línea de posición nacional ("#2 de 649 · Top 1 % del país")
+**no entra en esta versión**. Queda mapeada así para retomarla:
+- **Origen del dato:** `sync/sync_requisitoriados.py` ya baja los ~649 montos. Al armar el manifest,
+  ordenar por monto y agregar por perfil `rewardRank`, `rewardPercentile` y `rewardClass`; a nivel
+  raíz, `rewardClasses` (cortes y cantidad por clase) para que la leyenda muestre conteos reales.
+  Costo: milisegundos, sin llamadas extra a la API.
+- **Empates:** varios perfiles comparten S/ 500 000. "#N" es engañoso; usar "Top X %" o
+  "#1 · empatado con N más".
+- **Requisito:** la app aún consulta la API directamente y no lee `manifest.json`. La posición llega
+  cuando la app consuma los datos de Firebase; hasta entonces solo se muestra la clase.
+- **Filtro por clase:** también postergado. La API no filtra por monto; con el padrón local se filtra
+  al instante y con totales correctos.
+- **Cortes de clase:** provisionales (≥ S/ 300 mil, 100 mil, 50 mil). Calibrarlos con los montos
+  reales para que la clase S quede en torno al 5 % de los perfiles.
+
 ## 2026-11-16 · Ajustes tras la revisión
+
+### D15. La sincronización corre en una Mac en Perú
+La API no respondió en 60 s desde GitHub Actions (Azure, EE. UU.) y responde en ~2 s desde Perú: no se
+puede usar una nube extranjera para consultarla. `sync/` corre con launchd en una Mac, publica en
+Firebase Storage como máximo una vez por semana y solo pide las fichas nuevas o cambiadas
+(2 en paralelo con pausa: con 3 el servidor dejó de aceptar conexiones unos minutos).
+Firebase solo sirve archivos; la app nunca depende de que la Mac esté encendida para funcionar.
 
 ### D12. Denuncias: 0-800-40-007, 1818 y correo confirmados
 El 1818 y `denuncias@mininter.gob.pe` quedan confirmados como vigentes. El 0-800-40-007 sigue siendo la

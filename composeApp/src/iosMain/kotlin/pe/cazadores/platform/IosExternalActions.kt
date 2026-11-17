@@ -1,6 +1,11 @@
 package pe.cazadores.platform
 
+import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.addressOf
+import kotlinx.cinterop.usePinned
 import pe.cazadores.core.config.AppConfig
+import platform.Foundation.NSData
+import platform.Foundation.create
 import platform.Foundation.NSCharacterSet
 import platform.Foundation.NSString
 import platform.Foundation.NSURL
@@ -9,6 +14,7 @@ import platform.Foundation.stringByAddingPercentEncodingWithAllowedCharacters
 import platform.StoreKit.SKStoreReviewController
 import platform.UIKit.UIActivityViewController
 import platform.UIKit.UIApplication
+import platform.UIKit.UIImage
 import platform.UIKit.UIViewController
 import platform.UIKit.UIWindow
 import platform.UIKit.UIWindowScene
@@ -22,13 +28,28 @@ class IosExternalActions : ExternalActions {
         open("mailto:$to?subject=${subject.encoded()}&body=${body.encoded()}")
     }
 
-    override fun share(text: String) {
+    override fun share(text: String) = present(listOf(text))
+
+    override fun shareImage(png: ByteArray, text: String) {
+        val image = UIImage.imageWithData(png.toNSData())
+        if (image == null) {
+            share(text)
+            return
+        }
+        present(listOf(image, text))
+    }
+
+    private fun present(items: List<Any>) {
         val presenter = topViewController() ?: return
-        val controller = UIActivityViewController(activityItems = listOf(text), applicationActivities = null)
+        val controller = UIActivityViewController(activityItems = items, applicationActivities = null)
         // iPad: la hoja necesita un ancla.
         controller.popoverPresentationController?.sourceView = presenter.view
         presenter.presentViewController(controller, animated = true, completion = null)
     }
+
+    @OptIn(ExperimentalForeignApi::class)
+    private fun ByteArray.toNSData(): NSData =
+        if (isEmpty()) NSData() else usePinned { NSData.create(bytes = it.addressOf(0), length = size.toULong()) }
 
     override fun openUrl(url: String) = open(url)
 

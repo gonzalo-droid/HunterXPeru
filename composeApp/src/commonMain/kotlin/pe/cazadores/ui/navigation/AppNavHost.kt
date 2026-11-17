@@ -17,11 +17,13 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import org.koin.compose.koinInject
 import pe.cazadores.ads.AdsController
+import pe.cazadores.ui.screens.about.AboutRoute
 import pe.cazadores.ui.screens.detail.DetailRoute
 import pe.cazadores.ui.screens.home.HomeRoute
 import pe.cazadores.ui.screens.onboarding.OnboardingScreen
 import pe.cazadores.ui.screens.saved.SavedRoute
 import pe.cazadores.ui.screens.settings.SettingsRoute
+import pe.cazadores.ui.screens.regime.SpecialRegimeRoute
 import pe.cazadores.ui.screens.search.SearchRoute
 import pe.cazadores.ui.theme.Cz
 
@@ -74,12 +76,20 @@ fun AppNavHost(
                             launchSingleTop = true
                         }
                     },
+                    onSeeAll = {
+                        navController.navigate(Route.Search(sortByReward = true)) {
+                            popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                            launchSingleTop = true
+                        }
+                    },
                     onOpenDetail = { navController.navigate(Route.Detail(it)) },
+                    onOpenRegime = { navController.navigate(Route.SpecialRegime) },
                 )
             }
             composable<Route.Search> { entry ->
                 SearchRoute(
                     focusSearch = entry.toRoute<Route.Search>().focus,
+                    sortByReward = entry.toRoute<Route.Search>().sortByReward,
                     onOpenDetail = { navController.navigate(Route.Detail(it)) },
                 )
             }
@@ -89,10 +99,21 @@ fun AppNavHost(
                     onGoSearch = { navController.navigateToTab(TopLevel.SEARCH) },
                 )
             }
-            composable<Route.Settings> { SettingsRoute() }
-            composable<Route.Detail> { entry ->
-                DetailRoute(hash = entry.toRoute<Route.Detail>().hash, onBack = { navController.navigateUp() })
+            composable<Route.Settings> {
+                SettingsRoute(
+                    onOpenRegime = { navController.navigate(Route.SpecialRegime) },
+                    onOpenAbout = { navController.navigate(Route.About) },
+                )
             }
+            composable<Route.Detail> { entry ->
+                DetailRoute(
+                    hash = entry.toRoute<Route.Detail>().hash,
+                    onBack = { navController.navigateUp() },
+                    onOpenRegime = { navController.navigate(Route.SpecialRegime) },
+                )
+            }
+            composable<Route.SpecialRegime> { SpecialRegimeRoute(onBack = { navController.navigateUp() }) }
+            composable<Route.About> { AboutRoute(onBack = { navController.navigateUp() }) }
         }
     }
 }

@@ -12,6 +12,9 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import pe.cazadores.core.result.AppResult
 import pe.cazadores.core.result.DataError
+import pe.cazadores.domain.model.Catalogs
+import pe.cazadores.domain.model.Departamento
+import pe.cazadores.domain.model.SearchFilters
 import pe.cazadores.domain.model.SortOrder
 import pe.cazadores.domain.repository.TimeProvider
 import pe.cazadores.domain.usecase.GetCatalogsUseCase
@@ -25,6 +28,7 @@ import pe.cazadores.domain.usecase.ToggleFavoriteUseCase
 import pe.cazadores.testing.FakeCatalogRepository
 import pe.cazadores.testing.FakeCriminalRepository
 import pe.cazadores.testing.FakeFavoritesRepository
+import pe.cazadores.testing.FakeSettingsRepository
 import pe.cazadores.testing.criminal
 import pe.cazadores.ui.screens.detail.DetailContent
 import pe.cazadores.ui.screens.detail.DetailViewModel
@@ -118,7 +122,7 @@ class ViewModelsTest {
             advanceUntilIdle()
             val loaded = expectMostRecentItem()
             assertIs<DetailContent.Loaded>(loaded.content)
-            assertEquals(pe.cazadores.domain.model.DangerLevel.EXTREMO, (loaded.content as DetailContent.Loaded).danger)
+            assertEquals(pe.cazadores.domain.model.DangerLevel.EXTREMO, (loaded.content as DetailContent.Loaded).danger.level)
             vm.onToggleFavorite()
             advanceUntilIdle()
             assertTrue(expectMostRecentItem().isFavorite)
@@ -127,7 +131,7 @@ class ViewModelsTest {
 
     @Test fun homeKeepsTopWhenStatsFail() = runTest(dispatcher) {
         criminals.statsResult = AppResult.Failure(DataError.Timeout)
-        val vm = HomeViewModel(GetTopWantedUseCase(criminals), GetHomeStatsUseCase(criminals), TimeProvider { 42 })
+        val vm = homeVm(FakeSettingsRepository(), TimeProvider { 42 })
         advanceUntilIdle()
         with(vm.state.value) {
             assertEquals(2, top.size)
@@ -135,5 +139,98 @@ class ViewModelsTest {
             assertEquals(null, error)
             assertEquals(42L, updatedAtMillis)
         }
+    }
+
+    private val catalogs = FakeCatalogRepository()
+
+    private fun homeVm(settings: FakeSettingsRepository, time: TimeProvider = TimeProvider { 42 }) = HomeViewModel(
+        GetTopWantedUseCase(criminals), GetHomeStatsUseCase(criminals), SearchCriminalsUseCase(criminals),
+        GetCatalogsUseCase(catalogs), settings, time,
+    )
+
+    @Test fun homeNearbyEmptyUntilDepartmentPicked() = runTest(dispatcher) {
+        val vm = homeVm(FakeSettingsRepository())
+        advanceUntilIdle()
+        with(vm.state.value) {
+            assertTrue(near.isEmpty())
+            assertEquals(null, nearDepartamento)
+            assertEquals(null, error)
+            assertEquals(false, nearFailed)
+        }
+        assertTrue(criminals.searchCalls.isEmpty())
+    }
+
+    @Test fun homeNearbyLoadsByRewardForPickedDepartment() = runTest(dispatcher) {
+        catalogs.catalogs = Catalogs(emptyList(), listOf(Departamento("15", "LIMA")), emptyList())
+        val vm = homeVm(FakeSettingsRepository())
+        advanceUntilIdle()
+        vm.onPickDepartamento("15")
+        advanceUntilIdle()
+        assertEquals(SearchFilters(departamentoId = "15", sort = SortOrder.REWARD) to 1, criminals.searchCalls.single())
+        with(vm.state.value) {
+            assertEquals("LIMA", nearDepartamento?.name)
+            assertEquals(List(6) { "p1-$it" }, near.map { it.hash })
+        }
+        vm.onPickDepartamento(null)
+        advanceUntilIdle()
+        assertTrue(vm.state.value.near.isEmpty())
+        assertEquals(null, vm.state.value.nearDepartamento)
+    }
+
+    @Test fun homeKeepsTopAndStatsWhenNearbyFails() = runTest(dispatcher) {
+        catalogs.catalogs = Catalogs(emptyList(), listOf(Departamento("15", "LIMA")), emptyList())
+        criminals.searchResponder = { _, _ -> AppResult.Failure(DataError.Timeout) }
+        val vm = homeVm(FakeSettingsRepository("15"))
+        advanceUntilIdle()
+        with(vm.state.value) {
+            assertEquals(2, top.size)
+            assertEquals(649, stats?.total)
+            assertEquals(null, error)
+            assertTrue(nearFailed)
+            assertTrue(near.isEmpty())
+        }
+    }
+
+    @Test fun homeNearbyLoadsWithSavedIdWithoutWaitingForCatalogs() = runTest(dispatcher) {
+        val gate = kotlinx.coroutines.CompletableDeferred<Unit>()
+        catalogs.gate = gate
+        catalogs.catalogs = Catalogs(emptyList(), listOf(Departamento("15", "LIMA")), emptyList())
+        val vm = homeVm(FakeSettingsRepository("15"))
+        advanceUntilIdle()
+        with(vm.state.value) {
+            assertTrue(nearReady)
+            assertEquals("15", nearId)
+            assertEquals(null, nearDepartamento)
+            assertEquals(6, near.size)
+        }
+        gate.complete(Unit)
+        advanceUntilIdle()
+        assertEquals("LIMA", vm.state.value.nearDepartamento?.name)
+    }
+
+    @Test fun homeClearsSavedDepartmentMissingFromCatalog() = runTest(dispatcher) {
+        catalogs.catalogs = Catalogs(emptyList(), listOf(Departamento("15", "LIMA")), emptyList())
+        val settings = FakeSettingsRepository("99")
+        val vm = homeVm(settings)
+        advanceUntilIdle()
+        assertEquals(null, settings.near.value)
+        assertEquals(null, vm.state.value.nearId)
+        assertTrue(vm.state.value.near.isEmpty())
+    }
+
+    @Test fun homeClearsStaleIdWhenCatalogsArriveBeforeSetting() = runTest(dispatcher) {
+        catalogs.catalogs = Catalogs(emptyList(), listOf(Departamento("15", "LIMA")), emptyList())
+        val settings = FakeSettingsRepository("99")
+        val gate = kotlinx.coroutines.CompletableDeferred<Unit>()
+        settings.gate = gate
+        val vm = homeVm(settings)
+        advanceUntilIdle()
+        assertEquals(1, vm.state.value.departamentos.size)
+        gate.complete(Unit)
+        advanceUntilIdle()
+        assertEquals(null, settings.near.value)
+        assertEquals(null, vm.state.value.nearId)
+        assertTrue(vm.state.value.nearReady)
+        assertTrue(criminals.searchCalls.isEmpty())
     }
 }

@@ -30,6 +30,9 @@ enum class Sex { MALE, FEMALE }
 
 enum class DangerLevel(val marks: Int) { EXTREMO(3), MUY_ALTO(2), ALTO(1) }
 
+/** Rango de recompensa calculado por la app (no oficial): más estrellas, mayor recompensa. */
+enum class RewardClass(val stars: Int) { S(4), A(3), B(2), C(1) }
+
 enum class SortOrder { RECENT, REWARD, REGION }
 
 data class SearchFilters(

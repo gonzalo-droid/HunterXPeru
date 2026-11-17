@@ -56,12 +56,15 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import pe.cazadores.ads.AD_EVERY_N_ITEMS
 import pe.cazadores.ads.AdPlacement
 import pe.cazadores.ads.InlineAdSlot
 import pe.cazadores.core.text.titleCase
+import pe.cazadores.core.config.AppConfig
 import pe.cazadores.domain.model.SortOrder
+import pe.cazadores.platform.ExternalActions
 import pe.cazadores.resources.Res
 import pe.cazadores.resources.clear_filters
 import pe.cazadores.resources.empty_search_body
@@ -98,9 +101,20 @@ import pe.cazadores.ui.theme.CzIcons
 @Composable
 fun SearchRoute(
     focusSearch: Boolean,
+    sortByReward: Boolean,
     onOpenDetail: (String) -> Unit,
     viewModel: SearchViewModel = koinViewModel(),
+    actions: ExternalActions = koinInject(),
 ) {
+    // "Ver todos" del tablero Clase S: lista por mayor recompensa, sin abrir el teclado.
+    // Aplicar una sola vez por entrada: al volver de una ficha no debe pisar el orden elegido a mano.
+    var sortHandled by rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(sortByReward) {
+        if (sortByReward && !sortHandled) {
+            viewModel.onSortChange(SortOrder.REWARD)
+            sortHandled = true
+        }
+    }
     val state by viewModel.state.collectAsStateWithLifecycle()
     SearchScreen(
         state = state,
@@ -114,6 +128,7 @@ fun SearchRoute(
         onRemoveCrime = viewModel::onRemoveCrime,
         onClearFilters = viewModel::onClearFilters,
         onRetry = viewModel::onRetry,
+        onCall = { actions.dial(AppConfig.REPORT_PHONE_URI) },
         onRefresh = viewModel::onRefresh,
         onLoadMore = viewModel::onLoadMore,
         onOpenDetail = onOpenDetail,
@@ -144,6 +159,7 @@ fun SearchScreen(
     onRemoveCrime: () -> Unit,
     onClearFilters: () -> Unit,
     onRetry: () -> Unit,
+    onCall: () -> Unit,
     onRefresh: () -> Unit,
     onLoadMore: () -> Unit,
     onOpenDetail: (String) -> Unit,
@@ -161,7 +177,7 @@ fun SearchScreen(
         ) {
             when {
                 state.isLoading -> ListSkeleton(modifier = Modifier.padding(horizontal = CazadoresDimens.screenPadding))
-                state.error != null -> ErrorState(state.error, onRetry)
+                state.error != null -> ErrorState(state.error, onRetry, onCall)
                 state.isEmpty -> MessageState(
                     icon = CzIcons.Search,
                     title = stringResource(Res.string.empty_search_title),

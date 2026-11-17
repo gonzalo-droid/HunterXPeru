@@ -35,11 +35,40 @@ data class CazadoresColors(
     val onLevelAlto: Color,
     val photoPlaceholder: Color,
     val photoSilhouette: Color,
+    /** Cartel "Se busca": siempre papel, idéntico en claro y oscuro. */
+    val paper: Color,
+    val onPaper: Color,
+    val onPaperMuted: Color,
+    /** Sin texto: filetes y marcos sobre `paper`. */
+    val paperLine: Color,
+    /** Sin texto: fondo de la foto sobre `paper`. */
+    val paperPhoto: Color,
+    val posterRed: Color,
+    val onPosterRed: Color,
+    val rankS: Color,
+    val onRankS: Color,
+    val rankA: Color,
+    val onRankA: Color,
+    val rankB: Color,
+    val onRankB: Color,
+    val rankC: Color,
+    val onRankC: Color,
     val isDark: Boolean,
 )
 
 private val Ink = Color(0xFF16181B)
 private val Reward = Color(0xFFF2B93B)
+
+// Tokens del cartel: mismos valores en ambos temas (el cartel es siempre papel).
+private val Paper = Color(0xFFEFE4CC)
+private val OnPaper = Color(0xFF2B1D10)
+private val OnPaperMuted = Color(0xFF5A4630)
+private val PaperLine = Color(0xFFCDBF9F)
+private val PaperPhoto = Color(0xFFDCCFB0)
+private val PosterRed = Color(0xFF7A1D12)
+private val OnPosterRed = Color(0xFFFFF3E6)
+private val RankB = Color(0xFFB0480C)
+private val RankC = Color(0xFFEADFB8)
 
 val LightCazadoresColors = CazadoresColors(
     bg = Color(0xFFF3F1EC),
@@ -65,6 +94,21 @@ val LightCazadoresColors = CazadoresColors(
     onLevelAlto = Color(0xFF3D3200),
     photoPlaceholder = Color(0xFFD9D5CC),
     photoSilhouette = Color(0xFFB9B4A9),
+    paper = Paper,
+    onPaper = OnPaper,
+    onPaperMuted = OnPaperMuted,
+    paperLine = PaperLine,
+    paperPhoto = PaperPhoto,
+    posterRed = PosterRed,
+    onPosterRed = OnPosterRed,
+    rankS = OnPaper,
+    onRankS = Reward,
+    rankA = PosterRed,
+    onRankA = OnPosterRed,
+    rankB = RankB,
+    onRankB = OnPosterRed,
+    rankC = RankC,
+    onRankC = Color(0xFF3D3200),
     isDark = false,
 )
 
@@ -93,6 +137,21 @@ val DarkCazadoresColors = CazadoresColors(
     onLevelAlto = Color(0xFF3D3200),
     photoPlaceholder = Color(0xFF2A2D32),
     photoSilhouette = Color(0xFF4A4F57),
+    paper = Paper,
+    onPaper = OnPaper,
+    onPaperMuted = OnPaperMuted,
+    paperLine = PaperLine,
+    paperPhoto = PaperPhoto,
+    posterRed = PosterRed,
+    onPosterRed = OnPosterRed,
+    rankS = OnPaper,
+    onRankS = Reward,
+    rankA = PosterRed,
+    onRankA = OnPosterRed,
+    rankB = RankB,
+    onRankB = OnPosterRed,
+    rankC = RankC,
+    onRankC = Color(0xFF3D3200),
     isDark = true,
 )
 

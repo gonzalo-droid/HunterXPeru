@@ -43,6 +43,23 @@ internal object PhotoCache {
 }
 
 /**
+ * Devuelve la foto decodificada de [key]: de la caché o, si falta, decodificando [base64] fuera del hilo principal
+ * y guardándola. `null` solo si no hay foto o el Base64 no es una imagen válida. Llamar desde el hilo principal
+ * (la caché no es segura entre hilos). [decode] se inyecta para poder probarlo sin decodificador de imágenes.
+ */
+internal suspend fun ensurePhotoDecoded(
+    key: String,
+    base64: String?,
+    decode: (ByteArray) -> ImageBitmap? = { bytes -> runCatching { bytes.decodeToImageBitmap() }.getOrNull() },
+): ImageBitmap? {
+    PhotoCache.get(key)?.let { return it }
+    if (base64 == null) return null
+    val decoded = withContext(Dispatchers.Default) { PhotoDecoder.decode(base64)?.let(decode) }
+    decoded?.let { PhotoCache.put(key, it) }
+    return decoded
+}
+
+/**
  * Foto de la persona o silueta si no hay foto o no se puede leer.
  * [cacheKey] suele ser el hash de la persona.
  */
@@ -55,14 +72,8 @@ fun CriminalPhoto(
     shape: Shape = CazadoresShapes.photo,
 ) {
     val bitmap by produceState(PhotoCache.get(cacheKey), cacheKey, base64) {
-        if (value == null && base64 != null) {
-            val decoded = withContext(Dispatchers.Default) {
-                PhotoDecoder.decode(base64)?.let { bytes -> runCatching { bytes.decodeToImageBitmap() }.getOrNull() }
-            }
-            // La caché solo se toca desde el hilo principal (produceState corre ahí).
-            decoded?.let { PhotoCache.put(cacheKey, it) }
-            value = decoded
-        }
+        // La caché solo se toca desde el hilo principal (produceState corre ahí).
+        if (value == null && base64 != null) value = ensurePhotoDecoded(cacheKey, base64)
     }
     val described = if (contentDescription != null) Modifier.semantics { this.contentDescription = contentDescription } else Modifier
     Box(

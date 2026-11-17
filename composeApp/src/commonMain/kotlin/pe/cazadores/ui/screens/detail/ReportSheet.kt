@@ -41,6 +41,7 @@ import pe.cazadores.resources.Res
 import pe.cazadores.resources.report_call
 import pe.cazadores.resources.report_call_sub
 import pe.cazadores.resources.report_call_alt
+import pe.cazadores.resources.report_safety
 import pe.cazadores.core.config.AppConfig
 import pe.cazadores.ui.components.TextAction
 import pe.cazadores.resources.report_details
@@ -98,6 +99,7 @@ fun ReportSheet(
                     modifier = Modifier.semantics { heading() },
                 )
                 Text(stringResource(Res.string.report_subtitle, criminal.displayName, id), style = Cz.type.bodySmall, color = Cz.colors.inkMuted)
+                Text(stringResource(Res.string.report_safety), style = Cz.type.bodyStrong, color = Cz.colors.ink)
             }
 
             Row(

@@ -31,8 +31,11 @@ interface CatalogRepository {
 interface SettingsRepository {
     val onboardingDone: Flow<Boolean>
     val themeMode: Flow<ThemeMode>
+    /** Departamento elegido para "Cerca de ti" (null = sin elegir). */
+    val nearDepartamentoId: Flow<String?>
     suspend fun completeOnboarding()
     suspend fun setThemeMode(mode: ThemeMode)
+    suspend fun setNearDepartamento(id: String?)
 }
 
 /** Estado de la conexión (expect/actual por plataforma). */

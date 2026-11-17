@@ -11,11 +11,12 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import pe.cazadores.core.DangerAssessment
 import pe.cazadores.core.DangerLevelCalculator
+import pe.cazadores.core.SpecialRegime
 import pe.cazadores.core.result.AppResult
 import pe.cazadores.core.result.DataError
 import pe.cazadores.domain.model.Criminal
-import pe.cazadores.domain.model.DangerLevel
 import pe.cazadores.domain.repository.TimeProvider
 import pe.cazadores.domain.usecase.GetCriminalDetailUseCase
 import pe.cazadores.domain.usecase.IsFavoriteUseCase
@@ -26,7 +27,9 @@ sealed interface DetailContent {
     data class Error(val error: DataError) : DetailContent
     data class Loaded(
         val criminal: Criminal,
-        val danger: DangerLevel,
+        val danger: DangerAssessment,
+        /** Delitos de extorsión o sicariato: aplica el régimen especial de recompensas. */
+        val specialRegime: Boolean,
         /** Momento de los datos: ahora, o la fecha de la caché si no hubo red. */
         val dataAtMillis: Long,
         val fromCache: Boolean,
@@ -89,7 +92,8 @@ class DetailViewModel(
             content.value = when (val result = getDetail(hash)) {
                 is AppResult.Success -> DetailContent.Loaded(
                     criminal = result.data,
-                    danger = DangerLevelCalculator.of(result.data.crimes),
+                    danger = DangerLevelCalculator.assess(result.data.crimes),
+                    specialRegime = SpecialRegime.applies(result.data.crimes),
                     dataAtMillis = result.cachedAtMillis ?: time.nowMillis(),
                     fromCache = result.cachedAtMillis != null,
                 )

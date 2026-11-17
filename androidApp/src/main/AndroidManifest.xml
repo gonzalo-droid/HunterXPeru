@@ -37,6 +37,16 @@
                 <data android:scheme="cazadores" android:host="criminal" />
             </intent-filter>
         </activity>
+        <!-- Cartel compartido como imagen: expone solo cache/share/ (ver res/xml/share_paths.xml). -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.share"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/share_paths" />
+        </provider>
     </application>
 
 </manifest>

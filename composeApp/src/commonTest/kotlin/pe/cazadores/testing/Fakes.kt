@@ -1,6 +1,7 @@
 package pe.cazadores.testing
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import pe.cazadores.core.result.AppResult
@@ -11,7 +12,9 @@ import pe.cazadores.domain.model.SearchFilters
 import pe.cazadores.domain.model.SearchPage
 import pe.cazadores.domain.repository.CatalogRepository
 import pe.cazadores.domain.repository.CriminalRepository
+import pe.cazadores.domain.model.ThemeMode
 import pe.cazadores.domain.repository.FavoritesRepository
+import pe.cazadores.domain.repository.SettingsRepository
 
 fun criminal(hash: String, name: String = "PERSONA $hash", crimes: List<String> = listOf("EXTORSION")) =
     Criminal(id = hash.hashCode(), hash = hash, displayName = name, reward = 10_000.0, crimes = crimes)
@@ -48,5 +51,26 @@ class FakeCriminalRepository : CriminalRepository {
 }
 
 class FakeCatalogRepository : CatalogRepository {
-    override suspend fun catalogs() = Catalogs(emptyList(), emptyList(), emptyList())
+    var catalogs = Catalogs(emptyList(), emptyList(), emptyList())
+    var gate: kotlinx.coroutines.CompletableDeferred<Unit>? = null
+    override suspend fun catalogs(): Catalogs {
+        gate?.await()
+        return catalogs
+    }
+}
+
+class FakeSettingsRepository(initialNear: String? = null) : SettingsRepository {
+    val near = MutableStateFlow(initialNear)
+    override val onboardingDone: Flow<Boolean> = MutableStateFlow(true)
+    override val themeMode: Flow<ThemeMode> = MutableStateFlow(ThemeMode.SYSTEM)
+    var gate: kotlinx.coroutines.CompletableDeferred<Unit>? = null
+    override val nearDepartamentoId: Flow<String?> = kotlinx.coroutines.flow.flow {
+        gate?.await()
+        emitAll(near)
+    }
+    override suspend fun completeOnboarding() = Unit
+    override suspend fun setThemeMode(mode: ThemeMode) = Unit
+    override suspend fun setNearDepartamento(id: String?) {
+        near.value = id
+    }
 }

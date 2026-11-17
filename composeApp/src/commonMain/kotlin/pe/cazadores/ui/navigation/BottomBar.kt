@@ -35,7 +35,7 @@ fun NavDestination?.topLevel(): TopLevel? =
 
 @Composable
 fun CazadoresBottomBar(current: TopLevel?, onSelect: (TopLevel) -> Unit) {
-    // Las etiquetas de pestaña escalan hasta 1,3×: a 2× "Guardados" no cabe en un cuarto de pantalla.
+    // Las etiquetas de pestaña escalan hasta 1,3×: a 2× "Carteles" no cabe en un cuarto de pantalla.
     // El ícono y la descripción accesible identifican cada pestaña a cualquier tamaño.
     val fontScale = LocalDensity.current.fontScale
     val labelScale = if (fontScale > MAX_LABEL_SCALE) MAX_LABEL_SCALE / fontScale else 1f

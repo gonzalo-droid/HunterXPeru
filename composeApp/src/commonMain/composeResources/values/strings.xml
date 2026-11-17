@@ -5,7 +5,7 @@
     <!-- Pestañas -->
     <string name="tab_home">Inicio</string>
     <string name="tab_search">Buscar</string>
-    <string name="tab_saved">Guardados</string>
+    <string name="tab_saved">Carteles</string>
     <string name="tab_settings">Ajustes</string>
 
     <!-- Comunes -->
@@ -18,6 +18,8 @@
     <string name="error_timeout">El servidor del programa está tardando en responder. Intenta de nuevo en un momento.</string>
     <string name="error_server">El servidor del programa respondió con un error. Intenta de nuevo más tarde.</string>
     <string name="error_not_found">No encontramos esta ficha. Puede que la persona ya no esté en la lista del programa.</string>
+    <string name="poster_no_signal">SIN SEÑAL</string>
+    <string name="offline_call_note">El 0-800 funciona sin internet.</string>
     <string name="offline_banner">Sin conexión · datos del %1$s</string>
     <string name="reward_none">Sin recompensa</string>
     <string name="reward_cd">Recompensa: %1$s</string>
@@ -73,9 +75,7 @@
     <string name="detail_removed_msg">Quitado de tu lista</string>
     <string name="detail_photo_cd">Foto de %1$s</string>
     <string name="detail_id">ID %1$s</string>
-    <string name="detail_reward">Recompensa</string>
     <string name="detail_danger">Peligrosidad</string>
-    <string name="detail_danger_note">Estimado por la app según el tipo de delito. No es una calificación oficial.</string>
     <string name="detail_crimes">Delitos imputados</string>
     <string name="detail_department">Departamento</string>
     <string name="detail_province">Provincia</string>
@@ -89,6 +89,8 @@
     <string name="detail_report">Reportar por escrito</string>
     <string name="detail_not_found_title">Ficha no encontrada</string>
     <string name="share_text">%1$s\nRecompensa: %2$s\nSi tienes información, llama gratis al %3$s. No te acerques.\n%4$s\n(Datos públicos del Programa de Recompensas)</string>
+    <string name="share_image_call">No te acerques · Llama gratis %1$s</string>
+    <string name="share_image_disclaimer">Imagen no oficial · verifica en recompensas.pe</string>
 
     <!-- Reportar -->
     <string name="report_title">Reportar avistamiento</string>
@@ -114,21 +116,33 @@
     <string name="home_search_hint">Buscar por nombre</string>
     <string name="home_call_overline">¿Viste a alguien? Línea gratuita</string>
     <string name="home_call_cd">Llamar a la línea gratuita %1$s</string>
-    <string name="home_stat_total">Personas buscadas</string>
-    <string name="home_stat_max">Recompensa más alta</string>
     <string name="home_top">Mayores recompensas</string>
+    <string name="home_title_count">%1$d SE BUSCAN</string>
+    <string name="home_title_neutral">Tablón de recompensas</string>
+    <string name="home_regime_title">Hasta S/&#160;500&#160;000 por extorsión y sicariato</string>
+    <string name="home_class_s">Clase S ★★★★</string>
+    <string name="home_near_title">Cerca de ti</string>
+    <string name="home_near_prompt">Elige tu departamento y mira quién se busca cerca de ti.</string>
+    <string name="home_near_pick">Elegir departamento</string>
+    <string name="home_near_change">Cambiar</string>
+    <string name="home_near_in">Mayores recompensas en %1$s</string>
+    <string name="home_near_empty">No hay carteles en %1$s por ahora.</string>
+    <string name="home_near_error">No pudimos cargar esta sección.</string>
+    <string name="home_near_retry">Reintentar</string>
+    <string name="home_near_sheet_title">Tu departamento</string>
+    <string name="home_near_sheet_unavailable">No se pudo cargar la lista de departamentos.</string>
+    <string name="home_near_clear">Quitar elección</string>
     <string name="home_see_all">Ver todos</string>
-    <string name="home_rank">#%1$d</string>
 
-    <!-- Guardados -->
-    <string name="saved_title">Guardados</string>
-    <string name="saved_empty_title">Aún no guardas a nadie</string>
-    <string name="saved_empty_body">Guarda una ficha con el ícono de marcador para tenerla a mano, incluso sin conexión.</string>
+    <!-- Mis carteles -->
+    <string name="saved_title">Mis carteles</string>
+    <string name="saved_empty_title">Aún no tienes carteles</string>
+    <string name="saved_empty_body">Guarda una ficha con el ícono de marcador y su cartel quedará aquí, a mano incluso sin conexión.</string>
     <string name="saved_go_search">Ir a Buscar</string>
-    <string name="saved_removed">%1$s quitado de Guardados</string>
+    <string name="saved_removed">Cartel de %1$s quitado</string>
     <string name="undo">Deshacer</string>
-    <string name="saved_remove_action">Quitar de Guardados</string>
-    <string name="saved_swipe_hint">Desliza una ficha hacia la izquierda para quitarla.</string>
+    <string name="saved_remove_action">Quitar cartel</string>
+    <string name="saved_remove_hint">Toca la X de un cartel para quitarlo.</string>
 
     <!-- Ajustes -->
     <string name="settings_title">Ajustes</string>
@@ -136,6 +150,8 @@
     <string name="settings_theme_system">Sistema</string>
     <string name="settings_theme_light">Claro</string>
     <string name="settings_theme_dark">Oscuro</string>
+    <string name="settings_rewards_section">Recompensas</string>
+    <string name="settings_regime">Régimen especial: extorsión y sicariato</string>
     <string name="settings_privacy_section">Privacidad</string>
     <string name="settings_ads_prefs">Preferencias de anuncios</string>
     <string name="settings_privacy_policy">Política de privacidad</string>
@@ -143,7 +159,7 @@
     <string name="settings_info_section">Información</string>
     <string name="settings_source">Fuente de datos: recompensas.pe</string>
     <string name="settings_rate">Califica la app en la tienda</string>
-    <string name="settings_about">Sobre esta app</string>
+    <string name="settings_about">App no oficial</string>
     <string name="settings_about_body">Cazadores Perú es una app independiente. No está afiliada al Ministerio del Interior ni a la Policía Nacional del Perú. Muestra datos públicos del Programa de Recompensas, que pueden cambiar sin aviso: verifica siempre en recompensas.pe. La recompensa la otorga el Estado tras validar la información.</string>
     <string name="settings_version">Versión %1$s</string>
 
@@ -152,12 +168,68 @@
     <string name="onboarding_skip">Omitir</string>
     <string name="onboarding_next">Siguiente</string>
     <string name="onboarding_start">Entendido, empezar</string>
-    <string name="onboarding_1_title">Personas buscadas por el Estado</string>
-    <string name="onboarding_1_body">Consulta la lista pública del Programa de Recompensas: quiénes son, por qué delitos se les busca y cuánto ofrece el Estado por información que lleve a su captura.</string>
-    <string name="onboarding_2_title">Busca y guarda fichas</string>
-    <string name="onboarding_2_body">Filtra por nombre, departamento o delito. Guarda las fichas que te interesen para verlas incluso sin conexión.</string>
+    <string name="onboarding_1_title">Carteles del Programa de Recompensas</string>
+    <string name="onboarding_1_body">Aquí ves a las personas que busca el Estado, por qué delitos y cuánto ofrece el programa por información útil. Cada una tiene su cartel.</string>
+    <string name="onboarding_2_title">Rangos y estrellas</string>
+    <string name="onboarding_2_body">La app agrupa las recompensas en clases, de la S a la C. Más estrellas significan un monto ofrecido mayor.</string>
     <string name="onboarding_3_title">Nunca te enfrentes. Llama.</string>
-    <string name="onboarding_3_body">Si reconoces a alguien, no te acerques ni lo sigas. Anota lugar y hora, y comunícate con la línea gratuita. Tu reporte puede ser anónimo.</string>
-    <string name="onboarding_note_1">Esta app no es oficial. Muestra datos públicos del Programa de Recompensas (MININTER).</string>
+    <string name="onboarding_3_unofficial">Esta app no es oficial.</string>
+    <string name="onboarding_3_body">Si reconoces a alguien, no te acerques ni lo sigas. Anota lugar y hora y llama a la línea gratuita. Tu reporte puede ser anónimo.</string>
+    <string name="onboarding_note_1">Muestra datos públicos del Programa de Recompensas (MININTER). Verifica siempre en recompensas.pe.</string>
     <string name="onboarding_note_2">La recompensa la otorga el Estado tras validar la información.</string>
+    <string name="onboarding_rank_note">Los rangos son un sello de esta app, no una calificación oficial.</string>
+    <string name="poster_wanted">SE BUSCA</string>
+    <string name="poster_for">POR %1$s</string>
+    <plurals name="poster_more_crimes">
+        <item quantity="one">+ %d delito más</item>
+        <item quantity="other">+ %d delitos más</item>
+    </plurals>
+    <string name="rank_label">Clase %1$s</string>
+    <string name="rank_cd">Clase %1$s, %2$d estrellas</string>
+    <string name="danger_meter_by">Estimado por la app según: %1$s. No es una calificación oficial.</string>
+    <string name="danger_meter_base">Nivel base: todos los buscados tienen delitos graves. No es una calificación oficial.</string>
+    <!-- Ficha: aviso del régimen especial -->
+    <string name="detail_regime_body">Este delito entra en el régimen especial: la recompensa puede llegar hasta S/ 500 000.</string>
+    <string name="detail_regime_cta">Ver cómo funciona</string>
+    <!-- Leyenda de rangos -->
+    <string name="legend_title">¿Qué significan los rangos?</string>
+    <string name="legend_intro">La clase es un sello de esta app que agrupa a los buscados según el monto de la recompensa. No es una calificación oficial.</string>
+    <string name="legend_row_s">S/ 300 mil o más</string>
+    <string name="legend_row_a">S/ 100 mil o más</string>
+    <string name="legend_row_b">S/ 50 mil o más</string>
+    <string name="legend_row_c">Menos de S/ 50 mil</string>
+    <string name="legend_danger_note">La peligrosidad es otra estimación de la app, según el delito: no depende de la clase ni del monto.</string>
+    <string name="legend_close">Cerrar</string>
+    <!-- Régimen especial -->
+    <string name="regime_title">Recompensas por extorsión y sicariato</string>
+    <string name="regime_decree">D. S. N.º 097-2025-PCM</string>
+    <string name="regime_intro">Régimen especial aprobado por el D. S. N.º 097-2025-PCM. Da beneficios económicos a quien brinde información útil para capturar a implicados en extorsión y sicariato.</string>
+    <string name="regime_1_title">Pago acelerado</string>
+    <string name="regime_1_body">El pago se hace en hasta 32 días hábiles.</string>
+    <string name="regime_2_title">Protección del informante</string>
+    <string name="regime_2_body">Tu anonimato y confidencialidad se protegen mediante una clave reservada.</string>
+    <string name="regime_3_title">Procedimiento estructurado</string>
+    <string name="regime_3_body">Recepción, verificación, formulación del expediente, evaluación y pago.</string>
+    <string name="regime_4_title">Criterios claros</string>
+    <string name="regime_4_body">El monto depende del nivel de participación del colaborador en la captura.</string>
+    <string name="regime_5_title">Coordinación institucional</string>
+    <string name="regime_5_body">La DIRNIC de la PNP trabaja con la Comisión Evaluadora de Recompensas contra la Criminalidad.</string>
+    <string name="regime_closing">Tu recompensa puede ser hasta S/ 500 000</string>
+    <string name="regime_open_official">Ver el comunicado oficial</string>
+    <string name="regime_unofficial">Resumen hecho por una app no oficial. Lo que vale es el decreto y el Mininter.</string>
+    <string name="report_safety">No te acerques a la persona.</string>
+    <string name="settings_project">Sobre este proyecto</string>
+    <string name="about_title">Sobre este proyecto</string>
+    <string name="about_motto">Si todos estamos atentos, nadie se escapa.</string>
+    <string name="about_why_title">Por qué existe</string>
+    <string name="about_why_body">La web oficial del Programa de Recompensas tiene la información, pero no es fácil revisarla desde el celular. Esta app la ordena en carteles claros, fáciles de consultar y de compartir.</string>
+    <string name="about_community_title">Una comunidad atenta</string>
+    <string name="about_community_body">Queremos que mucha gente conozca estos rostros. Si alguien reconoce a una persona buscada, avisa a la línea gratuita y la Policía hace la captura. Nunca te acerques.</string>
+    <string name="about_future_title">Hacia dónde vamos</string>
+    <string name="about_future_body">Queremos ser una fuente de datos al día y fáciles de consultar que ayude a ubicar más rápido a las personas buscadas. Los datos vienen directamente de la web oficial del Programa de Recompensas.</string>
+    <string name="about_support_title">Cómo apoyar</string>
+    <string name="about_support_body">Los anuncios ayudan al mantenimiento y crecimiento del proyecto. Compartir la app y los carteles también suma. Agradecemos cualquier comentario u observación para seguir mejorando.</string>
+    <string name="about_share_app">Compartir la app</string>
+    <string name="about_rate">Calificar y comentar</string>
+    <string name="about_share_text">Cazadores Perú: consulta a las personas buscadas por el Programa de Recompensas y comparte sus carteles. Si todos estamos atentos, nadie se escapa. %1$s</string>
 </resources>

@@ -26,6 +26,9 @@ object AppConfig {
     const val PRIVACY_POLICY_URL = "https://example.com/cazadores/privacidad"
     const val TERMS_URL = "https://example.com/cazadores/terminos"
 
+    /** Enlace que se comparte desde "Sobre este proyecto". Play acepta el applicationId heredado de Flutter. */
+    const val PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=com.cazadores.cazadores_peru"
+
     const val SOURCE_URL = "https://recompensas.pe"
     const val DEEP_LINK_BASE = "cazadores://criminal/"
 
