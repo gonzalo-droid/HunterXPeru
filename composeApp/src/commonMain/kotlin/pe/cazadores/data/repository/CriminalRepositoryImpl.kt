@@ -1,5 +1,7 @@
 package pe.cazadores.data.repository
 
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.serialization.json.Json
 import pe.cazadores.core.config.AppConfig
 import pe.cazadores.core.result.AppResult
@@ -22,6 +24,7 @@ import pe.cazadores.domain.model.SearchFilters
 import pe.cazadores.domain.model.SearchPage
 import pe.cazadores.domain.model.SortOrder
 import pe.cazadores.domain.repository.CriminalRepository
+import pe.cazadores.domain.repository.NetworkMonitor
 import pe.cazadores.domain.repository.TimeProvider
 
 class CriminalRepositoryImpl(
@@ -29,11 +32,22 @@ class CriminalRepositoryImpl(
     private val cache: CacheDao,
     private val time: TimeProvider,
     private val json: Json,
+    private val network: NetworkMonitor,
     private val pageSize: Int = AppConfig.PAGE_SIZE,
 ) : CriminalRepository {
 
+    /**
+     * Sin red no tiene sentido esperar los reintentos del cliente (~14 s): se va directo a la caché.
+     * iOS publica el primer estado de forma asíncrona; si no llega a tiempo se asume que hay red.
+     */
+    private suspend fun isOffline(): Boolean =
+        withTimeoutOrNull(NETWORK_CHECK_TIMEOUT_MS) { network.isOnline.first() } == false
+
+    private suspend inline fun <T> remote(block: () -> T): AppResult<T> =
+        if (isOffline()) AppResult.Failure(DataError.Network) else apiCall(block)
+
     override suspend fun search(filters: SearchFilters, page: Int): AppResult<SearchPage> {
-        val remote = apiCall { api.search(filters.toRequest(page, pageSize)) }
+        val remote = remote { api.search(filters.toRequest(page, pageSize)) }
         return when (remote) {
             is AppResult.Success -> {
                 val dto = remote.data
@@ -53,7 +67,7 @@ class CriminalRepositoryImpl(
     }
 
     override suspend fun topWanted(): AppResult<List<Criminal>> {
-        val remote = apiCall { api.top5().map { it.toDomain() } }
+        val remote = remote { api.top5().map { it.toDomain() } }
         return when (remote) {
             is AppResult.Success -> {
                 storeSearch(TOP_KEY, SearchPage(remote.data, 1, remote.data.size, 1, true))
@@ -69,7 +83,7 @@ class CriminalRepositoryImpl(
     }
 
     override suspend fun detail(hash: String): AppResult<Criminal> {
-        val remote = apiCall { api.detail(hash).toDomain() }
+        val remote = remote { api.detail(hash).toDomain() }
         return when (remote) {
             is AppResult.Success -> {
                 if (remote.data.hash.isBlank()) return AppResult.Failure(DataError.NotFound)
@@ -87,7 +101,7 @@ class CriminalRepositoryImpl(
     }
 
     /** Total = búsqueda vacía; máximo = primer ítem ordenado por recompensa (bug B2 de Flutter). */
-    override suspend fun homeStats(): AppResult<HomeStats> = apiCall {
+    override suspend fun homeStats(): AppResult<HomeStats> = remote {
         val all = api.search(SearchFilters().toRequest(page = 1, size = 1))
         val top = api.search(SearchFilters(sort = SortOrder.REWARD).toRequest(page = 1, size = 1))
         HomeStats(total = all.totalElements, maxReward = top.content.firstOrNull()?.montoRecompensa ?: 0.0)
@@ -122,6 +136,7 @@ class CriminalRepositoryImpl(
         const val MAX_ROWS_PER_KEY = 100
         const val MAX_KEYS = 20
         internal const val TOP_KEY = "__top5__"
+        private const val NETWORK_CHECK_TIMEOUT_MS = 500L
     }
 }
 

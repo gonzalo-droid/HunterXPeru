@@ -23,6 +23,8 @@ import pe.cazadores.data.remote.RecompensasApi
 import pe.cazadores.data.remote.createHttpClient
 import pe.cazadores.domain.model.SearchFilters
 import pe.cazadores.domain.model.SortOrder
+import kotlinx.coroutines.flow.MutableStateFlow
+import pe.cazadores.domain.repository.NetworkMonitor
 import pe.cazadores.domain.repository.TimeProvider
 import pe.cazadores.testing.ApiFixtures
 import kotlin.test.Test
@@ -53,7 +55,12 @@ class CriminalRepositoryImplTest {
             cache = dao,
             time = TimeProvider { now },
             json = ApiJson,
+            network = object : NetworkMonitor {
+                override val isOnline = MutableStateFlow(true)
+            }.also { monitor = it },
         )
+
+    private lateinit var monitor: NetworkMonitor
 
     private fun MockRequestHandleScope.ok(body: String) = respond(body, HttpStatusCode.OK, jsonHeaders)
 
@@ -139,6 +146,16 @@ class CriminalRepositoryImplTest {
         val stats = assertIs<AppResult.Success<pe.cazadores.domain.model.HomeStats>>(repository.homeStats()).data
         assertEquals(649, stats.total)
         assertEquals(500_000.0, stats.maxReward, "B2: no la recompensa del último registro")
+    }
+
+    @Test fun offlineSkipsTheNetworkAndItsRetries() = runTest {
+        val repository = repo()
+        repository.search(SearchFilters(query = "x"), 1)
+        requests.clear()
+        (monitor.isOnline as MutableStateFlow).value = false
+        val result = assertIs<AppResult.Success<pe.cazadores.domain.model.SearchPage>>(repository.search(SearchFilters(query = "x"), 1))
+        assertNotNull(result.cachedAtMillis)
+        assertEquals(0, requests.size, "Sin red no se intenta ninguna llamada")
     }
 
     @Test fun provinceIsOnlySentWithDepartment() {

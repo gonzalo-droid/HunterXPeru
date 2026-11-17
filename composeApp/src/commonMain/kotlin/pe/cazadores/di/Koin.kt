@@ -64,7 +64,7 @@ val dataModule = module {
     @OptIn(ExperimentalResourceApi::class)
     single { BundledCatalogSource { name -> Res.readBytes("files/catalogs/$name.json").decodeToString() } }
 
-    single<CriminalRepository> { CriminalRepositoryImpl(get(), get(), get(), get()) }
+    single<CriminalRepository> { CriminalRepositoryImpl(get(), get(), get(), get(), get()) }
     single<FavoritesRepository> { FavoritesRepositoryImpl(get(), get(), get()) }
     single<CatalogRepository> { CatalogRepositoryImpl(get(), get(), get(), get(), get()) }
     single<SettingsRepository> { SettingsRepositoryImpl(get()) }
