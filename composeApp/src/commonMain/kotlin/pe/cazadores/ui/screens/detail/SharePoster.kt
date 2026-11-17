@@ -12,6 +12,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
@@ -40,6 +43,7 @@ import pe.cazadores.resources.share_image_call
 import pe.cazadores.resources.share_image_disclaimer
 import pe.cazadores.ui.components.CriminalPhoto
 import pe.cazadores.ui.components.WantedPoster
+import pe.cazadores.ui.components.ensurePhotoDecoded
 import pe.cazadores.ui.theme.CazadoresShapes
 import pe.cazadores.ui.theme.CazadoresTheme
 import pe.cazadores.ui.theme.Cz
@@ -84,8 +88,8 @@ fun SharePosterContent(criminal: Criminal, assessment: DangerAssessment, rewardC
         )
         Text(
             stringResource(Res.string.share_image_disclaimer),
-            style = Cz.type.bodySmall,
-            color = Cz.colors.onPaperMuted,
+            style = Cz.type.bodyStrong,
+            color = Cz.colors.onPaper,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth(),
         )
@@ -125,10 +129,15 @@ fun SharePosterCapture(
 ) {
     val layer = rememberGraphicsLayer()
     val callback by rememberUpdatedState(onCaptured)
+    // El cartel solo se compone cuando la foto ya está en la caché: así CriminalPhoto la lee al componerse y la
+    // captura nunca sale con la silueta por un toque rápido en Compartir.
+    var photoReady by remember { mutableStateOf(false) }
     LaunchedEffect(layer) {
         val bitmap = try {
             withTimeoutOrNull(CAPTURE_TIMEOUT_MS) {
-                // Dos cuadros: el primero mide y graba la capa; en el segundo la grabación ya está completa.
+                ensurePhotoDecoded(criminal.hash, criminal.photoBase64)
+                photoReady = true
+                // Un cuadro para componer con la foto lista; luego dos: el primero mide y graba la capa; en el segundo la grabación ya está completa.
                 withFrameNanos { }
                 withFrameNanos { }
                 layer.toImageBitmap()
@@ -154,7 +163,7 @@ fun SharePosterCapture(
     ) {
         CompositionLocalProvider(LocalDensity provides ShareDensity) {
             CazadoresTheme(themeMode = ThemeMode.LIGHT) {
-                SharePosterContent(criminal, assessment, rewardClass)
+                if (photoReady) SharePosterContent(criminal, assessment, rewardClass)
             }
         }
     }

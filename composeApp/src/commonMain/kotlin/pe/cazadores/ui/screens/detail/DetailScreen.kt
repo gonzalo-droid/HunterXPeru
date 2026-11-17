@@ -93,6 +93,7 @@ import pe.cazadores.resources.detail_sex_female
 import pe.cazadores.resources.detail_sex_male
 import pe.cazadores.resources.detail_share
 import pe.cazadores.resources.detail_source
+import pe.cazadores.resources.source_note
 import pe.cazadores.resources.detail_unknown
 import pe.cazadores.resources.error_not_found
 import pe.cazadores.resources.reward_none
@@ -147,6 +148,8 @@ fun DetailRoute(
     // true mientras se dibuja y codifica la imagen: los toques extra en Compartir se ignoran.
     var sharing by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
+    // Si la ficha deja de estar cargada (p. ej. Reintentar), el seguro de "compartiendo" no debe quedar activo.
+    LaunchedEffect(loaded == null) { if (loaded == null) sharing = false }
 
     DetailScreen(
         state = state,
@@ -228,7 +231,7 @@ fun DetailScreen(
                             action = { SecondaryButton(stringResource(Res.string.back), onBack) },
                         )
                     } else {
-                        ErrorState(content.error, onRetry)
+                        ErrorState(content.error, onRetry, onCall)
                     }
                 is DetailContent.Loaded -> DetailBody(content, onOpenLegend, onOpenRegime)
             }
@@ -365,6 +368,7 @@ private fun DetailBody(content: DetailContent.Loaded, onOpenLegend: () -> Unit, 
             style = Cz.type.caption,
             color = Cz.colors.inkMuted,
         )
+        Text(stringResource(Res.string.source_note), style = Cz.type.caption, color = Cz.colors.inkMuted)
     }
 }
 
