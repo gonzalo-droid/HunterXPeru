@@ -51,7 +51,11 @@ class FakeCriminalRepository : CriminalRepository {
 
 class FakeCatalogRepository : CatalogRepository {
     var catalogs = Catalogs(emptyList(), emptyList(), emptyList())
-    override suspend fun catalogs() = catalogs
+    var gate: kotlinx.coroutines.CompletableDeferred<Unit>? = null
+    override suspend fun catalogs(): Catalogs {
+        gate?.await()
+        return catalogs
+    }
 }
 
 class FakeSettingsRepository(initialNear: String? = null) : SettingsRepository {

@@ -3,6 +3,9 @@ package pe.cazadores.ui.screens.home
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.windowInsetsTopHeight
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -129,7 +132,8 @@ fun HomeScreen(
     onRetryNear: () -> Unit,
 ) {
     var showPicker by rememberSaveable { mutableStateOf(false) }
-    Column(Modifier.fillMaxSize().background(Cz.colors.bg).verticalScroll(rememberScrollState())) {
+    Box(Modifier.fillMaxSize().background(Cz.colors.bg)) {
+    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
         Header(state.stats?.total, state.updatedAtMillis, onOpenSearch)
         Column(
             Modifier.padding(CazadoresDimens.screenPadding),
@@ -147,6 +151,9 @@ fun HomeScreen(
             AdBanner(AdPlacement.HOME_BANNER, Modifier.fillMaxWidth())
             Text(stringResource(Res.string.source_note), style = Cz.type.caption, color = Cz.colors.inkMuted)
         }
+    }
+    // Franja fija bajo la barra de estado: los iconos claros siempre quedan sobre oscuro al desplazar.
+    Spacer(Modifier.align(Alignment.TopCenter).fillMaxWidth().windowInsetsTopHeight(WindowInsets.statusBars).background(Cz.colors.header))
     }
     if (showPicker) {
         DepartamentoSheet(
@@ -279,6 +286,7 @@ private fun NearSection(state: HomeUiState, onOpenDetail: (String) -> Unit, onCh
             onAction = onChoose,
         )
         when {
+            !state.nearReady -> SkeletonBlock(Modifier.fillMaxWidth().height(160.dp))
             state.nearId == null -> Column(
                 Modifier.fillMaxWidth().background(Cz.colors.surface, CazadoresShapes.card).padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),

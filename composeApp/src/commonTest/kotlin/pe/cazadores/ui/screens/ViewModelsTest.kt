@@ -190,4 +190,31 @@ class ViewModelsTest {
             assertTrue(near.isEmpty())
         }
     }
+
+    @Test fun homeNearbyLoadsWithSavedIdWithoutWaitingForCatalogs() = runTest(dispatcher) {
+        val gate = kotlinx.coroutines.CompletableDeferred<Unit>()
+        catalogs.gate = gate
+        catalogs.catalogs = Catalogs(emptyList(), listOf(Departamento("15", "LIMA")), emptyList())
+        val vm = homeVm(FakeSettingsRepository("15"))
+        advanceUntilIdle()
+        with(vm.state.value) {
+            assertTrue(nearReady)
+            assertEquals("15", nearId)
+            assertEquals(null, nearDepartamento)
+            assertEquals(6, near.size)
+        }
+        gate.complete(Unit)
+        advanceUntilIdle()
+        assertEquals("LIMA", vm.state.value.nearDepartamento?.name)
+    }
+
+    @Test fun homeClearsSavedDepartmentMissingFromCatalog() = runTest(dispatcher) {
+        catalogs.catalogs = Catalogs(emptyList(), listOf(Departamento("15", "LIMA")), emptyList())
+        val settings = FakeSettingsRepository("99")
+        val vm = homeVm(settings)
+        advanceUntilIdle()
+        assertEquals(null, settings.near.value)
+        assertEquals(null, vm.state.value.nearId)
+        assertTrue(vm.state.value.near.isEmpty())
+    }
 }

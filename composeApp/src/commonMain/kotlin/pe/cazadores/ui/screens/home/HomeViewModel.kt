@@ -2,11 +2,11 @@ package pe.cazadores.ui.screens.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import pe.cazadores.core.result.AppResult
@@ -37,6 +37,8 @@ data class HomeUiState(
     val departamentos: List<Departamento> = emptyList(),
     /** Id elegido (aunque el catálogo aún no haya cargado su nombre). */
     val nearId: String? = null,
+    /** Ya se leyó el ajuste (evita mostrar el aviso de "elegir" antes de tiempo). */
+    val nearReady: Boolean = false,
     val nearDepartamento: Departamento? = null,
     val near: List<Criminal> = emptyList(),
     val nearLoading: Boolean = false,
@@ -57,16 +59,23 @@ class HomeViewModel(
     val state: StateFlow<HomeUiState> = _state.asStateFlow()
 
     private var pickedId: String? = null
+    private var nearJob: Job? = null
 
     init {
         load()
+        // El ajuste se observa de inmediato: "Cerca de ti" no espera al catálogo.
+        viewModelScope.launch {
+            settings.nearDepartamentoId.collect { id ->
+                pickedId = id
+                startNear(id)
+            }
+        }
         viewModelScope.launch {
             val departamentos = getCatalogs().departamentos
-            _state.update { it.copy(departamentos = departamentos) }
-            settings.nearDepartamentoId.collectLatest { id ->
-                pickedId = id
-                loadNear(id, departamentos)
-            }
+            _state.update { it.copy(departamentos = departamentos, nearDepartamento = departamentos.firstOrNull { d -> d.id == it.nearId }) }
+            val saved = pickedId
+            // Id guardado que ya no existe en el catálogo: se descarta como "sin elegir".
+            if (saved != null && departamentos.isNotEmpty() && departamentos.none { it.id == saved }) onPickDepartamento(null)
         }
     }
 
@@ -75,24 +84,31 @@ class HomeViewModel(
         retryNear()
     }
 
-    fun retryNear() {
-        viewModelScope.launch { loadNear(pickedId, _state.value.departamentos) }
-    }
+    fun retryNear() = startNear(pickedId)
 
     /** `null` borra la elección y oculta la sección. */
     fun onPickDepartamento(id: String?) {
         viewModelScope.launch { settings.setNearDepartamento(id) }
     }
 
-    private suspend fun loadNear(id: String?, departamentos: List<Departamento>) {
+    /** Un solo trabajo de "Cerca de ti": el nuevo cancela al anterior. */
+    private fun startNear(id: String?) {
+        nearJob?.cancel()
+        nearJob = viewModelScope.launch { loadNear(id) }
+    }
+
+    private suspend fun loadNear(id: String?) {
         if (id == null) {
-            _state.update { it.copy(nearId = null, nearDepartamento = null, near = emptyList(), nearLoading = false, nearFailed = false) }
+            _state.update {
+                it.copy(nearReady = true, nearId = null, nearDepartamento = null, near = emptyList(), nearLoading = false, nearFailed = false)
+            }
             return
         }
         _state.update {
             it.copy(
+                nearReady = true,
                 nearId = id,
-                nearDepartamento = departamentos.firstOrNull { d -> d.id == id },
+                nearDepartamento = it.departamentos.firstOrNull { d -> d.id == id },
                 near = emptyList(),
                 nearLoading = true,
                 nearFailed = false,
