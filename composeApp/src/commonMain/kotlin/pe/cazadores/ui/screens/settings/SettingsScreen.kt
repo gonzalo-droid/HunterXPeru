@@ -41,11 +41,10 @@ import pe.cazadores.resources.settings_about
 import pe.cazadores.resources.settings_about_body
 import pe.cazadores.resources.settings_ads_prefs
 import pe.cazadores.resources.settings_appearance
-import pe.cazadores.resources.settings_feedback
-import pe.cazadores.resources.settings_feedback_subject
 import pe.cazadores.resources.settings_info_section
 import pe.cazadores.resources.settings_privacy_policy
 import pe.cazadores.resources.settings_privacy_section
+import pe.cazadores.resources.settings_rate
 import pe.cazadores.resources.settings_source
 import pe.cazadores.resources.settings_terms
 import pe.cazadores.resources.settings_theme_dark
@@ -68,14 +67,13 @@ fun SettingsRoute(
 ) {
     val theme by viewModel.themeMode.collectAsStateWithLifecycle()
     val privacyOptionsRequired by ads.privacyOptionsRequired.collectAsStateWithLifecycle()
-    val feedbackSubject = stringResource(Res.string.settings_feedback_subject, AppInfo.VERSION_NAME)
     SettingsScreen(
         theme = theme,
         showAdsPreferences = privacyOptionsRequired,
         onThemeChange = viewModel::onThemeChange,
         onAdsPreferences = ads::showPrivacyOptions,
         onOpenUrl = actions::openUrl,
-        onFeedback = { actions.email(AppConfig.FEEDBACK_EMAIL, feedbackSubject, "") },
+        onRateApp = actions::openStoreReview,
     )
 }
 
@@ -87,7 +85,7 @@ fun SettingsScreen(
     onThemeChange: (ThemeMode) -> Unit,
     onAdsPreferences: () -> Unit,
     onOpenUrl: (String) -> Unit,
-    onFeedback: () -> Unit,
+    onRateApp: () -> Unit,
 ) {
     Column(
         Modifier.fillMaxSize().background(Cz.colors.bg).statusBarsPadding().verticalScroll(rememberScrollState())
@@ -137,7 +135,7 @@ fun SettingsScreen(
         Group(stringResource(Res.string.settings_info_section)) {
             LinkRow(stringResource(Res.string.settings_source), CzIcons.External) { onOpenUrl(AppConfig.SOURCE_URL) }
             Divider()
-            LinkRow(stringResource(Res.string.settings_feedback), CzIcons.Mail, onFeedback)
+            LinkRow(stringResource(Res.string.settings_rate), CzIcons.Star, onRateApp)
         }
 
         Column(

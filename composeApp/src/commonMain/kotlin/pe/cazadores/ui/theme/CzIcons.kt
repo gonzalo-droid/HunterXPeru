@@ -46,6 +46,7 @@ object CzIcons {
     val Alert by lazy { stroke("alert", "M12 9v4", "M12 17h.01", "M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z") }
     val Info by lazy { stroke("info", "M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18z", "M12 11v5", "M12 8h.01") }
     val External by lazy { stroke("external", "M14 4h6v6", "M20 4l-9 9", "M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5") }
+    val Star by lazy { stroke("star", "M12 3l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9z") }
     val Mail by lazy { stroke("mail", "M3 5h18v14H3z", "M3 6l9 7 9-7") }
 
     private fun stroke(name: String, vararg paths: String): ImageVector =

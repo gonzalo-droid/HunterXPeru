@@ -1,10 +1,12 @@
 package pe.cazadores.platform
 
+import pe.cazadores.core.config.AppConfig
 import platform.Foundation.NSCharacterSet
 import platform.Foundation.NSString
 import platform.Foundation.NSURL
 import platform.Foundation.URLQueryAllowedCharacterSet
 import platform.Foundation.stringByAddingPercentEncodingWithAllowedCharacters
+import platform.StoreKit.SKStoreReviewController
 import platform.UIKit.UIActivityViewController
 import platform.UIKit.UIApplication
 import platform.UIKit.UIViewController
@@ -29,6 +31,15 @@ class IosExternalActions : ExternalActions {
     }
 
     override fun openUrl(url: String) = open(url)
+
+    override fun openStoreReview() {
+        if (AppConfig.IOS_APP_STORE_ID.isNotEmpty()) {
+            open("itms-apps://apps.apple.com/app/id${AppConfig.IOS_APP_STORE_ID}?action=write-review")
+            return
+        }
+        val scene = UIApplication.sharedApplication.connectedScenes.filterIsInstance<UIWindowScene>().firstOrNull() ?: return
+        SKStoreReviewController.requestReviewInScene(scene)
+    }
 
     private fun open(url: String) {
         val nsUrl = NSURL.URLWithString(url) ?: return

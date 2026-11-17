@@ -95,6 +95,7 @@
     <string name="report_subtitle">%1$s · ID %2$s</string>
     <string name="report_call">Llamar ahora (recomendado)</string>
     <string name="report_call_sub">Gratuito · puede ser anónimo</string>
+    <string name="report_call_alt">También puedes llamar al %1$s</string>
     <string name="report_or_write">o por escrito</string>
     <string name="report_where">¿Dónde lo viste?</string>
     <string name="report_where_hint">Distrito, calle o referencia</string>
@@ -141,8 +142,7 @@
     <string name="settings_terms">Términos de uso</string>
     <string name="settings_info_section">Información</string>
     <string name="settings_source">Fuente de datos: recompensas.pe</string>
-    <string name="settings_feedback">Enviar comentarios</string>
-    <string name="settings_feedback_subject">Comentarios sobre Cazadores Perú %1$s</string>
+    <string name="settings_rate">Califica la app en la tienda</string>
     <string name="settings_about">Sobre esta app</string>
     <string name="settings_about_body">Cazadores Perú es una app independiente. No está afiliada al Ministerio del Interior ni a la Policía Nacional del Perú. Muestra datos públicos del Programa de Recompensas, que pueden cambiar sin aviso: verifica siempre en recompensas.pe. La recompensa la otorga el Estado tras validar la información.</string>
     <string name="settings_version">Versión %1$s</string>

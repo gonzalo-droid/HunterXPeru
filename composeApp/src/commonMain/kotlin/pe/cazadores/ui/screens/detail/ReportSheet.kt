@@ -40,6 +40,9 @@ import pe.cazadores.domain.model.Criminal
 import pe.cazadores.resources.Res
 import pe.cazadores.resources.report_call
 import pe.cazadores.resources.report_call_sub
+import pe.cazadores.resources.report_call_alt
+import pe.cazadores.core.config.AppConfig
+import pe.cazadores.ui.components.TextAction
 import pe.cazadores.resources.report_details
 import pe.cazadores.resources.report_details_hint
 import pe.cazadores.resources.report_disclaimer
@@ -65,6 +68,7 @@ import pe.cazadores.ui.theme.CzIcons
 fun ReportSheet(
     criminal: Criminal,
     onCall: () -> Unit,
+    onCallAlt: () -> Unit,
     onSendEmail: (subject: String, body: String) -> Unit,
     onDismiss: () -> Unit,
 ) {
@@ -111,6 +115,12 @@ fun ReportSheet(
                     Text(stringResource(Res.string.report_call_sub), style = Cz.type.caption, color = Cz.colors.onAction)
                 }
             }
+
+            TextAction(
+                text = stringResource(Res.string.report_call_alt, AppConfig.REPORT_PHONE_ALT),
+                onClick = onCallAlt,
+                modifier = Modifier.fillMaxWidth().heightIn(min = CazadoresDimens.touchTarget),
+            )
 
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 HorizontalDivider(Modifier.weight(1f), color = Cz.colors.line)

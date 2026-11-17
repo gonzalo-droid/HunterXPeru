@@ -136,6 +136,7 @@ fun DetailRoute(
         ReportSheet(
             criminal = loaded.criminal,
             onCall = { actions.dial(AppConfig.REPORT_PHONE_URI) },
+            onCallAlt = { actions.dial(AppConfig.REPORT_PHONE_ALT_URI) },
             onSendEmail = { subject, body -> actions.email(AppConfig.REPORT_EMAIL, subject, body) },
             onDismiss = viewModel::onDismissReport,
         )

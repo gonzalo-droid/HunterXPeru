@@ -7,4 +7,7 @@ interface ExternalActions {
     fun email(to: String, subject: String, body: String)
     fun share(text: String)
     fun openUrl(url: String)
+
+    /** Abre la ficha de la app en su tienda (Play / App Store) para dejar reseña. */
+    fun openStoreReview()
 }
