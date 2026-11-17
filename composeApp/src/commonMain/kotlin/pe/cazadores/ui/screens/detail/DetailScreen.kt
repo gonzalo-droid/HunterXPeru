@@ -1,6 +1,20 @@
 package pe.cazadores.ui.screens.detail
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -41,6 +55,7 @@ import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import pe.cazadores.core.DateFormatter
+import pe.cazadores.core.RewardClassCalculator
 import pe.cazadores.core.RewardFormatter
 import pe.cazadores.core.config.AppConfig
 import pe.cazadores.core.result.DataError
@@ -54,7 +69,8 @@ import pe.cazadores.resources.back
 import pe.cazadores.resources.call_line
 import pe.cazadores.resources.detail_crimes
 import pe.cazadores.resources.detail_danger
-import pe.cazadores.resources.detail_danger_note
+import pe.cazadores.resources.detail_regime_body
+import pe.cazadores.resources.detail_regime_cta
 import pe.cazadores.resources.detail_department
 import pe.cazadores.resources.detail_id
 import pe.cazadores.resources.detail_if_you_see
@@ -64,7 +80,6 @@ import pe.cazadores.resources.detail_photo_cd
 import pe.cazadores.resources.detail_province
 import pe.cazadores.resources.detail_removed_msg
 import pe.cazadores.resources.detail_report
-import pe.cazadores.resources.detail_reward
 import pe.cazadores.resources.detail_save
 import pe.cazadores.resources.detail_saved
 import pe.cazadores.resources.detail_saved_msg
@@ -79,27 +94,30 @@ import pe.cazadores.resources.reward_none
 import pe.cazadores.resources.share_text
 import pe.cazadores.ui.components.CallButton
 import pe.cazadores.ui.components.CriminalPhoto
-import pe.cazadores.ui.components.DangerBadge
+import pe.cazadores.ui.components.DangerMeter
+import pe.cazadores.ui.components.WantedPoster
 import pe.cazadores.ui.components.ErrorState
 import pe.cazadores.ui.components.MessageState
 import pe.cazadores.ui.components.OfflineBanner
-import pe.cazadores.ui.components.RewardBadge
 import pe.cazadores.ui.components.SecondaryButton
 import pe.cazadores.ui.components.SectionLabel
 import pe.cazadores.ui.components.SkeletonBlock
 import pe.cazadores.ui.theme.CazadoresDimens
 import pe.cazadores.ui.theme.CazadoresShapes
 import pe.cazadores.ui.theme.Cz
+import pe.cazadores.ui.screens.legend.RankLegendSheet
 import pe.cazadores.ui.theme.CzIcons
 
 @Composable
 fun DetailRoute(
     hash: String,
     onBack: () -> Unit,
+    onOpenRegime: () -> Unit,
     viewModel: DetailViewModel = koinViewModel(key = hash) { parametersOf(hash) },
     actions: ExternalActions = koinInject(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    var showLegend by rememberSaveable { mutableStateOf(false) }
     val snackbar = remember { SnackbarHostState() }
     LaunchedEffect(viewModel) {
         viewModel.eventFlow.collect { event ->
@@ -129,8 +147,12 @@ fun DetailRoute(
         onToggleFavorite = viewModel::onToggleFavorite,
         onCall = { actions.dial(AppConfig.REPORT_PHONE_URI) },
         onReport = viewModel::onOpenReport,
+        onOpenLegend = { showLegend = true },
+        onOpenRegime = onOpenRegime,
         onRetry = viewModel::onRetry,
     )
+
+    if (showLegend) RankLegendSheet(onDismiss = { showLegend = false })
 
     if (state.showReport && loaded != null) {
         ReportSheet(
@@ -152,6 +174,8 @@ fun DetailScreen(
     onToggleFavorite: () -> Unit,
     onCall: () -> Unit,
     onReport: () -> Unit,
+    onOpenLegend: () -> Unit,
+    onOpenRegime: () -> Unit,
     onRetry: () -> Unit,
 ) {
     val loaded = state.content as? DetailContent.Loaded
@@ -183,7 +207,7 @@ fun DetailScreen(
                     } else {
                         ErrorState(content.error, onRetry)
                     }
-                is DetailContent.Loaded -> DetailBody(content)
+                is DetailContent.Loaded -> DetailBody(content, onOpenLegend, onOpenRegime)
             }
         }
     }
@@ -243,7 +267,7 @@ private fun BottomActions(onCall: () -> Unit, onReport: () -> Unit) {
 }
 
 @Composable
-private fun DetailBody(content: DetailContent.Loaded) {
+private fun DetailBody(content: DetailContent.Loaded, onOpenLegend: () -> Unit, onOpenRegime: () -> Unit) {
     val c = content.criminal
     Column(
         Modifier.fillMaxSize().verticalScroll(rememberScrollState())
@@ -252,41 +276,39 @@ private fun DetailBody(content: DetailContent.Loaded) {
     ) {
         if (content.fromCache) OfflineBanner(content.dataAtMillis)
 
-        Row(horizontalArrangement = Arrangement.spacedBy(16.dp), verticalAlignment = Alignment.Bottom) {
+        WantedPoster(
+            criminal = c,
+            assessment = content.danger,
+            rewardClass = RewardClassCalculator.of(c.reward),
+            onRankClick = onOpenLegend,
+        ) {
             CriminalPhoto(
                 cacheKey = c.hash,
                 base64 = c.photoBase64,
                 contentDescription = stringResource(Res.string.detail_photo_cd, c.displayName),
-                modifier = Modifier.size(width = 140.dp, height = 176.dp),
-                shape = CazadoresShapes.card,
+                modifier = Modifier.fillMaxSize(),
+                shape = CazadoresShapes.photo,
             )
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text(stringResource(Res.string.detail_id, c.id.toString()), style = Cz.type.mono, color = Cz.colors.inkMuted)
-                SectionLabel(stringResource(Res.string.detail_reward))
-                RewardBadge(c.reward, style = Cz.type.amount)
-            }
         }
 
-        Text(
-            c.displayName,
-            style = Cz.type.display,
-            color = Cz.colors.ink,
-            modifier = Modifier.semantics { heading() },
-        )
-
-        InfoCard {
-            // FlowRow: con letra grande la insignia baja de línea en vez de partir "PELIGROSIDAD".
+        // Medidor sobre papel, como el cartel: el sello y el medidor siempre son papel en ambos temas.
+        Column(
+            Modifier.fillMaxWidth().background(Cz.colors.paper, CazadoresShapes.card)
+                .border(1.dp, Cz.colors.paperLine, CazadoresShapes.card).padding(14.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
             FlowRow(
                 Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                itemVerticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
-                SectionLabel(stringResource(Res.string.detail_danger))
-                DangerBadge(content.danger.level)
+                Text(stringResource(Res.string.detail_danger).uppercase(), style = Cz.type.overline, color = Cz.colors.onPaperMuted)
+                Text(stringResource(Res.string.detail_id, c.id.toString()), style = Cz.type.mono, color = Cz.colors.onPaperMuted)
             }
-            Text(stringResource(Res.string.detail_danger_note), style = Cz.type.caption, color = Cz.colors.inkMuted)
+            DangerMeter(content.danger)
         }
+
+        if (content.specialRegime) RegimeNotice(onOpenRegime)
 
         if (c.crimes.isNotEmpty()) {
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -328,12 +350,38 @@ private fun DetailBody(content: DetailContent.Loaded) {
     }
 }
 
+/** Aviso con borde punteado rojo: solo si algún delito es extorsión o sicariato. Abre la pantalla del régimen. */
 @Composable
-private fun InfoCard(content: @Composable () -> Unit) {
+private fun RegimeNotice(onClick: () -> Unit) {
+    val red = Cz.colors.posterRed
+    val density = LocalDensity.current
     Column(
-        Modifier.fillMaxWidth().background(Cz.colors.surface, CazadoresShapes.card).padding(14.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) { content() }
+        Modifier.fillMaxWidth()
+            .clip(CazadoresShapes.card)
+            .background(Cz.colors.paper)
+            .drawBehind {
+                val stroke = with(density) { 2.dp.toPx() }
+                drawRoundRect(
+                    color = red,
+                    topLeft = Offset(stroke / 2, stroke / 2),
+                    size = Size(size.width - stroke, size.height - stroke),
+                    cornerRadius = CornerRadius(with(density) { 14.dp.toPx() }),
+                    style = Stroke(width = stroke, pathEffect = PathEffect.dashPathEffect(floatArrayOf(18f, 12f))),
+                )
+            }
+            .clickable(role = Role.Button, onClick = onClick)
+            .semantics(mergeDescendants = true) {}
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        Text(stringResource(Res.string.detail_regime_body), style = Cz.type.bodyStrong, color = Cz.colors.onPaper)
+        Text(
+            stringResource(Res.string.detail_regime_cta),
+            style = Cz.type.bodySmall,
+            color = Cz.colors.onPaper,
+            textDecoration = TextDecoration.Underline,
+        )
+    }
 }
 
 @Composable
@@ -369,13 +417,7 @@ private fun DetailSkeleton() {
         Modifier.fillMaxWidth().padding(horizontal = CazadoresDimens.screenPadding),
         verticalArrangement = Arrangement.spacedBy(18.dp),
     ) {
-        Row(horizontalArrangement = Arrangement.spacedBy(16.dp), verticalAlignment = Alignment.Bottom) {
-            SkeletonBlock(Modifier.size(140.dp, 176.dp))
-            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                SkeletonBlock(Modifier.width(80.dp).height(14.dp))
-                SkeletonBlock(Modifier.width(140.dp).height(34.dp))
-            }
-        }
+        SkeletonBlock(Modifier.fillMaxWidth().height(420.dp))
         SkeletonBlock(Modifier.fillMaxWidth().height(72.dp))
         SkeletonBlock(Modifier.fillMaxWidth().height(80.dp))
         SkeletonBlock(Modifier.fillMaxWidth().height(150.dp))

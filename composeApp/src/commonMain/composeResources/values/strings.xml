@@ -73,9 +73,7 @@
     <string name="detail_removed_msg">Quitado de tu lista</string>
     <string name="detail_photo_cd">Foto de %1$s</string>
     <string name="detail_id">ID %1$s</string>
-    <string name="detail_reward">Recompensa</string>
     <string name="detail_danger">Peligrosidad</string>
-    <string name="detail_danger_note">Estimado por la app según el tipo de delito. No es una calificación oficial.</string>
     <string name="detail_crimes">Delitos imputados</string>
     <string name="detail_department">Departamento</string>
     <string name="detail_province">Provincia</string>
@@ -171,4 +169,34 @@
     <string name="danger_meter_by">Estimado por: %1$s</string>
     <string name="danger_meter_base">Nivel base: todos los buscados tienen delitos graves</string>
     <string name="danger_meter_unofficial">Estimado por la app. No es una calificación oficial.</string>
+    <!-- Ficha: aviso del régimen especial -->
+    <string name="detail_regime_body">Este delito entra en el régimen especial: tu recompensa puede ser hasta S/ 500 000.</string>
+    <string name="detail_regime_cta">Ver cómo funciona</string>
+    <!-- Leyenda de rangos -->
+    <string name="legend_title">¿Qué significan los rangos?</string>
+    <string name="legend_intro">La clase es un sello de esta app que agrupa a los buscados según el monto de la recompensa. No es una calificación oficial.</string>
+    <string name="legend_row_s">S/ 300 mil o más</string>
+    <string name="legend_row_a">S/ 100 mil o más</string>
+    <string name="legend_row_b">S/ 50 mil o más</string>
+    <string name="legend_row_c">Menos de S/ 50 mil</string>
+    <string name="legend_danger_note">La peligrosidad es otra estimación de la app, según el delito: no depende de la clase ni del monto.</string>
+    <string name="legend_close">Cerrar</string>
+    <!-- Régimen especial -->
+    <string name="regime_title">Recompensas por extorsión y sicariato</string>
+    <string name="regime_decree">D. S. N.º 097-2025-PCM</string>
+    <string name="regime_intro">Régimen especial aprobado por el D. S. N.º 097-2025-PCM. Da beneficios económicos a quien brinde información útil para capturar a implicados en extorsión y sicariato.</string>
+    <string name="regime_1_title">Pago acelerado</string>
+    <string name="regime_1_body">El pago se hace en hasta 32 días hábiles.</string>
+    <string name="regime_2_title">Protección del informante</string>
+    <string name="regime_2_body">Tu anonimato y confidencialidad se protegen mediante una clave reservada.</string>
+    <string name="regime_3_title">Procedimiento estructurado</string>
+    <string name="regime_3_body">Recepción, verificación, formulación del expediente, evaluación y pago.</string>
+    <string name="regime_4_title">Criterios claros</string>
+    <string name="regime_4_body">El monto depende del nivel de participación del colaborador en la captura.</string>
+    <string name="regime_5_title">Coordinación institucional</string>
+    <string name="regime_5_body">La DIRNIC de la PNP trabaja con la Comisión Evaluadora de Recompensas contra la Criminalidad.</string>
+    <string name="regime_closing">Tu recompensa puede ser hasta S/ 500 000</string>
+    <string name="regime_open_official">Ver el comunicado oficial</string>
+    <string name="regime_unofficial">Resumen hecho por una app no oficial. Lo que vale es el decreto y el Mininter.</string>
+    <string name="report_safety">No te acerques a la persona.</string>
 </resources>

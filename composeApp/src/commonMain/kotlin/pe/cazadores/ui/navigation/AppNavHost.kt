@@ -22,6 +22,7 @@ import pe.cazadores.ui.screens.home.HomeRoute
 import pe.cazadores.ui.screens.onboarding.OnboardingScreen
 import pe.cazadores.ui.screens.saved.SavedRoute
 import pe.cazadores.ui.screens.settings.SettingsRoute
+import pe.cazadores.ui.screens.regime.SpecialRegimeRoute
 import pe.cazadores.ui.screens.search.SearchRoute
 import pe.cazadores.ui.theme.Cz
 
@@ -91,8 +92,13 @@ fun AppNavHost(
             }
             composable<Route.Settings> { SettingsRoute() }
             composable<Route.Detail> { entry ->
-                DetailRoute(hash = entry.toRoute<Route.Detail>().hash, onBack = { navController.navigateUp() })
+                DetailRoute(
+                    hash = entry.toRoute<Route.Detail>().hash,
+                    onBack = { navController.navigateUp() },
+                    onOpenRegime = { navController.navigate(Route.SpecialRegime) },
+                )
             }
+            composable<Route.SpecialRegime> { SpecialRegimeRoute(onBack = { navController.navigateUp() }) }
         }
     }
 }
