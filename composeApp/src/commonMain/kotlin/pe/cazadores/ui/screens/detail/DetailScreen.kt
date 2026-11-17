@@ -274,8 +274,14 @@ private fun DetailBody(content: DetailContent.Loaded) {
         )
 
         InfoCard {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                SectionLabel(stringResource(Res.string.detail_danger), Modifier.weight(1f))
+            // FlowRow: con letra grande la insignia baja de línea en vez de partir "PELIGROSIDAD".
+            FlowRow(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                itemVerticalAlignment = Alignment.CenterVertically,
+            ) {
+                SectionLabel(stringResource(Res.string.detail_danger))
                 DangerBadge(content.danger)
             }
             Text(stringResource(Res.string.detail_danger_note), style = Cz.type.caption, color = Cz.colors.inkMuted)

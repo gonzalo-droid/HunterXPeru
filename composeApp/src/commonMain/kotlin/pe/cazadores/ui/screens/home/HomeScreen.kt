@@ -123,8 +123,12 @@ private fun Header(updatedAtMillis: Long?, onOpenSearch: () -> Unit) {
             .padding(start = CazadoresDimens.screenPadding, end = CazadoresDimens.screenPadding, top = 20.dp, bottom = 24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Row(verticalAlignment = Alignment.Bottom) {
-            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        FlowRow(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            itemVerticalAlignment = Alignment.Bottom,
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(stringResource(Res.string.home_overline).uppercase(), style = Cz.type.monoSmall, color = Cz.colors.onHeaderMuted)
                 Text(
                     stringResource(Res.string.app_name).uppercase(),
@@ -204,12 +208,16 @@ private fun StatCard(label: String, value: String, modifier: Modifier) {
 private fun TopWanted(top: List<Criminal>, onSeeAll: () -> Unit, onOpenDetail: (String) -> Unit) {
     if (top.isEmpty()) return
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        FlowRow(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            itemVerticalAlignment = Alignment.CenterVertically,
+        ) {
             Text(
                 stringResource(Res.string.home_top).uppercase(),
                 style = Cz.type.title,
                 color = Cz.colors.ink,
-                modifier = Modifier.weight(1f).semantics { heading() },
+                modifier = Modifier.semantics { heading() },
             )
             TextAction(stringResource(Res.string.home_see_all), onSeeAll, color = Cz.colors.action)
         }

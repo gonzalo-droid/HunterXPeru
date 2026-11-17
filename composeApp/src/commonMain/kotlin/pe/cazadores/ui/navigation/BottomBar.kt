@@ -7,6 +7,7 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -34,6 +35,10 @@ fun NavDestination?.topLevel(): TopLevel? =
 
 @Composable
 fun CazadoresBottomBar(current: TopLevel?, onSelect: (TopLevel) -> Unit) {
+    // Las etiquetas de pestaña escalan hasta 1,5×: a 2× "Guardados" no cabe en un cuarto de pantalla.
+    // El ícono y la descripción accesible identifican cada pestaña a cualquier tamaño.
+    val fontScale = LocalDensity.current.fontScale
+    val labelScale = if (fontScale > MAX_LABEL_SCALE) MAX_LABEL_SCALE / fontScale else 1f
     NavigationBar(containerColor = Cz.colors.surface, contentColor = Cz.colors.ink) {
         TopLevel.entries.forEach { tab ->
             val selected = tab == current
@@ -44,8 +49,10 @@ fun CazadoresBottomBar(current: TopLevel?, onSelect: (TopLevel) -> Unit) {
                 label = {
                     Text(
                         stringResource(tab.label),
-                        style = Cz.type.caption,
+                        style = Cz.type.caption.copy(fontSize = Cz.type.caption.fontSize * labelScale),
                         fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
+                        maxLines = 1,
+                        softWrap = false,
                     )
                 },
                 alwaysShowLabel = true,
@@ -60,3 +67,5 @@ fun CazadoresBottomBar(current: TopLevel?, onSelect: (TopLevel) -> Unit) {
         }
     }
 }
+
+private const val MAX_LABEL_SCALE = 1.5f

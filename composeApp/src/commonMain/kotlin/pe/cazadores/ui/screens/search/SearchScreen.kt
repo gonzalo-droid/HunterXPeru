@@ -261,8 +261,12 @@ private fun SearchHeader(
         }
         ActiveFilterChips(state, onRemoveDepartment, onRemoveProvince, onRemoveCrime)
         if (!state.isLoading && state.error == null) {
-            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                ResultsCount(state.totalElements, Modifier.weight(1f))
+            FlowRow(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                itemVerticalAlignment = Alignment.CenterVertically,
+            ) {
+                ResultsCount(state.totalElements, Modifier)
                 SortMenu(state.filters.sort, onSortChange)
             }
         }
