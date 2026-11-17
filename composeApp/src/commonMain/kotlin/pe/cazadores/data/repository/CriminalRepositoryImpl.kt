@@ -27,7 +27,6 @@ import pe.cazadores.domain.model.RewardPosition
 import pe.cazadores.domain.model.SearchFilters
 import pe.cazadores.domain.model.SearchPage
 import pe.cazadores.domain.model.SortOrder
-import pe.cazadores.core.RewardClassCalculator
 import pe.cazadores.domain.repository.CatalogRepository
 import pe.cazadores.domain.repository.CriminalRepository
 import pe.cazadores.domain.repository.NetworkMonitor
@@ -67,14 +66,7 @@ class CriminalRepositoryImpl(
         if (local != null && catalogs != null) {
             return local.success(PadronQuery.search(local, filters, catalogs.catalogs(), page, pageSize))
         }
-        return apiSearch(filters, page).withRewardClass(filters)
-    }
-
-    /** La API no filtra por clase: sin padrón se filtra la página recibida (los totales no cambian). */
-    private fun AppResult<SearchPage>.withRewardClass(filters: SearchFilters): AppResult<SearchPage> {
-        val wanted = filters.rewardClass ?: return this
-        if (this !is AppResult.Success) return this
-        return copy(data = data.copy(items = data.items.filter { RewardClassCalculator.of(it.reward) == wanted }))
+        return apiSearch(filters, page)
     }
 
     private suspend fun apiSearch(filters: SearchFilters, page: Int): AppResult<SearchPage> {

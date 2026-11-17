@@ -43,16 +43,14 @@ data class SearchFilters(
     val departamentoId: String? = null,
     val provinciaId: String? = null,
     val delitoId: Int? = null,
-    /** Rango de recompensa calculado por la app; la API no lo filtra (solo el padrón local). */
-    val rewardClass: RewardClass? = null,
     val sort: SortOrder = SortOrder.RECENT,
 ) {
     /** Filtros de la hoja (sin contar el texto ni el orden). */
-    val activeCount: Int get() = listOfNotNull(departamentoId, provinciaId, delitoId, rewardClass).size
+    val activeCount: Int get() = listOfNotNull(departamentoId, provinciaId, delitoId).size
 
     /** Clave estable para la caché offline: una persona puede estar en varias búsquedas. */
     val cacheKey: String
-        get() = listOf(query.trim().lowercase(), departamentoId, provinciaId, delitoId, rewardClass, sort.name)
+        get() = listOf(query.trim().lowercase(), departamentoId, provinciaId, delitoId, sort.name)
             .joinToString("|") { it?.toString().orEmpty() }
 }
 

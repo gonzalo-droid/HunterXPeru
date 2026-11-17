@@ -5,7 +5,6 @@ import pe.cazadores.domain.model.Criminal
 import pe.cazadores.domain.model.Delito
 import pe.cazadores.domain.model.Departamento
 import pe.cazadores.domain.model.Provincia
-import pe.cazadores.domain.model.RewardClass
 import pe.cazadores.domain.model.SearchFilters
 import pe.cazadores.domain.model.SortOrder
 import kotlin.test.Test
@@ -44,11 +43,6 @@ class PadronQueryTest {
         assertEquals(listOf(3), search(SearchFilters(departamentoId = "02", provinciaId = "0201")).items.map { it.id })
         assertEquals(listOf(2), search(SearchFilters(delitoId = 7)).items.map { it.id })
         assertTrue(search(SearchFilters(departamentoId = "99")).items.isEmpty(), "Id desconocido: sin resultados, como la API")
-    }
-
-    @Test fun rewardClassFilter() {
-        assertEquals(listOf(1), search(SearchFilters(rewardClass = RewardClass.S)).items.map { it.id })
-        assertEquals(listOf(3, 2), search(SearchFilters(rewardClass = RewardClass.A)).items.map { it.id })
     }
 
     @Test fun sortingAndPaging() {

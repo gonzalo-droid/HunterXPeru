@@ -1,6 +1,5 @@
 package pe.cazadores.data.padron
 
-import pe.cazadores.core.RewardClassCalculator
 import pe.cazadores.core.text.normalizedForMatch
 import pe.cazadores.domain.model.Catalogs
 import pe.cazadores.domain.model.Criminal
@@ -62,8 +61,7 @@ internal object PadronQuery {
             (words.isEmpty() || c.searchText().let { text -> words.all { it in text } }) &&
                 (departamento == null || c.departamento?.trim()?.normalizedForMatch() == departamento) &&
                 (provincia == null || c.provincia?.trim()?.normalizedForMatch() == provincia) &&
-                (delito == null || c.crimes.any { it.trim().normalizedForMatch() == delito }) &&
-                (filters.rewardClass == null || RewardClassCalculator.of(c.reward) == filters.rewardClass)
+                (delito == null || c.crimes.any { it.trim().normalizedForMatch() == delito })
         }
     }
 

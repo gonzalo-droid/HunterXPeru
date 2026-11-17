@@ -19,9 +19,13 @@ Registro de lo que se verificó contra la API real y de las decisiones que cambi
   la miniatura; ficha y cartel a compartir muestran la miniatura al instante y la cambian por la grande.
   Un favorito guarda la miniatura en Base64, como antes.
 - Fecha de los datos: la de publicación del padrón (`dataAtMillis`), en Inicio y en la fuente de la Ficha.
-- Ahora sí (pendientes de D16/D18): **posición nacional** en la Ficha ("Puesto N de T · top X % del país",
-  con empates) y **filtro por clase S/A/B/C** en Filtros. Con la API de respaldo, el filtro por clase solo
-  filtra la página recibida y la posición no aparece. Los cortes de clase siguen provisionales.
+- Ahora sí (pendiente de D16/D18): **posición nacional** en la Ficha ("Puesto N de T · top X % del país",
+  con empates). Con la API de respaldo no aparece: hace falta la lista completa para calcularla.
+- **Filtro por clase S/A/B/C: descartado.** Se probó y se quitó. Con los cortes actuales el padrón v1
+  (649 personas) queda en S 3 · A 3 · B 40 · C 603: el 93 % es C y el filtro casi no separa a nadie. Además,
+  con la API de respaldo solo podría filtrar la página recibida (resultados vacíos o incompletos). El orden
+  "Mayor recompensa" ya pone arriba a S y A. La clase sigue como sello en carteles y tarjetas. Si se
+  recalibran los cortes y las clases quedan parejas, se puede reconsiderar.
 - Corrige D19: la app ya no consulta la API en cada pantalla; los datos siguen viniendo de la web oficial.
 
 ## 2026-11-17 · Identidad V3 (logo e íconos)
