@@ -16,9 +16,12 @@ Registro de lo que se verificó contra la API real y de las decisiones que cambi
 - "Cerca de ti" usa el departamento elegido por la persona (DataStore); sin elegir muestra la invitación.
 - Verificación final: Android a 360 dp (release, R8) con letra 1,0/1,3/2,0 y una pasada en oscuro.
   Defecto hallado y corregido: botón "Cerrar" de la leyenda ilegible en oscuro.
-- **No probado:** Android a ≈ 320 dp (solo se midió 360 dp). En iOS (iPhone SE) solo se capturó Inicio
-  (normal, accesibilidad XL y oscuro); Ficha, Buscar, Régimen, Leyenda y Mis carteles siguen pendientes
-  en iOS. Se borraron `ios-01-att.jpg` e `ios-03-ficha-deep-link.jpg` (mostraban el diseño anterior).
+- iOS (iPhone 16, release): Inicio, Ficha, Leyenda, Régimen, Buscar y Mis carteles con letra normal y
+  accesibilidad XL, más Inicio/Ficha en oscuro con letra ≈ 1,3× y la hoja de compartir (`ios-06`…`ios-15`).
+  Sin textos cortados ni encimados; a XL el tablón pasa a una columna y el sello baja bajo el monto.
+- **No probado:** Android a ≈ 320 dp (solo se midió 360 dp) ni iPhone SE para todas las pantallas (solo
+  Inicio; el resto se probó en iPhone 16, 393 pt de ancho). Se borraron `ios-01-att.jpg` e
+  `ios-03-ficha-deep-link.jpg` (mostraban el diseño anterior).
 
 ### D17. Compartir el cartel como imagen
 - El botón Compartir de la ficha dibuja `SharePosterContent` fuera de pantalla (1080 × 1350 px, densidad
