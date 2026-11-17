@@ -1,0 +1,11 @@
+rules_version = '2';
+// Lectura pública de lo que publica la sincronización; nadie escribe desde fuera
+// (la cuenta de servicio del script no pasa por estas reglas).
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /data/{file} { allow read: if true; }
+    match /thumbs/{file} { allow read: if true; }
+    match /photos/{file} { allow read: if true; }
+    match /{path=**} { allow read, write: if false; }
+  }
+}

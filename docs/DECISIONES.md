@@ -5,6 +5,13 @@ Registro de lo que se verificó contra la API real y de las decisiones que cambi
 
 ## 2026-11-16 · Ajustes tras la revisión
 
+### D15. La sincronización corre en una Mac en Perú
+La API no respondió en 60 s desde GitHub Actions (Azure, EE. UU.) y responde en ~2 s desde Perú: no se
+puede usar una nube extranjera para consultarla. `sync/` corre con launchd en una Mac, publica en
+Firebase Storage como máximo una vez por semana y solo pide las fichas nuevas o cambiadas
+(2 en paralelo con pausa: con 3 el servidor dejó de aceptar conexiones unos minutos).
+Firebase solo sirve archivos; la app nunca depende de que la Mac esté encendida para funcionar.
+
 ### D12. Denuncias: 0-800-40-007, 1818 y correo confirmados
 El 1818 y `denuncias@mininter.gob.pe` quedan confirmados como vigentes. El 0-800-40-007 sigue siendo la
 acción principal (gratuita); Reportar ofrece el 1818 como segunda opción.
