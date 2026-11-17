@@ -17,6 +17,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import org.koin.compose.koinInject
 import pe.cazadores.ads.AdsController
+import pe.cazadores.ui.screens.about.AboutRoute
 import pe.cazadores.ui.screens.detail.DetailRoute
 import pe.cazadores.ui.screens.home.HomeRoute
 import pe.cazadores.ui.screens.onboarding.OnboardingScreen
@@ -98,7 +99,12 @@ fun AppNavHost(
                     onGoSearch = { navController.navigateToTab(TopLevel.SEARCH) },
                 )
             }
-            composable<Route.Settings> { SettingsRoute(onOpenRegime = { navController.navigate(Route.SpecialRegime) }) }
+            composable<Route.Settings> {
+                SettingsRoute(
+                    onOpenRegime = { navController.navigate(Route.SpecialRegime) },
+                    onOpenAbout = { navController.navigate(Route.About) },
+                )
+            }
             composable<Route.Detail> { entry ->
                 DetailRoute(
                     hash = entry.toRoute<Route.Detail>().hash,
@@ -107,6 +113,7 @@ fun AppNavHost(
                 )
             }
             composable<Route.SpecialRegime> { SpecialRegimeRoute(onBack = { navController.navigateUp() }) }
+            composable<Route.About> { AboutRoute(onBack = { navController.navigateUp() }) }
         }
     }
 }

@@ -159,7 +159,7 @@
     <string name="settings_info_section">Información</string>
     <string name="settings_source">Fuente de datos: recompensas.pe</string>
     <string name="settings_rate">Califica la app en la tienda</string>
-    <string name="settings_about">Sobre esta app</string>
+    <string name="settings_about">App no oficial</string>
     <string name="settings_about_body">Cazadores Perú es una app independiente. No está afiliada al Ministerio del Interior ni a la Policía Nacional del Perú. Muestra datos públicos del Programa de Recompensas, que pueden cambiar sin aviso: verifica siempre en recompensas.pe. La recompensa la otorga el Estado tras validar la información.</string>
     <string name="settings_version">Versión %1$s</string>
 
@@ -218,4 +218,18 @@
     <string name="regime_open_official">Ver el comunicado oficial</string>
     <string name="regime_unofficial">Resumen hecho por una app no oficial. Lo que vale es el decreto y el Mininter.</string>
     <string name="report_safety">No te acerques a la persona.</string>
+    <string name="settings_project">Sobre este proyecto</string>
+    <string name="about_title">Sobre este proyecto</string>
+    <string name="about_motto">Si todos estamos atentos, nadie se escapa.</string>
+    <string name="about_why_title">Por qué existe</string>
+    <string name="about_why_body">La web oficial del Programa de Recompensas tiene la información, pero no es fácil revisarla desde el celular. Esta app la ordena en carteles claros, fáciles de consultar y de compartir.</string>
+    <string name="about_community_title">Una comunidad atenta</string>
+    <string name="about_community_body">Queremos que mucha gente conozca estos rostros. Si alguien reconoce a una persona buscada, avisa a la línea gratuita y la Policía hace la captura. Nunca te acerques.</string>
+    <string name="about_future_title">Hacia dónde vamos</string>
+    <string name="about_future_body">Queremos ser una fuente de datos al día y fáciles de consultar que ayude a ubicar más rápido a las personas buscadas. Los datos vienen directamente de la web oficial del Programa de Recompensas.</string>
+    <string name="about_support_title">Cómo apoyar</string>
+    <string name="about_support_body">Los anuncios ayudan al mantenimiento y crecimiento del proyecto. Compartir la app y los carteles también suma. Agradecemos cualquier comentario u observación para seguir mejorando.</string>
+    <string name="about_share_app">Compartir la app</string>
+    <string name="about_rate">Calificar y comentar</string>
+    <string name="about_share_text">Cazadores Perú: consulta a las personas buscadas por el Programa de Recompensas y comparte sus carteles. Si todos estamos atentos, nadie se escapa. %1$s</string>
 </resources>

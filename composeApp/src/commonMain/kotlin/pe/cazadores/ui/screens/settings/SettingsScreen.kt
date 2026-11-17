@@ -52,6 +52,7 @@ import pe.cazadores.resources.settings_ads_prefs
 import pe.cazadores.resources.settings_appearance
 import pe.cazadores.resources.settings_info_section
 import pe.cazadores.resources.settings_privacy_policy
+import pe.cazadores.resources.settings_project
 import pe.cazadores.resources.settings_privacy_section
 import pe.cazadores.resources.settings_rate
 import pe.cazadores.resources.settings_regime
@@ -75,6 +76,7 @@ import pe.cazadores.ui.theme.CzIcons
 fun SettingsRoute(
     viewModel: SettingsViewModel = koinViewModel(),
     onOpenRegime: () -> Unit,
+    onOpenAbout: () -> Unit,
     actions: ExternalActions = koinInject(),
     ads: AdsController = koinInject(),
 ) {
@@ -90,6 +92,7 @@ fun SettingsRoute(
         onRateApp = actions::openStoreReview,
         onOpenRegime = onOpenRegime,
         onOpenRanks = { showLegend = true },
+        onOpenAbout = onOpenAbout,
     )
     if (showLegend) RankLegendSheet(onDismiss = { showLegend = false })
 }
@@ -105,6 +108,7 @@ fun SettingsScreen(
     onRateApp: () -> Unit,
     onOpenRegime: () -> Unit,
     onOpenRanks: () -> Unit,
+    onOpenAbout: () -> Unit,
 ) {
     Column(
         Modifier.fillMaxSize().background(Cz.colors.bg).statusBarsPadding().verticalScroll(rememberScrollState())
@@ -184,6 +188,8 @@ fun SettingsScreen(
         }
 
         Group(stringResource(Res.string.settings_info_section)) {
+            LinkRow(stringResource(Res.string.settings_project), CzIcons.ChevronRight, onOpenAbout)
+            Divider()
             LinkRow(stringResource(Res.string.settings_source), CzIcons.External) { onOpenUrl(AppConfig.SOURCE_URL) }
             Divider()
             LinkRow(stringResource(Res.string.settings_rate), CzIcons.Star, onRateApp)
