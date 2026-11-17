@@ -5,6 +5,18 @@ Registro de lo que se verificó contra la API real y de las decisiones que cambi
 
 ## 2026-11-17 · Rediseño "caza recompensas"
 
+### D18. Rediseño "caza recompensas" aplicado
+- Todas las pantallas usan el estilo cartel (Inicio tablón, Buscar, Filtros, Mis carteles, Ficha, Régimen
+  especial, leyenda, onboarding, Ajustes, estados vacíos). El cartel es **siempre papel**, igual en claro y
+  oscuro; solo el resto de la pantalla cambia de tema (`ContrastTest` cubre ambos).
+- Rango por monto de recompensa: clases S/A/B/C con estrellas; cortes **provisionales** (S ≥ 300 000,
+  A ≥ 100 000, B ≥ 50 000, C > 0). Sin monto no hay sello ni "S/ 0".
+- Peligrosidad estimada **solo por delito** (palabras clave; sin coincidencia: "Nivel base"), nunca por monto.
+- Postergados (ver D16): filtro por clase y posición nacional.
+- "Cerca de ti" usa el departamento elegido por la persona (DataStore); sin elegir muestra la invitación.
+- Verificación final: Android 360 dp (release, R8) a letra 1,0/1,3/2,0 y tema oscuro; iPhone SE a letra
+  normal y accesibilidad XL. Defecto hallado y corregido: botón "Cerrar" de la leyenda ilegible en oscuro.
+
 ### D17. Compartir el cartel como imagen
 - El botón Compartir de la ficha dibuja `SharePosterContent` fuera de pantalla (1080 × 1350 px, densidad
   fija 2 y `fontScale = 1`, tema claro forzado: sale igual con cualquier tema o tamaño de letra) en un
