@@ -32,7 +32,6 @@ import pe.cazadores.resources.danger_cd
 import pe.cazadores.resources.danger_extremo
 import pe.cazadores.resources.danger_meter_base
 import pe.cazadores.resources.danger_meter_by
-import pe.cazadores.resources.danger_meter_unofficial
 import pe.cazadores.resources.danger_muy_alto
 import pe.cazadores.resources.rank_cd
 import pe.cazadores.resources.reward_cd
@@ -156,6 +155,5 @@ fun DangerMeter(assessment: DangerAssessment, modifier: Modifier = Modifier) {
         } else {
             Text(stringResource(Res.string.danger_meter_base), style = Cz.type.caption, color = Cz.colors.onPaperMuted)
         }
-        Text(stringResource(Res.string.danger_meter_unofficial), style = Cz.type.caption, color = Cz.colors.onPaperMuted)
     }
 }

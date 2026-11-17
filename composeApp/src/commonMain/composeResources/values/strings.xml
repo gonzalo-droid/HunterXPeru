@@ -166,9 +166,8 @@
     </plurals>
     <string name="rank_label">Clase %1$s</string>
     <string name="rank_cd">Clase %1$s, %2$d estrellas</string>
-    <string name="danger_meter_by">Estimado por: %1$s</string>
-    <string name="danger_meter_base">Nivel base: todos los buscados tienen delitos graves</string>
-    <string name="danger_meter_unofficial">Estimado por la app. No es una calificación oficial.</string>
+    <string name="danger_meter_by">Estimado por la app según: %1$s. No es una calificación oficial.</string>
+    <string name="danger_meter_base">Nivel base: todos los buscados tienen delitos graves. No es una calificación oficial.</string>
     <!-- Ficha: aviso del régimen especial -->
     <string name="detail_regime_body">Este delito entra en el régimen especial: tu recompensa puede ser hasta S/ 500 000.</string>
     <string name="detail_regime_cta">Ver cómo funciona</string>

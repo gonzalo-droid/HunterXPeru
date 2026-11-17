@@ -83,15 +83,19 @@ fun SpecialRegimeRoute(onBack: () -> Unit, actions: ExternalActions = koinInject
 fun SpecialRegimeScreen(onBack: () -> Unit, onCall: () -> Unit, onOpenOfficial: () -> Unit) {
     StatusBarAppearance(lightIcons = true)
     Column(Modifier.fillMaxSize().background(Cz.colors.bg)) {
-        Column(
-            Modifier.fillMaxWidth().background(Cz.colors.header).statusBarsPadding()
-                .padding(start = 4.dp, end = CazadoresDimens.screenPadding, bottom = 18.dp),
-            verticalArrangement = Arrangement.spacedBy(6.dp),
-        ) {
+        // Solo el botón Volver queda fijo; el título y el decreto se desplazan con el contenido.
+        Row(Modifier.fillMaxWidth().background(Cz.colors.header).statusBarsPadding().padding(horizontal = 4.dp)) {
             IconButton(onClick = onBack) {
                 Icon(CzIcons.Back, stringResource(Res.string.back), tint = Cz.colors.onHeader)
             }
-            Column(Modifier.padding(start = 16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        }
+
+        Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState())) {
+            Column(
+                Modifier.fillMaxWidth().background(Cz.colors.header)
+                    .padding(start = CazadoresDimens.screenPadding, end = CazadoresDimens.screenPadding, bottom = 18.dp),
+                verticalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
                 Text(
                     stringResource(Res.string.regime_title),
                     style = Cz.type.headline,
@@ -100,38 +104,36 @@ fun SpecialRegimeScreen(onBack: () -> Unit, onCall: () -> Unit, onOpenOfficial: 
                 )
                 Text(stringResource(Res.string.regime_decree), style = Cz.type.mono, color = Cz.colors.onHeaderMuted)
             }
-        }
-
-        Column(
-            Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState())
-                .padding(horizontal = CazadoresDimens.screenPadding, vertical = 18.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp),
-        ) {
-            Text(stringResource(Res.string.regime_intro), style = Cz.type.body, color = Cz.colors.ink)
-            POINTS.forEachIndexed { index, point ->
-                Row(
-                    Modifier.fillMaxWidth().background(Cz.colors.surface, CazadoresShapes.card).padding(14.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                    Text((index + 1).toString(), style = Cz.type.title, color = Cz.colors.inkMuted)
-                    Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Text(stringResource(point.title), style = Cz.type.bodyStrong, color = Cz.colors.ink)
-                        Text(stringResource(point.body), style = Cz.type.bodySmall, color = Cz.colors.inkMuted)
+            Column(
+                Modifier.fillMaxWidth().padding(horizontal = CazadoresDimens.screenPadding, vertical = 18.dp),
+                verticalArrangement = Arrangement.spacedBy(14.dp),
+            ) {
+                Text(stringResource(Res.string.regime_intro), style = Cz.type.body, color = Cz.colors.ink)
+                POINTS.forEachIndexed { index, point ->
+                    Row(
+                        Modifier.fillMaxWidth().background(Cz.colors.surface, CazadoresShapes.card).padding(14.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    ) {
+                        Text((index + 1).toString(), style = Cz.type.title, color = Cz.colors.inkMuted)
+                        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                            Text(stringResource(point.title), style = Cz.type.bodyStrong, color = Cz.colors.ink)
+                            Text(stringResource(point.body), style = Cz.type.bodySmall, color = Cz.colors.inkMuted)
+                        }
                     }
                 }
+                Text(
+                    stringResource(Res.string.regime_closing),
+                    style = Cz.type.title,
+                    color = Cz.colors.ink,
+                    modifier = Modifier.semantics { heading() },
+                )
+                TextAction(
+                    text = stringResource(Res.string.regime_open_official),
+                    onClick = onOpenOfficial,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                Text(stringResource(Res.string.regime_unofficial), style = Cz.type.caption, color = Cz.colors.inkMuted)
             }
-            Text(
-                stringResource(Res.string.regime_closing),
-                style = Cz.type.title,
-                color = Cz.colors.ink,
-                modifier = Modifier.semantics { heading() },
-            )
-            TextAction(
-                text = stringResource(Res.string.regime_open_official),
-                onClick = onOpenOfficial,
-                modifier = Modifier.fillMaxWidth(),
-            )
-            Text(stringResource(Res.string.regime_unofficial), style = Cz.type.caption, color = Cz.colors.inkMuted)
         }
 
         Column(Modifier.fillMaxWidth().background(Cz.colors.bg)) {

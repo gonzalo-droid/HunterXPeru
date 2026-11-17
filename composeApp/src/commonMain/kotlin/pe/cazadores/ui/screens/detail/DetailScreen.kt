@@ -297,14 +297,7 @@ private fun DetailBody(content: DetailContent.Loaded, onOpenLegend: () -> Unit, 
                 .border(1.dp, Cz.colors.paperLine, CazadoresShapes.card).padding(14.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            FlowRow(
-                Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp),
-            ) {
-                Text(stringResource(Res.string.detail_danger).uppercase(), style = Cz.type.overline, color = Cz.colors.onPaperMuted)
-                Text(stringResource(Res.string.detail_id, c.id.toString()), style = Cz.type.mono, color = Cz.colors.onPaperMuted)
-            }
+            Text(stringResource(Res.string.detail_danger).uppercase(), style = Cz.type.overline, color = Cz.colors.onPaperMuted)
             DangerMeter(content.danger)
         }
 
@@ -328,6 +321,8 @@ private fun DetailBody(content: DetailContent.Loaded, onOpenLegend: () -> Unit, 
         }
 
         DataRows(c)
+
+        Text(stringResource(Res.string.detail_id, c.id.toString()), style = Cz.type.mono, color = Cz.colors.inkMuted)
 
         Column(
             Modifier.fillMaxWidth().background(Cz.colors.header, CazadoresShapes.card).padding(16.dp),
