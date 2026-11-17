@@ -3,6 +3,22 @@
 Registro de lo que se verificó contra la API real y de las decisiones que cambian o precisan
 `docs/kmp-migration/`. La más reciente va arriba.
 
+## 2026-11-17 · Identidad V3 (logo e íconos)
+
+### D20. Logo e íconos de la identidad V3
+- Fuente: SVG de diseño en `docs/brand/` (lupa crema con silueta y marco de enfoque vino sobre tinta #16181B).
+- Android: primer plano y capa monocroma como **VectorDrawable** (no los PNG de 1024 del paquete). El
+  primer plano del paquete (símbolo a 0,82) **se salía de la zona segura**: con la máscara circular de Pixel
+  se cortaban el aro y el mango. Se reescala a 0,676 centrado en el círculo que envuelve el símbolo, que
+  cabe entero en los 66 dp. El fondo sigue siendo `ic_launcher_background` (#16181B).
+- iOS: el ícono claro es el PNG de diseño (opaco). El oscuro y el tintado de iOS 18 no venían en el paquete:
+  se derivan del mismo SVG sin fondo (colores originales; todo blanco para el tintado) con
+  `iosApp/scripts/render-app-icon.sh`, que reemplaza al generador Swift del ícono anterior.
+- En la app, el símbolo (`BrandMark`) va en el onboarding y en "Sobre este proyecto", siempre sobre la
+  cabecera oscura. Se usa la variante **crema** (papel + `onPaper` + `posterRed`): el vino sobre tinta
+  da ~1,7:1 y casi no se ve, y el papel es igual en ambos temas, como el cartel (D18). `ContrastTest`
+  exige papel/cabecera ≥ 3:1. El logotipo con texto no se usa en la app: depende de fuentes no incluidas.
+
 ## 2026-11-17 · Rediseño "caza recompensas"
 
 ### D19. Pantalla "Sobre este proyecto"

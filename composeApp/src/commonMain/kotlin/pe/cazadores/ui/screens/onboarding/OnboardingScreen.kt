@@ -64,6 +64,7 @@ import pe.cazadores.resources.onboarding_note_2
 import pe.cazadores.resources.onboarding_skip
 import pe.cazadores.resources.onboarding_start
 import pe.cazadores.resources.onboarding_step
+import pe.cazadores.ui.components.BrandMark
 import pe.cazadores.ui.components.RankBadge
 import pe.cazadores.ui.components.StatusBarAppearance
 import pe.cazadores.ui.components.TextAction
@@ -92,7 +93,8 @@ fun OnboardingScreen(onFinish: () -> Unit) {
         Modifier.fillMaxSize().background(Cz.colors.header).statusBarsPadding().navigationBarsPadding()
             .padding(horizontal = 24.dp, vertical = 16.dp),
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            BrandMark(32.dp)
             Text(
                 stringResource(Res.string.onboarding_step, pager.currentPage + 1, STEPS.size).uppercase(),
                 style = Cz.type.monoSmall,

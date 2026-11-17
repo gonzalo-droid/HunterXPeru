@@ -51,6 +51,8 @@ class ContrastTest {
 
         assertRatio("$theme lineStrong/surface", c.lineStrong, c.surface, 3.0)
         assertRatio("$theme lineStrong/bg", c.lineStrong, c.bg, 3.0)
+        // BrandMark: azulejo papel (trazo onPaper, marco posterRed, ya ≥ 4,5:1) sobre la cabecera oscura.
+        assertRatio("$theme marca paper/header", c.paper, c.header, 3.0)
     }
 
     @Test fun lightTheme() = check(LightCazadoresColors, "claro")

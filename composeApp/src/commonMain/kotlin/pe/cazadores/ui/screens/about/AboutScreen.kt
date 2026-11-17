@@ -40,6 +40,7 @@ import pe.cazadores.resources.about_why_body
 import pe.cazadores.resources.about_why_title
 import pe.cazadores.resources.back
 import pe.cazadores.resources.source_note
+import pe.cazadores.ui.components.BrandMark
 import pe.cazadores.ui.components.PrimaryButton
 import pe.cazadores.ui.components.SecondaryButton
 import pe.cazadores.ui.components.StatusBarAppearance
@@ -83,6 +84,7 @@ fun AboutScreen(onBack: () -> Unit, onShareApp: () -> Unit, onRate: () -> Unit) 
                     .padding(start = CazadoresDimens.screenPadding, end = CazadoresDimens.screenPadding, bottom = 18.dp),
                 verticalArrangement = Arrangement.spacedBy(6.dp),
             ) {
+                BrandMark(56.dp, Modifier.padding(bottom = 8.dp))
                 Text(
                     stringResource(Res.string.about_title),
                     style = Cz.type.headline,

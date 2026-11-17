@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="420" viewBox="0 0 1800 420">
+ 
+ <svg x="38" y="43" width="320" height="320" viewBox="0 0 1024 1024"><g stroke-linecap="round" stroke-linejoin="round">
+ <path d="M 705 705 L 850 850" stroke="#EFE4CC" stroke-width="72" fill="none"/>
+ <circle cx="475" cy="475" r="330" stroke="#EFE4CC" stroke-width="58" fill="none"/>
+ <g fill="none" stroke="#7A1D12" stroke-width="30">
+ <path d="M 354 290 H 305 Q 290 290 290 305 V 354"/>
+ <path d="M 596 290 H 645 Q 660 290 660 305 V 354"/>
+ <path d="M 290 596 V 645 Q 290 660 305 660 H 354"/>
+ <path d="M 660 596 V 645 Q 660 660 645 660 H 596"/>
+ </g>
+ <g fill="#EFE4CC"><circle cx="475" cy="420" r="69"/>
+ <path d="M 343 581 C 343 512 402 485 475 485 C 548 485 607 512 607 581 Q 607 597 591 597 H 359 Q 343 597 343 581 Z"/></g>
+ </g></svg>
+ <path d="M 395 65 V 353" stroke="#EFE4CC" stroke-width="4" opacity="0.65"/>
+ <text x="430" y="182" font-family="DejaVu Sans, Archivo, sans-serif" font-stretch="condensed" font-weight="800" font-size="112" letter-spacing="-5" fill="#EFE4CC">CAZADORES</text>
+ <text x="432" y="290" font-family="DejaVu Sans, Archivo, sans-serif" font-weight="800" font-size="112" letter-spacing="-3" fill="#A93A2C">PERÚ</text>
+ <text x="435" y="356" font-family="DejaVu Sans Mono, IBM Plex Mono, monospace" font-size="32" fill="#EFE4CC">Si todos estamos atentos, nadie se escapa.</text>
+ </svg>
