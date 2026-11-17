@@ -91,7 +91,7 @@ fun AppNavHost(
                     onGoSearch = { navController.navigateToTab(TopLevel.SEARCH) },
                 )
             }
-            composable<Route.Settings> { SettingsRoute() }
+            composable<Route.Settings> { SettingsRoute(onOpenRegime = { navController.navigate(Route.SpecialRegime) }) }
             composable<Route.Detail> { entry ->
                 DetailRoute(
                     hash = entry.toRoute<Route.Detail>().hash,

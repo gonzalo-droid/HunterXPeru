@@ -11,20 +11,28 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -37,6 +45,7 @@ import pe.cazadores.core.config.AppInfo
 import pe.cazadores.domain.model.ThemeMode
 import pe.cazadores.platform.ExternalActions
 import pe.cazadores.resources.Res
+import pe.cazadores.resources.legend_title
 import pe.cazadores.resources.settings_about
 import pe.cazadores.resources.settings_about_body
 import pe.cazadores.resources.settings_ads_prefs
@@ -45,6 +54,8 @@ import pe.cazadores.resources.settings_info_section
 import pe.cazadores.resources.settings_privacy_policy
 import pe.cazadores.resources.settings_privacy_section
 import pe.cazadores.resources.settings_rate
+import pe.cazadores.resources.settings_regime
+import pe.cazadores.resources.settings_rewards_section
 import pe.cazadores.resources.settings_source
 import pe.cazadores.resources.settings_terms
 import pe.cazadores.resources.settings_theme_dark
@@ -54,6 +65,7 @@ import pe.cazadores.resources.settings_title
 import pe.cazadores.resources.settings_version
 import pe.cazadores.ui.components.ScreenTitle
 import pe.cazadores.ui.components.SectionLabel
+import pe.cazadores.ui.screens.legend.RankLegendSheet
 import pe.cazadores.ui.theme.CazadoresDimens
 import pe.cazadores.ui.theme.CazadoresShapes
 import pe.cazadores.ui.theme.Cz
@@ -62,9 +74,11 @@ import pe.cazadores.ui.theme.CzIcons
 @Composable
 fun SettingsRoute(
     viewModel: SettingsViewModel = koinViewModel(),
+    onOpenRegime: () -> Unit,
     actions: ExternalActions = koinInject(),
     ads: AdsController = koinInject(),
 ) {
+    var showLegend by rememberSaveable { mutableStateOf(false) }
     val theme by viewModel.themeMode.collectAsStateWithLifecycle()
     val privacyOptionsRequired by ads.privacyOptionsRequired.collectAsStateWithLifecycle()
     SettingsScreen(
@@ -74,7 +88,10 @@ fun SettingsRoute(
         onAdsPreferences = ads::showPrivacyOptions,
         onOpenUrl = actions::openUrl,
         onRateApp = actions::openStoreReview,
+        onOpenRegime = onOpenRegime,
+        onOpenRanks = { showLegend = true },
     )
+    if (showLegend) RankLegendSheet(onDismiss = { showLegend = false })
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -86,6 +103,8 @@ fun SettingsScreen(
     onAdsPreferences: () -> Unit,
     onOpenUrl: (String) -> Unit,
     onRateApp: () -> Unit,
+    onOpenRegime: () -> Unit,
+    onOpenRanks: () -> Unit,
 ) {
     Column(
         Modifier.fillMaxSize().background(Cz.colors.bg).statusBarsPadding().verticalScroll(rememberScrollState())
@@ -101,25 +120,57 @@ fun SettingsScreen(
                 ThemeMode.LIGHT to stringResource(Res.string.settings_theme_light),
                 ThemeMode.DARK to stringResource(Res.string.settings_theme_dark),
             )
-            SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
-                options.forEachIndexed { index, (mode, label) ->
-                    SegmentedButton(
-                        selected = theme == mode,
-                        onClick = { onThemeChange(mode) },
-                        shape = SegmentedButtonDefaults.itemShape(index, options.size),
-                        modifier = Modifier.heightIn(min = CazadoresDimens.touchTarget),
-                        colors = SegmentedButtonDefaults.colors(
-                            activeContainerColor = Cz.colors.ink,
-                            activeContentColor = Cz.colors.bg,
-                            inactiveContainerColor = Cz.colors.surface,
-                            inactiveContentColor = Cz.colors.ink,
-                            activeBorderColor = Cz.colors.ink,
-                            inactiveBorderColor = Cz.colors.lineStrong,
-                        ),
-                        label = { Text(label, style = Cz.type.bodyStrong) },
-                    )
+            if (LocalDensity.current.fontScale > 1.3f) {
+                // Con letra muy grande el control segmentado parte "Sistema": se pasa a filas.
+                Column(Modifier.fillMaxWidth().background(Cz.colors.surface, CazadoresShapes.card).selectableGroup()) {
+                    options.forEachIndexed { index, (mode, label) ->
+                        if (index > 0) Divider()
+                        Row(
+                            Modifier.fillMaxWidth().heightIn(min = 56.dp)
+                                .selectable(selected = theme == mode, role = Role.RadioButton, onClick = { onThemeChange(mode) })
+                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        ) {
+                            RadioButton(
+                                selected = theme == mode,
+                                onClick = null,
+                                colors = RadioButtonDefaults.colors(
+                                    selectedColor = Cz.colors.ink,
+                                    unselectedColor = Cz.colors.inkMuted,
+                                ),
+                            )
+                            Text(label, style = Cz.type.bodyStrong, color = Cz.colors.ink, modifier = Modifier.weight(1f))
+                        }
+                    }
+                }
+            } else {
+                SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
+                    options.forEachIndexed { index, (mode, label) ->
+                        SegmentedButton(
+                            selected = theme == mode,
+                            onClick = { onThemeChange(mode) },
+                            shape = SegmentedButtonDefaults.itemShape(index, options.size),
+                            modifier = Modifier.heightIn(min = CazadoresDimens.touchTarget),
+                            colors = SegmentedButtonDefaults.colors(
+                                activeContainerColor = Cz.colors.ink,
+                                activeContentColor = Cz.colors.bg,
+                                inactiveContainerColor = Cz.colors.surface,
+                                inactiveContentColor = Cz.colors.ink,
+                                activeBorderColor = Cz.colors.ink,
+                                inactiveBorderColor = Cz.colors.lineStrong,
+                            ),
+                            label = { Text(label, style = Cz.type.bodyStrong) },
+                        )
+                    }
                 }
             }
+        }
+
+        Group(stringResource(Res.string.settings_rewards_section)) {
+            LinkRow(stringResource(Res.string.settings_regime), CzIcons.ChevronRight, onOpenRegime)
+            Divider()
+            LinkRow(stringResource(Res.string.legend_title), CzIcons.ChevronRight, onOpenRanks)
         }
 
         Group(stringResource(Res.string.settings_privacy_section)) {
