@@ -3,6 +3,22 @@
 Registro de lo que se verificó contra la API real y de las decisiones que cambian o precisan
 `docs/kmp-migration/`. La más reciente va arriba.
 
+## 2026-11-16 · Ajustes tras la revisión
+
+### D12. Denuncias: 0-800-40-007, 1818 y correo confirmados
+El 1818 y `denuncias@mininter.gob.pe` quedan confirmados como vigentes. El 0-800-40-007 sigue siendo la
+acción principal (gratuita); Reportar ofrece el 1818 como segunda opción.
+
+### D13. "Calificar en la tienda" reemplaza "Enviar comentarios"
+- Android abre `market://details?id=<paquete>` y, si no hay Play Store, la URL web de Play.
+- iOS abre `itms-apps://…/id<ID>?action=write-review` cuando `AppConfig.IOS_APP_STORE_ID` tiene valor.
+  Mientras esté vacío (la app aún no existe en App Store Connect) muestra la ventana de reseña del
+  sistema (`SKStoreReviewController`), que Apple limita a 3 veces al año por usuario.
+
+### D14. IDs reales de AdMob solo en release
+`local.properties` (Android) y `Secrets.xcconfig` con `[config=Release]` (iOS). Debug sigue con los IDs
+de prueba de Google: AdMob sanciona las impresiones y los toques propios sobre anuncios reales.
+
 ## 2026-11-16 · Fase 7: calidad
 
 ### D9. Sin red no se reintenta
