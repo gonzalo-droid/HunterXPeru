@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,8 +29,8 @@ import pe.cazadores.ui.theme.Cz
 /** Fila de lista de Buscar: foto 72×92, nombre (2 líneas), delito titular (1), sello de rango y monto. */
 @Composable
 fun CriminalCard(criminal: Criminal, onClick: () -> Unit, modifier: Modifier = Modifier) {
-    val crime = DangerLevelCalculator.assess(criminal.crimes).headlineCrime ?: criminal.mainCrime
-    val rewardClass = RewardClassCalculator.of(criminal.reward)
+    val crime = remember(criminal) { DangerLevelCalculator.assess(criminal.crimes).headlineCrime } ?: criminal.mainCrime
+    val rewardClass = remember(criminal.reward) { RewardClassCalculator.of(criminal.reward) }
     Row(
         modifier
             .fillMaxWidth()

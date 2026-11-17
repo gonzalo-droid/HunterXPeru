@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.customActions
 import pe.cazadores.resources.saved_remove_action
@@ -216,9 +215,10 @@ fun PosterMini(criminal: Criminal, onClick: () -> Unit, modifier: Modifier = Mod
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
         )
-        if (criminal.mainCrime.isNotBlank()) {
+        val crime = remember(criminal) { DangerLevelCalculator.assess(criminal.crimes).headlineCrime } ?: criminal.mainCrime
+        if (crime.isNotBlank()) {
             Text(
-                criminal.mainCrime.sentenceCase(),
+                crime.sentenceCase(),
                 style = Cz.type.caption,
                 color = Cz.colors.onPaperMuted,
                 maxLines = 1,
@@ -229,26 +229,37 @@ fun PosterMini(criminal: Criminal, onClick: () -> Unit, modifier: Modifier = Mod
     }
 }
 
-/**
- * Cuadrícula de carteles (Inicio y Mis carteles): 2 columnas; con letra muy grande, 1 para que nombre y monto
- * respiren. Si se pasa [onRemove], cada cartel muestra el botón de quitar.
- */
+/** Carteles por fila: 2; con letra muy grande, 1 para que nombre y monto respiren. */
 @Composable
-fun PosterGrid(items: List<Criminal>, onOpenDetail: (String) -> Unit, modifier: Modifier = Modifier, onRemove: ((Criminal) -> Unit)? = null) {
-    val perRow = if (LocalDensity.current.fontScale > 1.3f) 1 else 2
-    Column(modifier, verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        items.chunked(perRow).forEach { row ->
-            Row(Modifier.fillMaxWidth().height(IntrinsicSize.Max), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                row.forEach { criminal ->
-                    PosterMini(
-                        criminal, { onOpenDetail(criminal.hash) }, Modifier.weight(1f).fillMaxHeight(),
-                        onRemove = onRemove?.let { remove -> { remove(criminal) } },
-                    )
-                }
-                // Un cartel suelto no debe estirarse a todo el ancho.
-                repeat(perRow - row.size) { Spacer(Modifier.weight(1f)) }
-            }
+fun posterColumns(): Int = if (LocalDensity.current.fontScale > 1.3f) 1 else 2
+
+/** Una fila de la cuadrícula de carteles (compartida por Inicio y Mis carteles). Si hay [onRemove], cada cartel lo muestra. */
+@Composable
+fun PosterGridRow(
+    row: List<Criminal>,
+    perRow: Int,
+    onOpenDetail: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    onRemove: ((Criminal) -> Unit)? = null,
+) {
+    Row(modifier.fillMaxWidth().height(IntrinsicSize.Max), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        row.forEach { criminal ->
+            PosterMini(
+                criminal, { onOpenDetail(criminal.hash) }, Modifier.weight(1f).fillMaxHeight(),
+                onRemove = onRemove?.let { remove -> { remove(criminal) } },
+            )
         }
+        // Un cartel suelto no debe estirarse a todo el ancho.
+        repeat(perRow - row.size) { Spacer(Modifier.weight(1f)) }
+    }
+}
+
+/** Cuadrícula no perezosa para listas cortas (tablón de Inicio). Las largas usan [PosterGridRow] en un LazyColumn. */
+@Composable
+fun PosterGrid(items: List<Criminal>, onOpenDetail: (String) -> Unit, modifier: Modifier = Modifier) {
+    val perRow = posterColumns()
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        items.chunked(perRow).forEach { row -> PosterGridRow(row, perRow, onOpenDetail) }
     }
 }
 

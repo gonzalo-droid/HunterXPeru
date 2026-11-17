@@ -5,8 +5,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -24,6 +25,7 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import pe.cazadores.ads.AD_EVERY_N_ITEMS
 import pe.cazadores.ads.AdPlacement
 import pe.cazadores.ads.InlineAdSlot
 import pe.cazadores.domain.model.Criminal
@@ -37,7 +39,8 @@ import pe.cazadores.resources.saved_title
 import pe.cazadores.resources.undo
 import pe.cazadores.ui.components.ListSkeleton
 import pe.cazadores.ui.components.MessageState
-import pe.cazadores.ui.components.PosterGrid
+import pe.cazadores.ui.components.PosterGridRow
+import pe.cazadores.ui.components.posterColumns
 import pe.cazadores.ui.components.PrimaryButton
 import pe.cazadores.ui.components.ScreenTitle
 import pe.cazadores.ui.theme.CazadoresDimens
@@ -100,13 +103,21 @@ fun SavedScreen(
                     body = stringResource(Res.string.saved_empty_body),
                     action = { PrimaryButton(stringResource(Res.string.saved_go_search), onGoSearch, icon = CzIcons.Search) },
                 )
-                else -> Column(
-                    Modifier.verticalScroll(rememberScrollState())
-                        .padding(start = CazadoresDimens.screenPadding, end = CazadoresDimens.screenPadding, bottom = 24.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                    PosterGrid(state.items, onOpenDetail, onRemove = onRemove)
-                    InlineAdSlot(AdPlacement.SAVED_INLINE)
+                else -> {
+                    val perRow = posterColumns()
+                    val rows = remember(state.items, perRow) { state.items.chunked(perRow) }
+                    LazyColumn(
+                        contentPadding = PaddingValues(start = CazadoresDimens.screenPadding, end = CazadoresDimens.screenPadding, bottom = 24.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                    ) {
+                        itemsIndexed(rows, key = { _, row -> row.first().hash }) { index, row ->
+                            Column(Modifier.animateItem(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                                PosterGridRow(row, perRow, onOpenDetail, onRemove = onRemove)
+                                // Misma cadencia que antes: un anuncio cada AD_EVERY_N_ITEMS carteles.
+                                if (((index + 1) * perRow) % AD_EVERY_N_ITEMS == 0) InlineAdSlot(AdPlacement.SAVED_INLINE)
+                            }
+                        }
+                    }
                 }
             }
         }
