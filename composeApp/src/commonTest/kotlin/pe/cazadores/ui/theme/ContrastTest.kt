@@ -35,6 +35,14 @@ class ContrastTest {
             "onLevelExtremo" to (c.onLevelExtremo to c.levelExtremo),
             "onLevelMuyAlto" to (c.onLevelMuyAlto to c.levelMuyAlto),
             "onLevelAlto" to (c.onLevelAlto to c.levelAlto),
+            "onPaper/paper" to (c.onPaper to c.paper),
+            "onPaperMuted/paper" to (c.onPaperMuted to c.paper),
+            "posterRed/paper" to (c.posterRed to c.paper),
+            "onPosterRed/posterRed" to (c.onPosterRed to c.posterRed),
+            "onRankS/rankS" to (c.onRankS to c.rankS),
+            "onRankA/rankA" to (c.onRankA to c.rankA),
+            "onRankB/rankB" to (c.onRankB to c.rankB),
+            "onRankC/rankC" to (c.onRankC to c.rankC),
             "action/bg (texto rojo)" to (c.action to c.bg),
             "snackbar texto" to (c.bg to c.ink),
             "snackbar acción" to ((if (c.isDark) c.levelExtremo else c.reward) to c.ink),
@@ -45,6 +53,14 @@ class ContrastTest {
     }
 
     @Test fun lightTheme() = check(LightCazadoresColors, "claro")
+
+    @Test fun paperTokensAreIdenticalInBothThemes() {
+        fun tokens(c: CazadoresColors) = listOf(
+            c.paper, c.onPaper, c.onPaperMuted, c.paperLine, c.paperPhoto, c.posterRed, c.onPosterRed,
+            c.rankS, c.onRankS, c.rankA, c.onRankA, c.rankB, c.onRankB, c.rankC, c.onRankC,
+        )
+        assertTrue(tokens(LightCazadoresColors) == tokens(DarkCazadoresColors), "el cartel es siempre papel")
+    }
 
     @Test fun darkTheme() = check(DarkCazadoresColors, "oscuro")
 }
