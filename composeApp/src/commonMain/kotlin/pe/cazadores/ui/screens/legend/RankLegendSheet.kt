@@ -96,6 +96,7 @@ fun RankLegendSheet(onDismiss: () -> Unit) {
                 text = stringResource(Res.string.legend_close),
                 onClick = onDismiss,
                 modifier = Modifier.fillMaxWidth(),
+                contentColor = Cz.colors.onPaper,
             )
         }
     }
