@@ -26,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
@@ -181,12 +182,13 @@ private fun CallCard(onCall: () -> Unit) {
 @Composable
 private fun Stats(state: HomeUiState) {
     val stats = state.stats ?: return
-    // FlowRow: con letra grande las dos cifras quedan una debajo de otra.
+    // Con letra grande las cifras van una debajo de otra: "S/ 500 000" no se parte (espacios no separables).
+    val perRow = if (LocalDensity.current.fontScale > 1.3f) 1 else 2
     FlowRow(
         Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
-        maxItemsInEachRow = 2,
+        maxItemsInEachRow = perRow,
     ) {
         StatCard(stringResource(Res.string.home_stat_total), stats.total.toString(), Modifier.weight(1f))
         StatCard(stringResource(Res.string.home_stat_max), RewardFormatter.format(stats.maxReward) ?: "—", Modifier.weight(1f))
