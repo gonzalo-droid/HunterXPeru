@@ -107,7 +107,14 @@ fun SearchRoute(
     actions: ExternalActions = koinInject(),
 ) {
     // "Ver todos" del tablero Clase S: lista por mayor recompensa, sin abrir el teclado.
-    LaunchedEffect(sortByReward) { if (sortByReward) viewModel.onSortChange(SortOrder.REWARD) }
+    // Aplicar una sola vez por entrada: al volver de una ficha no debe pisar el orden elegido a mano.
+    var sortHandled by rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(sortByReward) {
+        if (sortByReward && !sortHandled) {
+            viewModel.onSortChange(SortOrder.REWARD)
+            sortHandled = true
+        }
+    }
     val state by viewModel.state.collectAsStateWithLifecycle()
     SearchScreen(
         state = state,
