@@ -3,6 +3,25 @@
 Registro de lo que se verificó contra la API real y de las decisiones que cambian o precisan
 `docs/kmp-migration/`. La más reciente va arriba.
 
+## 2026-11-17 · Rediseño "caza recompensas"
+
+### D16. Posición nacional de la recompensa: postergada a una versión siguiente
+El rediseño muestra el **rango de recompensa** (clase S/A/B/C con estrellas, calculado solo con
+`montoRecompensa`) y su leyenda. La línea de posición nacional ("#2 de 649 · Top 1 % del país")
+**no entra en esta versión**. Queda mapeada así para retomarla:
+- **Origen del dato:** `sync/sync_requisitoriados.py` ya baja los ~649 montos. Al armar el manifest,
+  ordenar por monto y agregar por perfil `rewardRank`, `rewardPercentile` y `rewardClass`; a nivel
+  raíz, `rewardClasses` (cortes y cantidad por clase) para que la leyenda muestre conteos reales.
+  Costo: milisegundos, sin llamadas extra a la API.
+- **Empates:** varios perfiles comparten S/ 500 000. "#N" es engañoso; usar "Top X %" o
+  "#1 · empatado con N más".
+- **Requisito:** la app aún consulta la API directamente y no lee `manifest.json`. La posición llega
+  cuando la app consuma los datos de Firebase; hasta entonces solo se muestra la clase.
+- **Filtro por clase:** también postergado. La API no filtra por monto; con el padrón local se filtra
+  al instante y con totales correctos.
+- **Cortes de clase:** provisionales (≥ S/ 300 mil, 100 mil, 50 mil). Calibrarlos con los montos
+  reales para que la clase S quede en torno al 5 % de los perfiles.
+
 ## 2026-11-16 · Ajustes tras la revisión
 
 ### D15. La sincronización corre en una Mac en Perú
