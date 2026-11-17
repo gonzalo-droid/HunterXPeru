@@ -12,6 +12,7 @@ Registro de lo que se verificó contra la API real y de las decisiones que cambi
   directamente de la web oficial" (la app consulta la API; la sincronización semanal es solo Firebase, D15).
 - Comentarios vía "Calificar y comentar" (reseña en tienda); "Compartir la app" comparte el enlace de Play.
 - La tarjeta del aviso en Ajustes pasa a titularse "App no oficial" para no confundirse con esta pantalla.
+- Verificado en iPhone 16 (oscuro, normal y XL) y Android (claro, oscuro y letra 2×), incluida la hoja de compartir.
 
 ### D18. Rediseño "caza recompensas" aplicado
 - Todas las pantallas usan el estilo cartel (Inicio tablón, Buscar, Filtros, Mis carteles, Ficha, Régimen
