@@ -67,6 +67,7 @@ import pe.cazadores.core.result.DataError
 import pe.cazadores.core.text.sentenceCase
 import pe.cazadores.core.text.titleCase
 import pe.cazadores.domain.model.Criminal
+import pe.cazadores.domain.model.RewardPosition
 import pe.cazadores.domain.model.Sex
 import pe.cazadores.platform.ExternalActions
 import pe.cazadores.resources.Res
@@ -93,6 +94,10 @@ import pe.cazadores.resources.detail_sex_female
 import pe.cazadores.resources.detail_sex_male
 import pe.cazadores.resources.detail_share
 import pe.cazadores.resources.detail_source
+import pe.cazadores.resources.detail_position
+import pe.cazadores.resources.detail_position_rank
+import pe.cazadores.resources.detail_position_tied
+import pe.cazadores.resources.detail_position_tied_one
 import pe.cazadores.resources.source_note
 import pe.cazadores.resources.detail_unknown
 import pe.cazadores.resources.error_not_found
@@ -309,13 +314,14 @@ private fun DetailBody(content: DetailContent.Loaded, onOpenLegend: () -> Unit, 
             onRankClick = onOpenLegend,
         ) {
             CriminalPhoto(
-                cacheKey = c.hash,
-                base64 = c.photoBase64,
+                criminal = c,
                 contentDescription = stringResource(Res.string.detail_photo_cd, c.displayName),
                 modifier = Modifier.fillMaxSize(),
                 shape = CazadoresShapes.photo,
             )
         }
+
+        content.position?.let { PositionCard(it) }
 
         // Medidor sobre papel, como el cartel: el sello y el medidor siempre son papel en ambos temas.
         Column(
@@ -369,6 +375,34 @@ private fun DetailBody(content: DetailContent.Loaded, onOpenLegend: () -> Unit, 
             color = Cz.colors.inkMuted,
         )
         Text(stringResource(Res.string.source_note), style = Cz.type.caption, color = Cz.colors.inkMuted)
+    }
+}
+
+/** Puesto nacional por recompensa, en papel como el medidor de peligrosidad. */
+@Composable
+private fun PositionCard(position: RewardPosition) {
+    Column(
+        Modifier.fillMaxWidth().background(Cz.colors.paper, CazadoresShapes.card)
+            .border(1.dp, Cz.colors.paperLine, CazadoresShapes.card).padding(14.dp)
+            .semantics(mergeDescendants = true) {},
+        verticalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        Text(stringResource(Res.string.detail_position).uppercase(), style = Cz.type.overline, color = Cz.colors.onPaperMuted)
+        Text(
+            stringResource(
+                Res.string.detail_position_rank,
+                position.rank.toString(),
+                position.total.toString(),
+                position.topPercent,
+            ),
+            style = Cz.type.bodyStrong,
+            color = Cz.colors.onPaper,
+        )
+        when (position.tiedWith) {
+            0 -> Unit
+            1 -> Text(stringResource(Res.string.detail_position_tied_one), style = Cz.type.bodySmall, color = Cz.colors.onPaperMuted)
+            else -> Text(stringResource(Res.string.detail_position_tied, position.tiedWith), style = Cz.type.bodySmall, color = Cz.colors.onPaperMuted)
+        }
     }
 }
 

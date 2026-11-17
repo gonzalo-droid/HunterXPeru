@@ -16,11 +16,15 @@ sealed interface DataError {
  * salen de la caché local porque la red falló: la UI muestra "Sin conexión · datos del …".
  */
 sealed interface AppResult<out T> {
-    data class Success<T>(val data: T, val cachedAtMillis: Long? = null) : AppResult<T>
+    /**
+     * [dataAtMillis]: fecha de los datos cuando no son "de ahora" sin ser caché de emergencia
+     * (el padrón semanal se publicó en ese momento).
+     */
+    data class Success<T>(val data: T, val cachedAtMillis: Long? = null, val dataAtMillis: Long? = null) : AppResult<T>
     data class Failure(val error: DataError) : AppResult<Nothing>
 }
 
 inline fun <T, R> AppResult<T>.map(transform: (T) -> R): AppResult<R> = when (this) {
-    is AppResult.Success -> AppResult.Success(transform(data), cachedAtMillis)
+    is AppResult.Success -> AppResult.Success(transform(data), cachedAtMillis, dataAtMillis)
     is AppResult.Failure -> this
 }

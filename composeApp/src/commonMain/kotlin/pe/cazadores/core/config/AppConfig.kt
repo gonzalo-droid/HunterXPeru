@@ -33,4 +33,11 @@ object AppConfig {
     const val DEEP_LINK_BASE = "cazadores://criminal/"
 
     const val PAGE_SIZE = 20
+
+    /**
+     * Padrón semanal que publica `sync/sync_requisitoriados.py` (docs/DECISIONES.md D15/D20).
+     * Cualquier archivo: `$STORAGE_BASE_URL/o/<ruta con / como %2F>?alt=media`.
+     */
+    const val STORAGE_BASE_URL = "https://firebasestorage.googleapis.com/v0/b/peruxhunter.firebasestorage.app"
+    const val MANIFEST_PATH = "data/manifest.json"
 }

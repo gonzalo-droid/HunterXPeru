@@ -8,7 +8,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.runtime.CompositionLocalProvider
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
+import pe.cazadores.domain.repository.PhotoRepository
+import pe.cazadores.ui.components.LocalPhotoRepository
 import pe.cazadores.ui.app.AppUiState
 import pe.cazadores.ui.app.AppViewModel
 import pe.cazadores.ui.components.StatusBarAppearance
@@ -29,7 +33,9 @@ fun App(viewModel: AppViewModel = koinViewModel()) {
         } else {
             // El destino inicial se decide una sola vez: al terminar el onboarding se navega, no se recompone el grafo.
             val start = remember { if (ready.showOnboarding) Route.Onboarding else Route.Home }
-            AppNavHost(startDestination = start, onOnboardingFinished = viewModel::onOnboardingFinished)
+            CompositionLocalProvider(LocalPhotoRepository provides koinInject<PhotoRepository>()) {
+                AppNavHost(startDestination = start, onOnboardingFinished = viewModel::onOnboardingFinished)
+            }
         }
     }
 }

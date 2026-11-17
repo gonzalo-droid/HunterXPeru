@@ -19,6 +19,7 @@ import pe.cazadores.domain.model.SortOrder
 import pe.cazadores.domain.repository.TimeProvider
 import pe.cazadores.domain.usecase.GetCatalogsUseCase
 import pe.cazadores.domain.usecase.GetCriminalDetailUseCase
+import pe.cazadores.domain.usecase.GetRewardPositionUseCase
 import pe.cazadores.domain.usecase.GetHomeStatsUseCase
 import pe.cazadores.domain.usecase.GetTopWantedUseCase
 import pe.cazadores.domain.usecase.IsFavoriteUseCase
@@ -109,20 +110,23 @@ class ViewModelsTest {
 
     @Test fun detailNotFoundAndFavoriteToggle() = runTest(dispatcher) {
         criminals.detailResult = AppResult.Failure(DataError.NotFound)
-        val notFound = DetailViewModel("X", GetCriminalDetailUseCase(criminals, favorites), IsFavoriteUseCase(favorites), toggle(), TimeProvider { 0 })
+        val notFound = DetailViewModel("X", GetCriminalDetailUseCase(criminals, favorites), IsFavoriteUseCase(favorites), toggle(), TimeProvider { 0 }, GetRewardPositionUseCase(criminals))
         notFound.state.test {
             skipItems(1)
             advanceUntilIdle()
             assertEquals(DetailContent.Error(DataError.NotFound), expectMostRecentItem().content)
         }
 
-        criminals.detailResult = AppResult.Success(criminal("D", crimes = listOf("SICARIATO")))
-        val vm = DetailViewModel("D", GetCriminalDetailUseCase(criminals, favorites), IsFavoriteUseCase(favorites), toggle(), TimeProvider { 0 })
+        criminals.detailResult = AppResult.Success(criminal("D", crimes = listOf("SICARIATO")), dataAtMillis = 42)
+        criminals.positionResult = pe.cazadores.domain.model.RewardPosition(rank = 3, tiedWith = 1, total = 649)
+        val vm = DetailViewModel("D", GetCriminalDetailUseCase(criminals, favorites), IsFavoriteUseCase(favorites), toggle(), TimeProvider { 0 }, GetRewardPositionUseCase(criminals))
         vm.state.test {
             advanceUntilIdle()
             val loaded = expectMostRecentItem()
             assertIs<DetailContent.Loaded>(loaded.content)
             assertEquals(pe.cazadores.domain.model.DangerLevel.EXTREMO, (loaded.content as DetailContent.Loaded).danger.level)
+            assertEquals(3, (loaded.content as DetailContent.Loaded).position?.rank)
+            assertEquals(42L, (loaded.content as DetailContent.Loaded).dataAtMillis)
             vm.onToggleFavorite()
             advanceUntilIdle()
             assertTrue(expectMostRecentItem().isFavorite)

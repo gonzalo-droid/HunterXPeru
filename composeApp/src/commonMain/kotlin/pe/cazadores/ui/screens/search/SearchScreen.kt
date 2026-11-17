@@ -74,6 +74,7 @@ import pe.cazadores.resources.end_of_list
 import pe.cazadores.resources.filters_button_active_cd
 import pe.cazadores.resources.filters_button_cd
 import pe.cazadores.resources.load_more_error
+import pe.cazadores.resources.rank_label
 import pe.cazadores.resources.remove_filter_cd
 import pe.cazadores.resources.results_count
 import pe.cazadores.resources.results_count_one
@@ -126,6 +127,7 @@ fun SearchRoute(
         onRemoveDepartment = viewModel::onRemoveDepartment,
         onRemoveProvince = viewModel::onRemoveProvince,
         onRemoveCrime = viewModel::onRemoveCrime,
+        onRemoveClass = viewModel::onRemoveClass,
         onClearFilters = viewModel::onClearFilters,
         onRetry = viewModel::onRetry,
         onCall = { actions.dial(AppConfig.REPORT_PHONE_URI) },
@@ -157,6 +159,7 @@ fun SearchScreen(
     onRemoveDepartment: () -> Unit,
     onRemoveProvince: () -> Unit,
     onRemoveCrime: () -> Unit,
+    onRemoveClass: () -> Unit,
     onClearFilters: () -> Unit,
     onRetry: () -> Unit,
     onCall: () -> Unit,
@@ -168,7 +171,7 @@ fun SearchScreen(
     LoadMoreEffect(listState, state.items.size, onLoadMore)
 
     Column(Modifier.fillMaxSize().background(Cz.colors.bg).statusBarsPadding()) {
-        SearchHeader(state, focusSearch, onQueryChange, onClearQuery, onOpenFilters, onSortChange, onRemoveDepartment, onRemoveProvince, onRemoveCrime)
+        SearchHeader(state, focusSearch, onQueryChange, onClearQuery, onOpenFilters, onSortChange, onRemoveDepartment, onRemoveProvince, onRemoveCrime, onRemoveClass)
 
         PullToRefreshBox(
             isRefreshing = state.isRefreshing,
@@ -224,6 +227,7 @@ private fun SearchHeader(
     onRemoveDepartment: () -> Unit,
     onRemoveProvince: () -> Unit,
     onRemoveCrime: () -> Unit,
+    onRemoveClass: () -> Unit,
 ) {
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
@@ -275,7 +279,7 @@ private fun SearchHeader(
             )
             FiltersButton(state.filters.activeCount, onOpenFilters)
         }
-        ActiveFilterChips(state, onRemoveDepartment, onRemoveProvince, onRemoveCrime)
+        ActiveFilterChips(state, onRemoveDepartment, onRemoveProvince, onRemoveCrime, onRemoveClass)
         if (!state.isLoading && state.error == null) {
             FlowRow(
                 Modifier.fillMaxWidth(),
@@ -324,6 +328,7 @@ private fun ActiveFilterChips(
     onRemoveDepartment: () -> Unit,
     onRemoveProvince: () -> Unit,
     onRemoveCrime: () -> Unit,
+    onRemoveClass: () -> Unit,
 ) {
     val f = state.filters
     val catalogs = state.catalogs
@@ -333,6 +338,7 @@ private fun ActiveFilterChips(
             add((catalogs?.provinciasOf(f.departamentoId)?.firstOrNull { it.id == id }?.name ?: id) to onRemoveProvince)
         }
         f.delitoId?.let { id -> add((catalogs?.delitos?.firstOrNull { it.id == id }?.name ?: "#$id") to onRemoveCrime) }
+        f.rewardClass?.let { add(stringResource(Res.string.rank_label, it.name) to onRemoveClass) }
     }
     if (chips.isEmpty()) return
     FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {

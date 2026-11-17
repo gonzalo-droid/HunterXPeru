@@ -30,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -52,6 +53,10 @@ import pe.cazadores.resources.filters_other_crime
 import pe.cazadores.resources.filters_province
 import pe.cazadores.resources.filters_province_needs_department
 import pe.cazadores.resources.filters_title
+import pe.cazadores.resources.filters_class
+import pe.cazadores.resources.rank_cd
+import pe.cazadores.resources.rank_label
+import pe.cazadores.domain.model.RewardClass
 import pe.cazadores.ui.components.PrimaryButton
 import pe.cazadores.ui.components.SectionLabel
 import pe.cazadores.ui.components.TextAction
@@ -155,6 +160,24 @@ fun FiltersSheet(
                 )
             }
 
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                SectionLabel(stringResource(Res.string.filters_class))
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    CrimeChip(stringResource(Res.string.filters_all_f), selected = draft.rewardClass == null) {
+                        onChange(draft.copy(rewardClass = null))
+                    }
+                    RewardClass.entries.forEach { rewardClass ->
+                        CrimeChip(
+                            stringResource(Res.string.rank_label, rewardClass.name) + " " + "★".repeat(rewardClass.stars),
+                            selected = draft.rewardClass == rewardClass,
+                            contentDescription = stringResource(Res.string.rank_cd, rewardClass.name, rewardClass.stars),
+                        ) {
+                            onChange(draft.copy(rewardClass = if (draft.rewardClass == rewardClass) null else rewardClass))
+                        }
+                    }
+                }
+            }
+
             PrimaryButton(
                 text = count?.let { stringResource(Res.string.filters_apply_count, it.toString()) }
                     ?: stringResource(Res.string.filters_apply),
@@ -166,12 +189,13 @@ fun FiltersSheet(
 }
 
 @Composable
-private fun CrimeChip(label: String, selected: Boolean, onClick: () -> Unit) {
+private fun CrimeChip(label: String, selected: Boolean, contentDescription: String? = null, onClick: () -> Unit) {
     FilterChip(
         selected = selected,
         onClick = onClick,
         label = { Text(label, style = Cz.type.bodySmall) },
-        modifier = Modifier.heightIn(min = 40.dp),
+        modifier = Modifier.heightIn(min = 40.dp)
+            .then(if (contentDescription != null) Modifier.semantics { this.contentDescription = contentDescription } else Modifier),
         shape = CazadoresShapes.chip,
         colors = FilterChipDefaults.filterChipColors(
             containerColor = Cz.colors.surface,

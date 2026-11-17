@@ -3,6 +3,27 @@
 Registro de lo que se verificó contra la API real y de las decisiones que cambian o precisan
 `docs/kmp-migration/`. La más reciente va arriba.
 
+## 2026-11-17 · Padrón desde Firebase
+
+### D21. La app lee el padrón semanal de Firebase; la API queda de respaldo
+- Fuente principal: `data/manifest.json` del bucket `peruxhunter.firebasestorage.app` (URL pública
+  `…/o/<ruta>?alt=media`, sin SDK de Firebase). Lo publica `sync/sync_requisitoriados.py` (D15).
+- `PadronStore` lo guarda en Room (`padron_meta`, esquema **v2**, AutoMigration 1→2) y lo tiene en memoria.
+  Primera vez: espera el manifest hasta 15 s; si falla, sigue con la API y no reintenta antes de 60 s.
+  Después responde al instante con lo guardado y revisa si hay versión nueva cada 6 h, en segundo plano.
+  Un manifest roto, vacío o de esquema mayor se ignora y se queda el anterior.
+- Búsqueda, top 5, totales y ficha salen del padrón (`PadronQuery`): el texto ignora tildes y busca cada
+  palabra; los filtros traducen ids del catálogo a nombres. Sin padrón (o sin catálogos) se usa la API como antes.
+- Fotos: el zip de miniaturas (sin compresión) se baja una vez por versión y se guarda en `padron_image`;
+  la foto grande se baja al abrir la ficha y se guardan las últimas 60. Tarjetas y mini carteles usan solo
+  la miniatura; ficha y cartel a compartir muestran la miniatura al instante y la cambian por la grande.
+  Un favorito guarda la miniatura en Base64, como antes.
+- Fecha de los datos: la de publicación del padrón (`dataAtMillis`), en Inicio y en la fuente de la Ficha.
+- Ahora sí (pendientes de D16/D18): **posición nacional** en la Ficha ("Puesto N de T · top X % del país",
+  con empates) y **filtro por clase S/A/B/C** en Filtros. Con la API de respaldo, el filtro por clase solo
+  filtra la página recibida y la posición no aparece. Los cortes de clase siguen provisionales.
+- Corrige D19: la app ya no consulta la API en cada pantalla; los datos siguen viniendo de la web oficial.
+
 ## 2026-11-17 · Identidad V3 (logo e íconos)
 
 ### D20. Logo e íconos de la identidad V3
@@ -25,7 +46,7 @@ Registro de lo que se verificó contra la API real y de las decisiones que cambi
 - Desde Ajustes → Información. Explica por qué existe la app, la idea de comunidad atenta (reconocer y
   avisar; **la captura la hace la Policía**, nunca te acerques), hacia dónde va y cómo apoyar.
 - Financiamiento: solo se mencionan los anuncios (no hay suscripción en la app). Datos: "vienen
-  directamente de la web oficial" (la app consulta la API; la sincronización semanal es solo Firebase, D15).
+  directamente de la web oficial" (vía el padrón semanal en Firebase, D21; la API es el respaldo).
 - Comentarios vía "Calificar y comentar" (reseña en tienda); "Compartir la app" comparte el enlace de Play.
 - La tarjeta del aviso en Ajustes pasa a titularse "App no oficial" para no confundirse con esta pantalla.
 - Verificado en iPhone 16 (oscuro, normal y XL) y Android (claro, oscuro y letra 2×), incluida la hoja de compartir.

@@ -144,7 +144,7 @@ class HomeViewModel(
                     top = topItems ?: current.top,
                     stats = (statsResult as? AppResult.Success)?.data ?: current.stats,
                     cachedAtMillis = cachedAt,
-                    updatedAtMillis = if (topItems != null) cachedAt ?: time.nowMillis() else current.updatedAtMillis,
+                    updatedAtMillis = if (topItems != null) cachedAt ?: (topResult as? AppResult.Success)?.dataAtMillis ?: time.nowMillis() else current.updatedAtMillis,
                     error = if (topItems == null && current.top.isEmpty()) (topResult as AppResult.Failure).error else null,
                 )
             }

@@ -63,6 +63,11 @@
     <string name="filters_province_needs_department">Elige primero un departamento</string>
     <string name="filters_crime">Delito</string>
     <string name="filters_other_crime">Otro delito…</string>
+    <string name="filters_class">Clase de recompensa</string>
+    <string name="detail_position">Posición nacional</string>
+    <string name="detail_position_rank">Puesto %1$s de %2$s por recompensa · top %3$d&#160;% del país</string>
+    <string name="detail_position_tied">Comparte el monto con %1$d personas más.</string>
+    <string name="detail_position_tied_one">Comparte el monto con 1 persona más.</string>
     <string name="filters_apply">Ver resultados</string>
     <string name="filters_apply_count">Ver %1$s resultados</string>
     <string name="filters_value">%1$s: %2$s</string>

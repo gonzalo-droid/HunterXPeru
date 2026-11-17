@@ -85,6 +85,8 @@ class SearchViewModel(
 
     fun onRemoveCrime() = applyFilters(_state.value.filters.copy(delitoId = null))
 
+    fun onRemoveClass() = applyFilters(_state.value.filters.copy(rewardClass = null))
+
     fun onClearFilters() = applyFilters(SearchFilters(query = _state.value.filters.query, sort = _state.value.filters.sort))
 
     fun onRetry() = reload()

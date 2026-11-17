@@ -5,6 +5,7 @@ import pe.cazadores.core.result.AppResult
 import pe.cazadores.domain.model.Catalogs
 import pe.cazadores.domain.model.Criminal
 import pe.cazadores.domain.model.HomeStats
+import pe.cazadores.domain.model.RewardPosition
 import pe.cazadores.domain.model.SearchFilters
 import pe.cazadores.domain.model.SearchPage
 import pe.cazadores.domain.model.ThemeMode
@@ -15,6 +16,13 @@ interface CriminalRepository {
     suspend fun topWanted(): AppResult<List<Criminal>>
     suspend fun detail(hash: String): AppResult<Criminal>
     suspend fun homeStats(): AppResult<HomeStats>
+    /** Lugar de su recompensa en el país. Solo con el padrón local; `null` si no se puede saber. */
+    suspend fun rewardPosition(hash: String): RewardPosition?
+}
+
+/** Imágenes del padrón por su ruta en Storage (miniaturas y fotos de ficha). `null` si no se pudo obtener. */
+interface PhotoRepository {
+    suspend fun image(key: String): ByteArray?
 }
 
 interface FavoritesRepository {

@@ -17,6 +17,9 @@ import pe.cazadores.data.local.SettingsDataSource
 import pe.cazadores.data.remote.ApiJson
 import pe.cazadores.data.remote.RecompensasApi
 import pe.cazadores.data.remote.createHttpClient
+import pe.cazadores.data.remote.createStorageClient
+import pe.cazadores.data.padron.PadronSource
+import pe.cazadores.data.padron.PadronStore
 import pe.cazadores.data.repository.BundledCatalogSource
 import pe.cazadores.data.repository.CatalogRepositoryImpl
 import pe.cazadores.data.repository.CriminalRepositoryImpl
@@ -25,10 +28,12 @@ import pe.cazadores.data.repository.SettingsRepositoryImpl
 import pe.cazadores.domain.repository.CatalogRepository
 import pe.cazadores.domain.repository.CriminalRepository
 import pe.cazadores.domain.repository.FavoritesRepository
+import pe.cazadores.domain.repository.PhotoRepository
 import pe.cazadores.domain.repository.SettingsRepository
 import pe.cazadores.domain.repository.TimeProvider
 import pe.cazadores.domain.usecase.GetCatalogsUseCase
 import pe.cazadores.domain.usecase.GetCriminalDetailUseCase
+import pe.cazadores.domain.usecase.GetRewardPositionUseCase
 import pe.cazadores.domain.usecase.GetHomeStatsUseCase
 import pe.cazadores.domain.usecase.GetTopWantedUseCase
 import pe.cazadores.domain.usecase.IsFavoriteUseCase
@@ -60,12 +65,18 @@ val dataModule = module {
     single { RecompensasApi(get()) }
     single { get<AppDatabase>().favoriteDao() }
     single { get<AppDatabase>().cacheDao() }
+    single { get<AppDatabase>().padronDao() }
+    single { PadronStore(client = createStorageClient(engine = get(), userAgent = get<AppEnvironment>().userAgent), dao = get(), json = get(), time = get(), network = get(), scope = get(APP_SCOPE)) }
+    single<PadronSource> { get<PadronStore>() }
+    single<PhotoRepository> { get<PadronStore>() }
     single { SettingsDataSource(get()) }
     @OptIn(ExperimentalResourceApi::class)
     single { BundledCatalogSource { name -> Res.readBytes("files/catalogs/$name.json").decodeToString() } }
 
-    single<CriminalRepository> { CriminalRepositoryImpl(get(), get(), get(), get(), get()) }
-    single<FavoritesRepository> { FavoritesRepositoryImpl(get(), get(), get()) }
+    single<CriminalRepository> {
+        CriminalRepositoryImpl(api = get(), cache = get(), time = get(), json = get(), network = get(), padron = get(), catalogs = get())
+    }
+    single<FavoritesRepository> { FavoritesRepositoryImpl(get(), get(), get(), get()) }
     single<CatalogRepository> { CatalogRepositoryImpl(get(), get(), get(), get(), get()) }
     single<SettingsRepository> { SettingsRepositoryImpl(get()) }
 }
@@ -74,6 +85,7 @@ val domainModule = module {
     factory { GetTopWantedUseCase(get()) }
     factory { SearchCriminalsUseCase(get()) }
     factory { GetCriminalDetailUseCase(get(), get()) }
+    factory { GetRewardPositionUseCase(get()) }
     factory { GetHomeStatsUseCase(get()) }
     factory { GetCatalogsUseCase(get()) }
     factory { ObserveFavoritesUseCase(get()) }
@@ -87,7 +99,7 @@ val uiModule = module {
     viewModelOf(::SavedViewModel)
     viewModelOf(::SettingsViewModel)
     viewModelOf(::AppViewModel)
-    viewModel { (hash: String) -> DetailViewModel(hash, get(), get(), get(), get()) }
+    viewModel { (hash: String) -> DetailViewModel(hash, get(), get(), get(), get(), get()) }
 }
 
 fun appModules(): List<Module> = listOf(platformModule, dataModule, domainModule, uiModule)

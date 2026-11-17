@@ -8,6 +8,7 @@ import pe.cazadores.core.result.AppResult
 import pe.cazadores.domain.model.Catalogs
 import pe.cazadores.domain.model.Criminal
 import pe.cazadores.domain.model.HomeStats
+import pe.cazadores.domain.model.RewardPosition
 import pe.cazadores.domain.model.SearchFilters
 import pe.cazadores.domain.model.SearchPage
 import pe.cazadores.domain.repository.CatalogRepository
@@ -38,6 +39,11 @@ class GetCriminalDetailUseCase(
         }
         return result
     }
+}
+
+/** Puesto de la persona entre todas, por monto de recompensa. `null` si no hay padrón. */
+class GetRewardPositionUseCase(private val repository: CriminalRepository) {
+    suspend operator fun invoke(hash: String): RewardPosition? = repository.rewardPosition(hash)
 }
 
 class GetHomeStatsUseCase(private val repository: CriminalRepository) {

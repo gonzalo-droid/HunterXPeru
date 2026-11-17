@@ -17,8 +17,10 @@ import pe.cazadores.core.SpecialRegime
 import pe.cazadores.core.result.AppResult
 import pe.cazadores.core.result.DataError
 import pe.cazadores.domain.model.Criminal
+import pe.cazadores.domain.model.RewardPosition
 import pe.cazadores.domain.repository.TimeProvider
 import pe.cazadores.domain.usecase.GetCriminalDetailUseCase
+import pe.cazadores.domain.usecase.GetRewardPositionUseCase
 import pe.cazadores.domain.usecase.IsFavoriteUseCase
 import pe.cazadores.domain.usecase.ToggleFavoriteUseCase
 
@@ -33,6 +35,8 @@ sealed interface DetailContent {
         /** Momento de los datos: ahora, o la fecha de la caché si no hubo red. */
         val dataAtMillis: Long,
         val fromCache: Boolean,
+        /** Puesto nacional por recompensa; `null` sin padrón o sin monto. */
+        val position: RewardPosition? = null,
     ) : DetailContent
 }
 
@@ -52,6 +56,7 @@ class DetailViewModel(
     isFavorite: IsFavoriteUseCase,
     private val toggleFavorite: ToggleFavoriteUseCase,
     private val time: TimeProvider,
+    private val getPosition: GetRewardPositionUseCase,
 ) : ViewModel() {
 
     private val content = MutableStateFlow<DetailContent>(DetailContent.Loading)
@@ -94,8 +99,9 @@ class DetailViewModel(
                     criminal = result.data,
                     danger = DangerLevelCalculator.assess(result.data.crimes),
                     specialRegime = SpecialRegime.applies(result.data.crimes),
-                    dataAtMillis = result.cachedAtMillis ?: time.nowMillis(),
+                    dataAtMillis = result.cachedAtMillis ?: result.dataAtMillis ?: time.nowMillis(),
                     fromCache = result.cachedAtMillis != null,
+                    position = getPosition(hash),
                 )
                 is AppResult.Failure -> DetailContent.Error(result.error)
             }

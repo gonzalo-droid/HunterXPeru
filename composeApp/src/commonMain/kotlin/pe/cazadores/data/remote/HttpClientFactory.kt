@@ -72,6 +72,28 @@ fun createHttpClient(
     }
 }
 
+/**
+ * Cliente para Firebase Storage (padrón, D21), aparte del de la API: Storage responde 403
+ * `SignatureDoesNotMatch` a un GET con `Content-Type`, que el cliente de la API manda siempre.
+ */
+fun createStorageClient(engine: HttpClientEngine, userAgent: String): HttpClient = HttpClient(engine) {
+    expectSuccess = true
+    install(HttpTimeout) {
+        connectTimeoutMillis = 30_000
+        requestTimeoutMillis = 60_000
+        socketTimeoutMillis = 60_000
+    }
+    install(HttpRequestRetry) {
+        maxRetries = 2
+        retryOnExceptionIf { _, cause -> cause.isTransient() }
+        retryIf { _, _ -> false }
+        exponentialDelay(base = 2.0, maxDelayMs = 8_000)
+    }
+    defaultRequest {
+        headers.append(HttpHeaders.UserAgent, userAgent)
+    }
+}
+
 internal fun Throwable.isTransient(): Boolean = when (this) {
     is HttpRequestTimeoutException, is ConnectTimeoutException, is SocketTimeoutException -> true
     is IOException -> true

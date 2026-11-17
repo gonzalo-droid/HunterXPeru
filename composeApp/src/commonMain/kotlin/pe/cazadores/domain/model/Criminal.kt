@@ -17,6 +17,9 @@ data class Criminal(
     val photoBase64: String? = null,
     val departamento: String? = null,
     val provincia: String? = null,
+    /** Rutas en Firebase Storage (solo si viene del padrón): miniatura de 240 px y foto de 720 px. */
+    val thumbKey: String? = null,
+    val photoKey: String? = null,
 ) {
     /** Primer delito: el que muestran las tarjetas. */
     val mainCrime: String get() = crimes.firstOrNull().orEmpty()
@@ -40,14 +43,16 @@ data class SearchFilters(
     val departamentoId: String? = null,
     val provinciaId: String? = null,
     val delitoId: Int? = null,
+    /** Rango de recompensa calculado por la app; la API no lo filtra (solo el padrón local). */
+    val rewardClass: RewardClass? = null,
     val sort: SortOrder = SortOrder.RECENT,
 ) {
     /** Filtros de la hoja (sin contar el texto ni el orden). */
-    val activeCount: Int get() = listOfNotNull(departamentoId, provinciaId, delitoId).size
+    val activeCount: Int get() = listOfNotNull(departamentoId, provinciaId, delitoId, rewardClass).size
 
     /** Clave estable para la caché offline: una persona puede estar en varias búsquedas. */
     val cacheKey: String
-        get() = listOf(query.trim().lowercase(), departamentoId, provinciaId, delitoId, sort.name)
+        get() = listOf(query.trim().lowercase(), departamentoId, provinciaId, delitoId, rewardClass, sort.name)
             .joinToString("|") { it?.toString().orEmpty() }
 }
 
@@ -61,6 +66,15 @@ data class SearchPage(
 )
 
 data class HomeStats(val total: Int, val maxReward: Double)
+
+/**
+ * Lugar de una recompensa en el padrón nacional (1 = la más alta). [tiedWith] es cuántas personas
+ * más tienen el mismo monto: varios comparten S/ 500 000 y "#1" a secas engañaría (D16).
+ */
+data class RewardPosition(val rank: Int, val tiedWith: Int, val total: Int) {
+    /** "Top X %" redondeado hacia arriba y nunca 0. */
+    val topPercent: Int get() = maxOf(1, (rank * 100 + total - 1) / total)
+}
 
 data class Delito(val id: Int, val name: String)
 data class Departamento(val id: String, val name: String)

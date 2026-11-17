@@ -8,6 +8,7 @@ import pe.cazadores.core.result.AppResult
 import pe.cazadores.domain.model.Catalogs
 import pe.cazadores.domain.model.Criminal
 import pe.cazadores.domain.model.HomeStats
+import pe.cazadores.domain.model.RewardPosition
 import pe.cazadores.domain.model.SearchFilters
 import pe.cazadores.domain.model.SearchPage
 import pe.cazadores.domain.repository.CatalogRepository
@@ -48,6 +49,8 @@ class FakeCriminalRepository : CriminalRepository {
     override suspend fun topWanted() = topResult
     override suspend fun detail(hash: String) = detailResult
     override suspend fun homeStats() = statsResult
+    var positionResult: RewardPosition? = null
+    override suspend fun rewardPosition(hash: String) = positionResult
 }
 
 class FakeCatalogRepository : CatalogRepository {

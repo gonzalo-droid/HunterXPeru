@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -22,6 +23,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.decodeToImageBitmap
 import pe.cazadores.core.PhotoDecoder
+import pe.cazadores.domain.model.Criminal
+import pe.cazadores.domain.repository.PhotoRepository
 import pe.cazadores.ui.theme.CazadoresShapes
 import pe.cazadores.ui.theme.Cz
 
@@ -59,9 +62,40 @@ internal suspend fun ensurePhotoDecoded(
     return decoded
 }
 
+/** Imágenes del padrón (miniatura y foto por clave). `null` en previews y tests: solo se usa el Base64. */
+val LocalPhotoRepository = staticCompositionLocalOf<PhotoRepository?> { null }
+
+/** Imagen del padrón por [key] ("thumbs/…" o "photos/…"): de la caché o bajada con [photos] y decodificada. */
+internal suspend fun ensureKeyDecoded(
+    key: String?,
+    photos: PhotoRepository?,
+    decode: (ByteArray) -> ImageBitmap? = { bytes -> runCatching { bytes.decodeToImageBitmap() }.getOrNull() },
+): ImageBitmap? {
+    if (key == null) return null
+    PhotoCache.get(key)?.let { return it }
+    val bytes = photos?.image(key) ?: return null
+    val decoded = withContext(Dispatchers.Default) { decode(bytes) }
+    decoded?.let { PhotoCache.put(key, it) }
+    return decoded
+}
+
+/** La mejor foto que ya está en la caché, sin bajar nada. */
+internal fun cachedPhoto(cacheKey: String, photoKey: String?, thumbKey: String?): ImageBitmap? =
+    photoKey?.let(PhotoCache::get) ?: PhotoCache.get(cacheKey) ?: thumbKey?.let(PhotoCache::get)
+
+/**
+ * Deja en la caché la mejor foto de [criminal] y la devuelve: Base64 (API o favorito) o, si viene del padrón,
+ * la foto grande con la miniatura como respaldo. Para quien necesita la foto antes de componer (el cartel a compartir).
+ */
+internal suspend fun ensureBestPhoto(criminal: Criminal, photos: PhotoRepository?): ImageBitmap? =
+    ensurePhotoDecoded(criminal.hash, criminal.photoBase64)
+        ?: ensureKeyDecoded(criminal.photoKey, photos)
+        ?: ensureKeyDecoded(criminal.thumbKey, photos)
+
 /**
  * Foto de la persona o silueta si no hay foto o no se puede leer.
- * [cacheKey] suele ser el hash de la persona.
+ * [cacheKey] suele ser el hash de la persona. Sin [base64], usa las imágenes del padrón: primero la miniatura
+ * ([thumbKey], ya guardada en el teléfono) y, si se pide [photoKey], la cambia por la foto grande cuando llega.
  */
 @Composable
 fun CriminalPhoto(
@@ -70,10 +104,19 @@ fun CriminalPhoto(
     contentDescription: String?,
     modifier: Modifier = Modifier,
     shape: Shape = CazadoresShapes.photo,
+    thumbKey: String? = null,
+    photoKey: String? = null,
 ) {
-    val bitmap by produceState(PhotoCache.get(cacheKey), cacheKey, base64) {
+    val photos = LocalPhotoRepository.current
+    val bitmap by produceState(cachedPhoto(cacheKey, photoKey, thumbKey), cacheKey, base64, thumbKey, photoKey) {
         // La caché solo se toca desde el hilo principal (produceState corre ahí).
-        if (value == null && base64 != null) value = ensurePhotoDecoded(cacheKey, base64)
+        if (base64 != null) {
+            if (value == null) value = ensurePhotoDecoded(cacheKey, base64)
+            return@produceState
+        }
+        if (photoKey != null && PhotoCache.get(photoKey) != null) return@produceState
+        if (value == null) value = ensureKeyDecoded(thumbKey, photos)
+        ensureKeyDecoded(photoKey, photos)?.let { value = it }
     }
     val described = if (contentDescription != null) Modifier.semantics { this.contentDescription = contentDescription } else Modifier
     Box(
@@ -88,6 +131,24 @@ fun CriminalPhoto(
         }
     }
 }
+
+/** Foto completa de [criminal] (cartel, ficha): miniatura del padrón al instante y luego la foto grande. */
+@Composable
+fun CriminalPhoto(
+    criminal: Criminal,
+    contentDescription: String?,
+    modifier: Modifier = Modifier,
+    shape: Shape = CazadoresShapes.photo,
+    full: Boolean = true,
+) = CriminalPhoto(
+    cacheKey = criminal.hash,
+    base64 = criminal.photoBase64,
+    contentDescription = contentDescription,
+    modifier = modifier,
+    shape = shape,
+    thumbKey = criminal.thumbKey,
+    photoKey = criminal.photoKey.takeIf { full },
+)
 
 @Composable
 private fun Silhouette(modifier: Modifier) {

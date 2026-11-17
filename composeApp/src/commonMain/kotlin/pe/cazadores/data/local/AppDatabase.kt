@@ -1,5 +1,6 @@
 package pe.cazadores.data.local
 
+import androidx.room.AutoMigration
 import androidx.room.ConstructedBy
 import androidx.room.Database
 import androidx.room.RoomDatabase
@@ -15,14 +16,19 @@ import kotlinx.coroutines.IO
         SearchCacheMetaEntity::class,
         DetailCacheEntity::class,
         CatalogCacheEntity::class,
+        PadronMetaEntity::class,
+        PadronImageEntity::class,
     ],
-    version = 1,
+    // v2: padrón de Firebase Storage (solo tablas nuevas: migración automática).
+    version = 2,
     exportSchema = true,
+    autoMigrations = [AutoMigration(from = 1, to = 2)],
 )
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun favoriteDao(): FavoriteDao
     abstract fun cacheDao(): CacheDao
+    abstract fun padronDao(): PadronDao
 
     companion object {
         const val FILE_NAME = "cazadores.db"

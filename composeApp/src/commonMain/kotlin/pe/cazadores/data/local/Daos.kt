@@ -92,3 +92,31 @@ interface CacheDao {
     @Upsert
     suspend fun upsertCatalog(entity: CatalogCacheEntity)
 }
+
+@Dao
+interface PadronDao {
+    @Query("SELECT * FROM padron_meta WHERE id = 0")
+    suspend fun meta(): PadronMetaEntity?
+
+    @Upsert
+    suspend fun upsertMeta(meta: PadronMetaEntity)
+
+    @Query("UPDATE padron_meta SET checkedAt = :checkedAt WHERE id = 0")
+    suspend fun markChecked(checkedAt: Long)
+
+    @Query("SELECT * FROM padron_image WHERE path = :path")
+    suspend fun image(path: String): PadronImageEntity?
+
+    @Query("SELECT path FROM padron_image WHERE path LIKE :prefix || '%'")
+    suspend fun imagePaths(prefix: String): List<String>
+
+    @Upsert
+    suspend fun upsertImages(images: List<PadronImageEntity>)
+
+    @Query("DELETE FROM padron_image WHERE path IN (:paths)")
+    suspend fun deleteImages(paths: List<String>)
+
+    /** Fotos de ficha más antiguas que exceden el máximo guardado (las miniaturas no se podan así). */
+    @Query("SELECT path FROM padron_image WHERE path LIKE 'photos/%' ORDER BY savedAt DESC LIMIT -1 OFFSET :keep")
+    suspend fun photosBeyond(keep: Int): List<String>
+}

@@ -42,9 +42,9 @@ fun CriminalCard(criminal: Criminal, onClick: () -> Unit, modifier: Modifier = M
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         CriminalPhoto(
-            cacheKey = criminal.hash,
-            base64 = criminal.photoBase64,
+            criminal = criminal,
             contentDescription = null,
+            full = false,
             modifier = Modifier.size(width = 72.dp, height = 92.dp),
         )
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {

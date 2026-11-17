@@ -188,9 +188,9 @@ fun PosterMini(criminal: Criminal, onClick: () -> Unit, modifier: Modifier = Mod
     ) {
         Box {
             CriminalPhoto(
-                cacheKey = criminal.hash,
-                base64 = criminal.photoBase64,
+                criminal = criminal,
                 contentDescription = null,
+                full = false,
                 modifier = Modifier.fillMaxWidth().aspectRatio(4f / 5f),
             )
             if (onRemove != null) {

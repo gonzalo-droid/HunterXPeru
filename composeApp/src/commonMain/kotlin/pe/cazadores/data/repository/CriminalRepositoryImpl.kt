@@ -14,27 +14,42 @@ import pe.cazadores.data.local.SearchCacheMetaEntity
 import pe.cazadores.data.local.toCached
 import pe.cazadores.data.local.toDomain
 import pe.cazadores.data.mapper.toDomain
+import pe.cazadores.data.padron.Padron
+import pe.cazadores.data.padron.PadronQuery
+import pe.cazadores.data.padron.PadronSource
 import pe.cazadores.data.remote.RecompensasApi
 import pe.cazadores.data.remote.dto.PageInfoDto
 import pe.cazadores.data.remote.dto.SearchDto
 import pe.cazadores.data.remote.dto.SearchRequestDto
 import pe.cazadores.domain.model.Criminal
 import pe.cazadores.domain.model.HomeStats
+import pe.cazadores.domain.model.RewardPosition
 import pe.cazadores.domain.model.SearchFilters
 import pe.cazadores.domain.model.SearchPage
 import pe.cazadores.domain.model.SortOrder
+import pe.cazadores.core.RewardClassCalculator
+import pe.cazadores.domain.repository.CatalogRepository
 import pe.cazadores.domain.repository.CriminalRepository
 import pe.cazadores.domain.repository.NetworkMonitor
 import pe.cazadores.domain.repository.TimeProvider
 
+/**
+ * Padrón semanal de Firebase primero (D20): búsquedas y fichas salen del teléfono, al instante y sin red.
+ * La API directa (con su caché de 24 h) queda de respaldo cuando el padrón nunca se pudo bajar o no
+ * tiene a la persona (un deep link a alguien agregado después de la última publicación).
+ */
 class CriminalRepositoryImpl(
     private val api: RecompensasApi,
     private val cache: CacheDao,
     private val time: TimeProvider,
     private val json: Json,
     private val network: NetworkMonitor,
+    private val padron: PadronSource = PadronSource.Unavailable,
+    private val catalogs: CatalogRepository? = null,
     private val pageSize: Int = AppConfig.PAGE_SIZE,
 ) : CriminalRepository {
+
+    private fun <T> Padron.success(data: T) = AppResult.Success(data, dataAtMillis = generatedAtMillis)
 
     /**
      * Sin red no tiene sentido esperar los reintentos del cliente (~14 s): se va directo a la caché.
@@ -47,6 +62,22 @@ class CriminalRepositoryImpl(
         if (isOffline()) AppResult.Failure(DataError.Network) else apiCall(block)
 
     override suspend fun search(filters: SearchFilters, page: Int): AppResult<SearchPage> {
+        val local = padron.current()
+        val catalogs = catalogs
+        if (local != null && catalogs != null) {
+            return local.success(PadronQuery.search(local, filters, catalogs.catalogs(), page, pageSize))
+        }
+        return apiSearch(filters, page).withRewardClass(filters)
+    }
+
+    /** La API no filtra por clase: sin padrón se filtra la página recibida (los totales no cambian). */
+    private fun AppResult<SearchPage>.withRewardClass(filters: SearchFilters): AppResult<SearchPage> {
+        val wanted = filters.rewardClass ?: return this
+        if (this !is AppResult.Success) return this
+        return copy(data = data.copy(items = data.items.filter { RewardClassCalculator.of(it.reward) == wanted }))
+    }
+
+    private suspend fun apiSearch(filters: SearchFilters, page: Int): AppResult<SearchPage> {
         val remote = remote { api.search(filters.toRequest(page, pageSize)) }
         return when (remote) {
             is AppResult.Success -> {
@@ -67,6 +98,7 @@ class CriminalRepositoryImpl(
     }
 
     override suspend fun topWanted(): AppResult<List<Criminal>> {
+        padron.current()?.let { return it.success(PadronQuery.topWanted(it)) }
         val remote = remote { api.top5().map { it.toDomain() } }
         return when (remote) {
             is AppResult.Success -> {
@@ -83,6 +115,7 @@ class CriminalRepositoryImpl(
     }
 
     override suspend fun detail(hash: String): AppResult<Criminal> {
+        padron.current()?.let { local -> local.byHash[hash]?.let { return local.success(it) } }
         val remote = remote { api.detail(hash).toDomain() }
         return when (remote) {
             is AppResult.Success -> {
@@ -101,7 +134,15 @@ class CriminalRepositoryImpl(
     }
 
     /** Total = búsqueda vacía; máximo = primer ítem ordenado por recompensa (bug B2 de Flutter). */
-    override suspend fun homeStats(): AppResult<HomeStats> = remote {
+    override suspend fun homeStats(): AppResult<HomeStats> {
+        padron.current()?.let { return it.success(PadronQuery.stats(it)) }
+        return apiStats()
+    }
+
+    override suspend fun rewardPosition(hash: String): RewardPosition? =
+        padron.current()?.let { PadronQuery.position(it, hash) }
+
+    private suspend fun apiStats(): AppResult<HomeStats> = remote {
         val all = api.search(SearchFilters().toRequest(page = 1, size = 1))
         val top = api.search(SearchFilters(sort = SortOrder.REWARD).toRequest(page = 1, size = 1))
         HomeStats(total = all.totalElements, maxReward = top.content.firstOrNull()?.montoRecompensa ?: 0.0)

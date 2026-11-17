@@ -80,11 +80,13 @@ data class CachedCriminal(
     val photoBase64: String? = null,
     val departamento: String? = null,
     val provincia: String? = null,
+    val thumbKey: String? = null,
+    val photoKey: String? = null,
 )
 
 fun Criminal.toCached() = CachedCriminal(
     id, hash, displayName, apellidoPaterno, apellidoMaterno, nombres, sex?.name, reward, crimes,
-    photoBase64, departamento, provincia,
+    photoBase64, departamento, provincia, thumbKey, photoKey,
 )
 
 fun CachedCriminal.toDomain() = Criminal(
@@ -100,4 +102,30 @@ fun CachedCriminal.toDomain() = Criminal(
     photoBase64 = photoBase64,
     departamento = departamento,
     provincia = provincia,
+    thumbKey = thumbKey,
+    photoKey = photoKey,
 )
+
+/**
+ * Padrón vigente (una sola fila): el `manifest.json` tal cual llegó de Firebase Storage.
+ * [checkedAt] es la última vez que se consultó si había versión nueva.
+ */
+@Entity(tableName = "padron_meta", primaryKeys = ["id"])
+data class PadronMetaEntity(
+    val id: Int = 0,
+    val version: Int,
+    val json: String,
+    val generatedAt: Long,
+    val checkedAt: Long,
+)
+
+/** Imagen guardada por su ruta en Storage: miniaturas del padrón y fotos de ficha ya vistas. */
+@Entity(tableName = "padron_image", primaryKeys = ["path"])
+data class PadronImageEntity(
+    val path: String,
+    val bytes: ByteArray,
+    val savedAt: Long,
+) {
+    override fun equals(other: Any?) = other is PadronImageEntity && path == other.path && savedAt == other.savedAt
+    override fun hashCode() = path.hashCode()
+}

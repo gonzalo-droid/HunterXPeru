@@ -43,7 +43,8 @@ import pe.cazadores.resources.share_image_call
 import pe.cazadores.resources.share_image_disclaimer
 import pe.cazadores.ui.components.CriminalPhoto
 import pe.cazadores.ui.components.WantedPoster
-import pe.cazadores.ui.components.ensurePhotoDecoded
+import pe.cazadores.ui.components.LocalPhotoRepository
+import pe.cazadores.ui.components.ensureBestPhoto
 import pe.cazadores.ui.theme.CazadoresShapes
 import pe.cazadores.ui.theme.CazadoresTheme
 import pe.cazadores.ui.theme.Cz
@@ -69,8 +70,7 @@ fun SharePosterContent(criminal: Criminal, assessment: DangerAssessment, rewardC
         ScaleDownToFit(Modifier.weight(1f).fillMaxWidth()) {
             WantedPoster(criminal = criminal, assessment = assessment, rewardClass = rewardClass, onRankClick = null) {
                 CriminalPhoto(
-                    cacheKey = criminal.hash,
-                    base64 = criminal.photoBase64,
+                    criminal = criminal,
                     contentDescription = null,
                     modifier = Modifier.fillMaxSize(),
                     shape = CazadoresShapes.photo,
@@ -128,6 +128,7 @@ fun SharePosterCapture(
     onCaptured: (ImageBitmap?) -> Unit,
 ) {
     val layer = rememberGraphicsLayer()
+    val photos = LocalPhotoRepository.current
     val callback by rememberUpdatedState(onCaptured)
     // El cartel solo se compone cuando la foto ya está en la caché: así CriminalPhoto la lee al componerse y la
     // captura nunca sale con la silueta por un toque rápido en Compartir.
@@ -135,7 +136,7 @@ fun SharePosterCapture(
     LaunchedEffect(layer) {
         val bitmap = try {
             withTimeoutOrNull(CAPTURE_TIMEOUT_MS) {
-                ensurePhotoDecoded(criminal.hash, criminal.photoBase64)
+                ensureBestPhoto(criminal, photos)
                 photoReady = true
                 // Un cuadro para componer con la foto lista; luego dos: el primero mide y graba la capa; en el segundo la grabación ya está completa.
                 withFrameNanos { }
