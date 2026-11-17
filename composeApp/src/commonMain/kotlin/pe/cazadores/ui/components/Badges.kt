@@ -128,11 +128,7 @@ fun RankBadge(rewardClass: RewardClass, modifier: Modifier = Modifier, onClick: 
 @Composable
 fun DangerMeter(assessment: DangerAssessment, modifier: Modifier = Modifier) {
     val level = assessment.level
-    val filled = when (level) {
-        DangerLevel.EXTREMO -> Cz.colors.levelExtremo
-        DangerLevel.MUY_ALTO -> Cz.colors.levelMuyAlto
-        DangerLevel.ALTO -> Cz.colors.levelAlto
-    }
+    val filled = Cz.colors.posterRed
     val label = dangerLabel(level)
     val description = stringResource(Res.string.danger_cd, label)
     Column(modifier, verticalArrangement = Arrangement.spacedBy(6.dp)) {

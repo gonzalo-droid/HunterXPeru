@@ -14,12 +14,13 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -48,20 +49,26 @@ import pe.cazadores.resources.reward_none
 import pe.cazadores.ui.theme.CazadoresShapes
 import pe.cazadores.ui.theme.Cz
 
-/** Monto en una sola línea: si no cabe con [Cz.type.amount] baja a `amountSmall` en vez de partirse. */
+/**
+ * Monto en una sola línea. Si no cabe baja de estilo (preferido -> `amountSmall` -> `caption`) y, como último
+ * recurso, se parte en varias líneas: nunca se recortan dígitos.
+ */
 @Composable
 private fun PosterAmount(amount: Double, modifier: Modifier = Modifier, preferred: TextStyle = Cz.type.amount) {
     val text = RewardFormatter.format(amount) ?: stringResource(Res.string.reward_none)
     val spoken = stringResource(Res.string.reward_cd, RewardFormatter.spoken(amount))
-    var small by remember(text) { mutableStateOf(false) }
+    val styles = listOf(preferred, Cz.type.amountSmall, Cz.type.caption).distinct()
+    val fontScale = LocalDensity.current.fontScale
+    var step by remember(text, fontScale, preferred) { mutableIntStateOf(0) }
+    val last = step >= styles.lastIndex
     Text(
         text = text,
-        style = if (small) Cz.type.amountSmall else preferred,
+        style = styles[step.coerceAtMost(styles.lastIndex)],
         color = Cz.colors.onPaper,
-        maxLines = 1,
-        softWrap = false,
-        overflow = TextOverflow.Clip,
-        onTextLayout = { if (it.hasVisualOverflow) small = true },
+        maxLines = if (last) Int.MAX_VALUE else 1,
+        softWrap = last,
+        overflow = TextOverflow.Visible,
+        onTextLayout = { if (!last && it.hasVisualOverflow) step += 1 },
         modifier = modifier.semantics { contentDescription = spoken },
     )
 }
