@@ -160,4 +160,15 @@
     <string name="onboarding_3_body">Si reconoces a alguien, no te acerques ni lo sigas. Anota lugar y hora, y comunícate con la línea gratuita. Tu reporte puede ser anónimo.</string>
     <string name="onboarding_note_1">Esta app no es oficial. Muestra datos públicos del Programa de Recompensas (MININTER).</string>
     <string name="onboarding_note_2">La recompensa la otorga el Estado tras validar la información.</string>
+    <string name="poster_wanted">SE BUSCA</string>
+    <string name="poster_for">POR %1$s</string>
+    <plurals name="poster_more_crimes">
+        <item quantity="one">+ %d delito más</item>
+        <item quantity="other">+ %d delitos más</item>
+    </plurals>
+    <string name="rank_label">Clase %1$s</string>
+    <string name="rank_cd">Clase %1$s, %2$d estrellas</string>
+    <string name="danger_meter_by">Estimado por: %1$s</string>
+    <string name="danger_meter_base">Nivel base: todos los buscados tienen delitos graves</string>
+    <string name="danger_meter_unofficial">Estimado por la app. No es una calificación oficial.</string>
 </resources>
