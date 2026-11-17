@@ -217,4 +217,20 @@ class ViewModelsTest {
         assertEquals(null, vm.state.value.nearId)
         assertTrue(vm.state.value.near.isEmpty())
     }
+
+    @Test fun homeClearsStaleIdWhenCatalogsArriveBeforeSetting() = runTest(dispatcher) {
+        catalogs.catalogs = Catalogs(emptyList(), listOf(Departamento("15", "LIMA")), emptyList())
+        val settings = FakeSettingsRepository("99")
+        val gate = kotlinx.coroutines.CompletableDeferred<Unit>()
+        settings.gate = gate
+        val vm = homeVm(settings)
+        advanceUntilIdle()
+        assertEquals(1, vm.state.value.departamentos.size)
+        gate.complete(Unit)
+        advanceUntilIdle()
+        assertEquals(null, settings.near.value)
+        assertEquals(null, vm.state.value.nearId)
+        assertTrue(vm.state.value.nearReady)
+        assertTrue(criminals.searchCalls.isEmpty())
+    }
 }

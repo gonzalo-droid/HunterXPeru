@@ -1,6 +1,7 @@
 package pe.cazadores.testing
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import pe.cazadores.core.result.AppResult
@@ -62,7 +63,11 @@ class FakeSettingsRepository(initialNear: String? = null) : SettingsRepository {
     val near = MutableStateFlow(initialNear)
     override val onboardingDone: Flow<Boolean> = MutableStateFlow(true)
     override val themeMode: Flow<ThemeMode> = MutableStateFlow(ThemeMode.SYSTEM)
-    override val nearDepartamentoId: Flow<String?> = near
+    var gate: kotlinx.coroutines.CompletableDeferred<Unit>? = null
+    override val nearDepartamentoId: Flow<String?> = kotlinx.coroutines.flow.flow {
+        gate?.await()
+        emitAll(near)
+    }
     override suspend fun completeOnboarding() = Unit
     override suspend fun setThemeMode(mode: ThemeMode) = Unit
     override suspend fun setNearDepartamento(id: String?) {

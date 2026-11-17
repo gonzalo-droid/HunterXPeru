@@ -67,7 +67,13 @@ class HomeViewModel(
         viewModelScope.launch {
             settings.nearDepartamentoId.collect { id ->
                 pickedId = id
-                startNear(id)
+                val known = _state.value.departamentos
+                if (id != null && known.isNotEmpty() && known.none { it.id == id }) {
+                    // Id guardado que ya no existe (el catálogo llegó antes que el ajuste): se descarta sin buscar.
+                    onPickDepartamento(null)
+                } else {
+                    startNear(id)
+                }
             }
         }
         viewModelScope.launch {
