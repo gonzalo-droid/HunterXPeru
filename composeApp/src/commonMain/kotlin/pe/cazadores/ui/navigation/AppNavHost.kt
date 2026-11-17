@@ -76,6 +76,7 @@ fun AppNavHost(
                         }
                     },
                     onOpenDetail = { navController.navigate(Route.Detail(it)) },
+                    onOpenRegime = { navController.navigate(Route.SpecialRegime) },
                 )
             }
             composable<Route.Search> { entry ->

@@ -114,11 +114,23 @@
     <string name="home_search_hint">Buscar por nombre</string>
     <string name="home_call_overline">¿Viste a alguien? Línea gratuita</string>
     <string name="home_call_cd">Llamar a la línea gratuita %1$s</string>
-    <string name="home_stat_total">Personas buscadas</string>
-    <string name="home_stat_max">Recompensa más alta</string>
     <string name="home_top">Mayores recompensas</string>
+    <string name="home_title_count">%1$d SE BUSCAN</string>
+    <string name="home_title_neutral">Tablón de recompensas</string>
+    <string name="home_regime_title">Hasta S/&#160;500&#160;000 por extorsión y sicariato</string>
+    <string name="home_class_s">Clase S ★★★★</string>
+    <string name="home_near_title">Cerca de ti</string>
+    <string name="home_near_prompt">Elige tu departamento y mira quién se busca cerca de ti.</string>
+    <string name="home_near_pick">Elegir departamento</string>
+    <string name="home_near_change">Cambiar</string>
+    <string name="home_near_in">Mayores recompensas en %1$s</string>
+    <string name="home_near_empty">No hay carteles en %1$s por ahora.</string>
+    <string name="home_near_error">No pudimos cargar esta sección.</string>
+    <string name="home_near_retry">Reintentar</string>
+    <string name="home_near_sheet_title">Tu departamento</string>
+    <string name="home_near_sheet_unavailable">No se pudo cargar la lista de departamentos.</string>
+    <string name="home_near_clear">Quitar elección</string>
     <string name="home_see_all">Ver todos</string>
-    <string name="home_rank">#%1$d</string>
 
     <!-- Guardados -->
     <string name="saved_title">Guardados</string>
