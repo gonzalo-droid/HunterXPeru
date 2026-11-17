@@ -1,0 +1,42 @@
+# Prueba manual: ¿la API del Programa de Recompensas responde desde los servidores de GitHub (EE. UU.)?
+# Decide si la sincronización semanal puede correr aquí o necesita una máquina en Perú.
+name: Prueba de acceso a la API
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      BASE: https://sispasvehapp.mininter.gob.pe/api-recompensas
+      UA: "CazadoresPeru/2.0.0 (sync)"
+    steps:
+      - name: Ubicación del runner
+        run: curl -s --max-time 10 https://ipinfo.io/json | jq '{ip, city, country, org}' || true
+
+      - name: Lista paginada (20 perfiles)
+        run: |
+          code=$(curl -s --max-time 60 -A "$UA" -H 'Content-Type: application/json' \
+            -X POST "$BASE/requisitoriados/pageandfilter" \
+            -d '{"pageInfo":{"page":1,"size":20,"sortBy":"idRequisitoriado","direction":"DESC"},"search":{"tipoFilter":"F"}}' \
+            -o page.json -w '%{http_code} %{size_download} %{time_total}')
+          echo "HTTP, bytes, segundos: $code"
+          jq '{totalElements, totalPages, recibidos: (.content | length)}' page.json || head -c 500 page.json
+
+      - name: Detalle de un perfil
+        run: |
+          hash=$(jq -r '.content[0].hashRequisitoriado' page.json)
+          code=$(curl -s --max-time 60 -A "$UA" "$BASE/requisitoriados/$hash" -o detail.json \
+            -w '%{http_code} %{size_download} %{time_total}')
+          echo "HTTP, bytes, segundos: $code"
+          jq '{departamento, provincia, delitos}' detail.json || head -c 500 detail.json
+
+      - name: Catálogo de delitos
+        run: |
+          curl -s --max-time 60 -A "$UA" "$BASE/delitos" -o delitos.json -w 'HTTP %{http_code} · %{size_download} bytes\n'
+          jq 'length' delitos.json || head -c 500 delitos.json
