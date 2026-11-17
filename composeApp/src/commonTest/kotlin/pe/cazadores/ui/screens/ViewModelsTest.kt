@@ -118,7 +118,7 @@ class ViewModelsTest {
             advanceUntilIdle()
             val loaded = expectMostRecentItem()
             assertIs<DetailContent.Loaded>(loaded.content)
-            assertEquals(pe.cazadores.domain.model.DangerLevel.EXTREMO, (loaded.content as DetailContent.Loaded).danger)
+            assertEquals(pe.cazadores.domain.model.DangerLevel.EXTREMO, (loaded.content as DetailContent.Loaded).danger.level)
             vm.onToggleFavorite()
             advanceUntilIdle()
             assertTrue(expectMostRecentItem().isFavorite)

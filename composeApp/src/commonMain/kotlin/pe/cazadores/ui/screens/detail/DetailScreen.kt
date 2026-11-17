@@ -283,7 +283,7 @@ private fun DetailBody(content: DetailContent.Loaded) {
                 itemVerticalAlignment = Alignment.CenterVertically,
             ) {
                 SectionLabel(stringResource(Res.string.detail_danger))
-                DangerBadge(content.danger)
+                DangerBadge(content.danger.level)
             }
             Text(stringResource(Res.string.detail_danger_note), style = Cz.type.caption, color = Cz.colors.inkMuted)
         }

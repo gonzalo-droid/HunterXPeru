@@ -6,7 +6,9 @@ import pe.cazadores.domain.model.RewardClass
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class DangerLevelCalculatorTest {
     @Test fun extremoWithAndWithoutAccents() {
@@ -24,6 +26,34 @@ class DangerLevelCalculatorTest {
     @Test fun altoByDefault() {
         assertEquals(DangerLevel.ALTO, DangerLevelCalculator.of(listOf("TRÁFICO ILÍCITO DE DROGAS")))
         assertEquals(DangerLevel.ALTO, DangerLevelCalculator.of(emptyList()))
+    }
+
+    @Test fun headlineIsMostSevereThenApiOrder() {
+        val a = DangerLevelCalculator.assess(listOf("ESTAFA", "EXTORSION", "SICARIATO", "FEMINICIDIO"))
+        assertEquals(DangerLevel.EXTREMO, a.level)
+        assertEquals("SICARIATO", a.headlineCrime)
+        assertTrue(a.matched)
+    }
+
+    @Test fun noMatchFallsBackToFirstCrime() {
+        val a = DangerLevelCalculator.assess(listOf("LAVADO DE ACTIVOS", "ESTAFA"))
+        assertEquals(DangerLevel.ALTO, a.level)
+        assertEquals("LAVADO DE ACTIVOS", a.headlineCrime)
+        assertFalse(a.matched)
+    }
+
+    @Test fun emptyCrimes() {
+        val a = DangerLevelCalculator.assess(emptyList())
+        assertNull(a.headlineCrime)
+        assertFalse(a.matched)
+    }
+}
+
+class SpecialRegimeTest {
+    @Test fun specialRegimeOnlyForExtortionOrHitman() {
+        assertTrue(SpecialRegime.applies(listOf("Extorsión agravada")))
+        assertTrue(SpecialRegime.applies(listOf("ROBO", "SICARIATO")))
+        assertFalse(SpecialRegime.applies(listOf("FEMINICIDIO")))
     }
 }
 
