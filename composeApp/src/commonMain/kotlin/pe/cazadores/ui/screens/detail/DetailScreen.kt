@@ -3,6 +3,11 @@ package pe.cazadores.ui.screens.detail
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import pe.cazadores.platform.encodePng
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
@@ -139,11 +144,15 @@ fun DetailRoute(
         )
     }
 
+    // true mientras se dibuja y codifica la imagen: los toques extra en Compartir se ignoran.
+    var sharing by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+
     DetailScreen(
         state = state,
         snackbar = snackbar,
         onBack = onBack,
-        onShare = { shareText?.let(actions::share) },
+        onShare = { if (shareText != null) sharing = true },
         onToggleFavorite = viewModel::onToggleFavorite,
         onCall = { actions.dial(AppConfig.REPORT_PHONE_URI) },
         onReport = viewModel::onOpenReport,
@@ -153,6 +162,20 @@ fun DetailRoute(
     )
 
     if (showLegend) RankLegendSheet(onDismiss = { showLegend = false })
+
+    if (sharing && loaded != null && shareText != null) {
+        // Fuera de pantalla: mide 0 × 0 y no se ve; cae al texto solo si la imagen no se pudo generar.
+        SharePosterCapture(loaded.criminal, loaded.danger, RewardClassCalculator.of(loaded.criminal.reward)) { bitmap ->
+            scope.launch {
+                try {
+                    val png = bitmap?.let { withContext(Dispatchers.Default) { runCatching { it.encodePng() }.getOrNull() } }
+                    if (png != null) actions.shareImage(png, shareText) else actions.share(shareText)
+                } finally {
+                    sharing = false
+                }
+            }
+        }
+    }
 
     if (state.showReport && loaded != null) {
         ReportSheet(

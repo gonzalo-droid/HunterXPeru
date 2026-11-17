@@ -87,6 +87,8 @@
     <string name="detail_report">Reportar por escrito</string>
     <string name="detail_not_found_title">Ficha no encontrada</string>
     <string name="share_text">%1$s\nRecompensa: %2$s\nSi tienes información, llama gratis al %3$s. No te acerques.\n%4$s\n(Datos públicos del Programa de Recompensas)</string>
+    <string name="share_image_call">Llama gratis %1$s</string>
+    <string name="share_image_disclaimer">Imagen no oficial · verifica en recompensas.pe</string>
 
     <!-- Reportar -->
     <string name="report_title">Reportar avistamiento</string>

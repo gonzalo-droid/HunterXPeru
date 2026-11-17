@@ -6,6 +6,9 @@ interface ExternalActions {
     fun dial(telUri: String)
     fun email(to: String, subject: String, body: String)
     fun share(text: String)
+
+    /** Comparte una imagen PNG (el cartel) con [text] como acompañante en la hoja del sistema. */
+    fun shareImage(png: ByteArray, text: String)
     fun openUrl(url: String)
 
     /** Abre la ficha de la app en su tienda (Play / App Store) para dejar reseña. */

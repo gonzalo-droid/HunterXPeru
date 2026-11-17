@@ -30,6 +30,8 @@
 	<string>$(ADMOB_BANNER_IOS)</string>
 	<key>NSUserTrackingUsageDescription</key>
 	<string>Usamos este identificador solo para mostrarte anuncios más relevantes. La app funciona igual si no lo permites.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Para guardar en tus fotos el cartel que compartes. La app no lee tu galería.</string>
 	<key>SKAdNetworkItems</key>
 	<array>
 		<dict>

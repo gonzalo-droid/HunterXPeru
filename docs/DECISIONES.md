@@ -5,6 +5,16 @@ Registro de lo que se verificó contra la API real y de las decisiones que cambi
 
 ## 2026-11-17 · Rediseño "caza recompensas"
 
+### D17. Compartir el cartel como imagen
+- El botón Compartir de la ficha dibuja `SharePosterContent` fuera de pantalla (1080 × 1350 px, densidad
+  fija 2 y `fontScale = 1`, tema claro forzado: sale igual con cualquier tema o tamaño de letra) en un
+  `GraphicsLayer` que nunca se pinta, y comparte el PNG con el texto de siempre. Si el dibujo o la
+  codificación fallan, cae al texto solo. Si el cartel no cabe en alto, se reduce (nunca se corta).
+- La imagen lleva "Llama gratis 0-800-40-007" y "Imagen no oficial · verifica en recompensas.pe".
+- Android: `cache/share/cartel.png` (se sobrescribe) vía `FileProvider` `${applicationId}.share`.
+- iOS: `UIImage` en `UIActivityViewController`. Se agregó `NSPhotoLibraryAddUsageDescription`: sin esa
+  clave, "Guardar imagen" en la hoja cierra la app.
+
 ### D16. Posición nacional de la recompensa: postergada a una versión siguiente
 El rediseño muestra el **rango de recompensa** (clase S/A/B/C con estrellas, calculado solo con
 `montoRecompensa`) y su leyenda. La línea de posición nacional ("#2 de 649 · Top 1 % del país")
