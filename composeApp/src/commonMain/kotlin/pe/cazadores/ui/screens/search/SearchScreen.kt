@@ -38,6 +38,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -210,7 +211,14 @@ private fun SearchHeader(
 ) {
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
-    LaunchedEffect(focusSearch) { if (focusSearch) focusRequester.requestFocus() }
+    // Solo la primera vez (atajo desde Inicio): al volver de una ficha no se reabre el teclado.
+    var focusHandled by rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(focusSearch) {
+        if (focusSearch && !focusHandled) {
+            focusRequester.requestFocus()
+            focusHandled = true
+        }
+    }
 
     Column(
         Modifier.padding(start = CazadoresDimens.screenPadding, end = CazadoresDimens.screenPadding, top = 16.dp, bottom = 8.dp),
