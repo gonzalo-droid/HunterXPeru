@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
@@ -79,7 +80,9 @@ fun FiltersSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
         containerColor = Cz.colors.surface,
+        contentColor = Cz.colors.ink,
         shape = CazadoresShapes.sheet,
+        dragHandle = { BottomSheetDefaults.DragHandle(color = Cz.colors.inkMuted) },
     ) {
         Column(
             Modifier.fillMaxWidth().verticalScroll(rememberScrollState())

@@ -86,7 +86,7 @@ import pe.cazadores.resources.home_updated
 import pe.cazadores.resources.source_note
 import pe.cazadores.ui.components.ErrorState
 import pe.cazadores.ui.components.OfflineBanner
-import pe.cazadores.ui.components.PosterMini
+import pe.cazadores.ui.components.PosterGrid
 import pe.cazadores.ui.components.SecondaryButton
 import pe.cazadores.ui.components.SkeletonBlock
 import pe.cazadores.ui.components.StatusBarAppearance
@@ -311,23 +311,6 @@ private fun NearSection(state: HomeUiState, onOpenDetail: (String) -> Unit, onCh
             else -> {
                 if (name != null) Text(stringResource(Res.string.home_near_in, name), style = Cz.type.caption, color = Cz.colors.inkMuted)
                 PosterGrid(state.near, onOpenDetail)
-            }
-        }
-    }
-}
-
-/** Cuadrícula de carteles: 2 columnas; con letra muy grande, 1 para que nombre y monto respiren. */
-@Composable
-private fun PosterGrid(items: List<Criminal>, onOpenDetail: (String) -> Unit) {
-    val perRow = if (LocalDensity.current.fontScale > 1.3f) 1 else 2
-    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        items.chunked(perRow).forEach { row ->
-            Row(Modifier.fillMaxWidth().height(IntrinsicSize.Max), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                row.forEach { criminal ->
-                    PosterMini(criminal, { onOpenDetail(criminal.hash) }, Modifier.weight(1f).fillMaxHeight())
-                }
-                // Un cartel suelto no debe estirarse a todo el ancho.
-                repeat(perRow - row.size) { Spacer(Modifier.weight(1f)) }
             }
         }
     }

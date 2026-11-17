@@ -5,7 +5,7 @@
     <!-- Pestañas -->
     <string name="tab_home">Inicio</string>
     <string name="tab_search">Buscar</string>
-    <string name="tab_saved">Guardados</string>
+    <string name="tab_saved">Carteles</string>
     <string name="tab_settings">Ajustes</string>
 
     <!-- Comunes -->
@@ -132,15 +132,15 @@
     <string name="home_near_clear">Quitar elección</string>
     <string name="home_see_all">Ver todos</string>
 
-    <!-- Guardados -->
-    <string name="saved_title">Guardados</string>
-    <string name="saved_empty_title">Aún no guardas a nadie</string>
-    <string name="saved_empty_body">Guarda una ficha con el ícono de marcador para tenerla a mano, incluso sin conexión.</string>
+    <!-- Mis carteles -->
+    <string name="saved_title">Mis carteles</string>
+    <string name="saved_empty_title">Aún no tienes carteles</string>
+    <string name="saved_empty_body">Guarda una ficha con el ícono de marcador y su cartel quedará aquí, a mano incluso sin conexión.</string>
     <string name="saved_go_search">Ir a Buscar</string>
-    <string name="saved_removed">%1$s quitado de Guardados</string>
+    <string name="saved_removed">Cartel de %1$s quitado</string>
     <string name="undo">Deshacer</string>
-    <string name="saved_remove_action">Quitar de Guardados</string>
-    <string name="saved_swipe_hint">Desliza una ficha hacia la izquierda para quitarla.</string>
+    <string name="saved_remove_action">Quitar cartel</string>
+    <string name="saved_remove_hint">Toca la X de un cartel para quitarlo.</string>
 
     <!-- Ajustes -->
     <string name="settings_title">Ajustes</string>

@@ -11,7 +11,21 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.CustomAccessibilityAction
+import androidx.compose.ui.semantics.customActions
+import pe.cazadores.resources.saved_remove_action
+import pe.cazadores.ui.theme.CazadoresDimens
+import pe.cazadores.ui.theme.CzIcons
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -159,23 +173,42 @@ fun WantedPoster(
 
 /** Cartel clavado para el tablón y Mis carteles: sin `display`, nombre 2 líneas, delito 1, monto pequeño. */
 @Composable
-fun PosterMini(criminal: Criminal, onClick: () -> Unit, modifier: Modifier = Modifier) {
+fun PosterMini(criminal: Criminal, onClick: () -> Unit, modifier: Modifier = Modifier, onRemove: (() -> Unit)? = null) {
+    val removeLabel = stringResource(Res.string.saved_remove_action)
     Column(
         modifier
             .clip(CazadoresShapes.card)
             .background(Cz.colors.paper)
             .border(1.dp, Cz.colors.paperLine, CazadoresShapes.card)
             .clickable(role = Role.Button, onClick = onClick)
-            .semantics(mergeDescendants = true) {}
+            .semantics(mergeDescendants = true) {
+                if (onRemove != null) customActions = listOf(CustomAccessibilityAction(removeLabel) { onRemove(); true })
+            }
             .padding(10.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-        CriminalPhoto(
-            cacheKey = criminal.hash,
-            base64 = criminal.photoBase64,
-            contentDescription = null,
-            modifier = Modifier.fillMaxWidth().aspectRatio(4f / 5f),
-        )
+        Box {
+            CriminalPhoto(
+                cacheKey = criminal.hash,
+                base64 = criminal.photoBase64,
+                contentDescription = null,
+                modifier = Modifier.fillMaxWidth().aspectRatio(4f / 5f),
+            )
+            if (onRemove != null) {
+                // Botón propio (no hijo fusionado): talla táctil mínima y contraste sobre cualquier foto.
+                Box(
+                    Modifier.align(Alignment.TopEnd).padding(4.dp).size(CazadoresDimens.touchTarget)
+                        .clickable(role = Role.Button, onClick = onRemove)
+                        .semantics { contentDescription = removeLabel },
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Box(
+                        Modifier.size(28.dp).background(Cz.colors.paper, CircleShape).border(1.dp, Cz.colors.paperLine, CircleShape),
+                        contentAlignment = Alignment.Center,
+                    ) { Icon(CzIcons.Close, contentDescription = null, tint = Cz.colors.onPaper, modifier = Modifier.size(16.dp)) }
+                }
+            }
+        }
         Text(
             criminal.displayName,
             style = Cz.type.title,
@@ -193,6 +226,29 @@ fun PosterMini(criminal: Criminal, onClick: () -> Unit, modifier: Modifier = Mod
             )
         }
         PosterAmount(criminal.reward, preferred = Cz.type.amountSmall)
+    }
+}
+
+/**
+ * Cuadrícula de carteles (Inicio y Mis carteles): 2 columnas; con letra muy grande, 1 para que nombre y monto
+ * respiren. Si se pasa [onRemove], cada cartel muestra el botón de quitar.
+ */
+@Composable
+fun PosterGrid(items: List<Criminal>, onOpenDetail: (String) -> Unit, modifier: Modifier = Modifier, onRemove: ((Criminal) -> Unit)? = null) {
+    val perRow = if (LocalDensity.current.fontScale > 1.3f) 1 else 2
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        items.chunked(perRow).forEach { row ->
+            Row(Modifier.fillMaxWidth().height(IntrinsicSize.Max), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                row.forEach { criminal ->
+                    PosterMini(
+                        criminal, { onOpenDetail(criminal.hash) }, Modifier.weight(1f).fillMaxHeight(),
+                        onRemove = onRemove?.let { remove -> { remove(criminal) } },
+                    )
+                }
+                // Un cartel suelto no debe estirarse a todo el ancho.
+                repeat(perRow - row.size) { Spacer(Modifier.weight(1f)) }
+            }
+        }
     }
 }
 
