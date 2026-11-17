@@ -3,6 +3,22 @@
 Registro de lo que se verificó contra la API real y de las decisiones que cambian o precisan
 `docs/kmp-migration/`. La más reciente va arriba.
 
+## 2026-11-16 · Fase 7: calidad
+
+### D9. Sin red no se reintenta
+El cliente reintenta 3 veces los errores transitorios (~14 s). Si `NetworkMonitor` dice que no hay red, el
+repositorio va directo a la caché (o al error "sin conexión"). Verificado en emulador con modo avión.
+
+### D10. Texto grande (Android 2×, iOS Accesibilidad XL)
+- Las etiquetas de la barra de pestañas escalan hasta 1,3× (a 2× "Guardados" no cabe); el ícono y la
+  descripción accesible identifican la pestaña.
+- Filas "texto + acción" usan `FlowRow`; las cifras de Inicio se apilan con letra grande.
+
+### D11. Release Android
+R8 en modo completo eliminaba los campos de `GeneratedMessageLite` que DataStore lee por reflexión y la app
+quedaba en blanco: regla de keep en `proguard-rules.pro`. Release verificado en emulador (búsqueda, ficha,
+guardado, banner). Firmado con la clave de debug: falta la clave de subida real.
+
 ## 2026-11-16 · Fase 5: anuncios
 
 ### D7. Consentimiento antes de cualquier anuncio
