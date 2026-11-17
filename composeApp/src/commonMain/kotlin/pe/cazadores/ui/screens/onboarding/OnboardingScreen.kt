@@ -56,6 +56,7 @@ import pe.cazadores.resources.onboarding_2_body
 import pe.cazadores.resources.onboarding_2_title
 import pe.cazadores.resources.onboarding_3_body
 import pe.cazadores.resources.onboarding_3_title
+import pe.cazadores.resources.onboarding_3_unofficial
 import pe.cazadores.resources.onboarding_next
 import pe.cazadores.resources.onboarding_note_1
 import pe.cazadores.resources.onboarding_rank_note
@@ -157,12 +158,13 @@ private fun StepPage(step: Step, page: Int) {
             color = Cz.colors.onHeader,
             modifier = Modifier.semantics { heading() },
         )
-        // El aviso de "no oficial" va antes que la instrucción para que nunca quede bajo el pliegue.
+        // El título es la línea de seguridad; el aviso de "no oficial" va justo debajo, antes del texto largo.
         if (page == STEPS.lastIndex) {
             Column(
                 Modifier.fillMaxWidth().background(Cz.colors.headerField, CazadoresShapes.card).padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
+                Text(stringResource(Res.string.onboarding_3_unofficial), style = Cz.type.bodyStrong, color = Cz.colors.onHeader)
                 Note("01", stringResource(Res.string.onboarding_note_1))
                 Note("02", stringResource(Res.string.onboarding_note_2))
             }

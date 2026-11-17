@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 sealed interface Route {
     @Serializable data object Onboarding : Route
     @Serializable data object Home : Route
-    @Serializable data class Search(val focus: Boolean = false) : Route
+    @Serializable data class Search(val focus: Boolean = false, val sortByReward: Boolean = false) : Route
     @Serializable data object Saved : Route
     @Serializable data object Settings : Route
 

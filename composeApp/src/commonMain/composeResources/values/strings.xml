@@ -89,7 +89,7 @@
     <string name="detail_report">Reportar por escrito</string>
     <string name="detail_not_found_title">Ficha no encontrada</string>
     <string name="share_text">%1$s\nRecompensa: %2$s\nSi tienes información, llama gratis al %3$s. No te acerques.\n%4$s\n(Datos públicos del Programa de Recompensas)</string>
-    <string name="share_image_call">Llama gratis %1$s</string>
+    <string name="share_image_call">No te acerques · Llama gratis %1$s</string>
     <string name="share_image_disclaimer">Imagen no oficial · verifica en recompensas.pe</string>
 
     <!-- Reportar -->
@@ -151,7 +151,7 @@
     <string name="settings_theme_light">Claro</string>
     <string name="settings_theme_dark">Oscuro</string>
     <string name="settings_rewards_section">Recompensas</string>
-    <string name="settings_regime">Cómo funcionan las recompensas</string>
+    <string name="settings_regime">Régimen especial: extorsión y sicariato</string>
     <string name="settings_privacy_section">Privacidad</string>
     <string name="settings_ads_prefs">Preferencias de anuncios</string>
     <string name="settings_privacy_policy">Política de privacidad</string>
@@ -172,7 +172,8 @@
     <string name="onboarding_1_body">Aquí ves a las personas que busca el Estado, por qué delitos y cuánto ofrece el programa por información útil. Cada una tiene su cartel.</string>
     <string name="onboarding_2_title">Rangos y estrellas</string>
     <string name="onboarding_2_body">La app agrupa las recompensas en clases, de la S a la C. Más estrellas significan un monto ofrecido mayor.</string>
-    <string name="onboarding_3_title">Esta app no es oficial</string>
+    <string name="onboarding_3_title">Nunca te enfrentes. Llama.</string>
+    <string name="onboarding_3_unofficial">Esta app no es oficial.</string>
     <string name="onboarding_3_body">Si reconoces a alguien, no te acerques ni lo sigas. Anota lugar y hora y llama a la línea gratuita. Tu reporte puede ser anónimo.</string>
     <string name="onboarding_note_1">Muestra datos públicos del Programa de Recompensas (MININTER). Verifica siempre en recompensas.pe.</string>
     <string name="onboarding_note_2">La recompensa la otorga el Estado tras validar la información.</string>
@@ -188,7 +189,7 @@
     <string name="danger_meter_by">Estimado por la app según: %1$s. No es una calificación oficial.</string>
     <string name="danger_meter_base">Nivel base: todos los buscados tienen delitos graves. No es una calificación oficial.</string>
     <!-- Ficha: aviso del régimen especial -->
-    <string name="detail_regime_body">Este delito entra en el régimen especial: tu recompensa puede ser hasta S/ 500 000.</string>
+    <string name="detail_regime_body">Este delito entra en el régimen especial: la recompensa puede llegar hasta S/ 500 000.</string>
     <string name="detail_regime_cta">Ver cómo funciona</string>
     <!-- Leyenda de rangos -->
     <string name="legend_title">¿Qué significan los rangos?</string>

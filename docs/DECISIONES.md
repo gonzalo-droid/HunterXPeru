@@ -18,14 +18,15 @@ Registro de lo que se verificó contra la API real y de las decisiones que cambi
   Defecto hallado y corregido: botón "Cerrar" de la leyenda ilegible en oscuro.
 - **No probado:** Android a ≈ 320 dp (solo se midió 360 dp). En iOS (iPhone SE) solo se capturó Inicio
   (normal, accesibilidad XL y oscuro); Ficha, Buscar, Régimen, Leyenda y Mis carteles siguen pendientes
-  en iOS. `ios-01-att.jpg` e `ios-03-ficha-deep-link.jpg` muestran el diseño anterior.
+  en iOS. Se borraron `ios-01-att.jpg` e `ios-03-ficha-deep-link.jpg` (mostraban el diseño anterior).
 
 ### D17. Compartir el cartel como imagen
 - El botón Compartir de la ficha dibuja `SharePosterContent` fuera de pantalla (1080 × 1350 px, densidad
   fija 2 y `fontScale = 1`, tema claro forzado: sale igual con cualquier tema o tamaño de letra) en un
   `GraphicsLayer` que nunca se pinta, y comparte el PNG con el texto de siempre. Si el dibujo o la
   codificación fallan, cae al texto solo. Si el cartel no cabe en alto, se reduce (nunca se corta).
-- La imagen lleva "Llama gratis 0-800-40-007" y "Imagen no oficial · verifica en recompensas.pe".
+- La imagen lleva "No te acerques · Llama gratis 0-800-40-007" y "Imagen no oficial · verifica en recompensas.pe".
+  El Compartir espera a que la foto esté decodificada (`ensurePhotoDecoded`) antes de componer el cartel.
 - Android: `cache/share/cartel.png` (se sobrescribe) vía `FileProvider` `${applicationId}.share`.
 - iOS: `UIImage` en `UIActivityViewController`. Se agregó `NSPhotoLibraryAddUsageDescription`: sin esa
   clave, "Guardar imagen" en la hoja cierra la app.

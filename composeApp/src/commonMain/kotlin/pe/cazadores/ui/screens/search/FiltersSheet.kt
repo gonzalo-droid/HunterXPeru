@@ -99,7 +99,6 @@ fun FiltersSheet(
                 TextAction(
                     stringResource(Res.string.filters_clear),
                     onClick = { onChange(SearchFilters(query = draft.query, sort = draft.sort)) },
-                    color = Cz.colors.action,
                 )
             }
 

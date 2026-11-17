@@ -37,11 +37,9 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.koinInject
 import pe.cazadores.core.DateFormatter
 import pe.cazadores.core.config.AppConfig
 import pe.cazadores.core.result.DataError
-import pe.cazadores.platform.ExternalActions
 import pe.cazadores.resources.Res
 import pe.cazadores.resources.call_line
 import pe.cazadores.resources.error_network
@@ -102,8 +100,8 @@ fun MessageState(
 fun ErrorState(
     error: DataError,
     onRetry: () -> Unit,
+    onCall: () -> Unit,
     modifier: Modifier = Modifier,
-    actions: ExternalActions = koinInject(),
 ) {
     val offline = error == DataError.Network
     val title = stringResource(if (offline) Res.string.poster_no_signal else Res.string.error_title)
@@ -141,7 +139,7 @@ fun ErrorState(
             Text(stringResource(Res.string.offline_call_note), style = Cz.type.bodySmall, color = Cz.colors.onPaper)
             TextAction(
                 stringResource(Res.string.call_line, AppConfig.REPORT_PHONE),
-                { actions.dial(AppConfig.REPORT_PHONE_URI) },
+                onCall,
                 color = Cz.colors.onPaper,
             )
         }

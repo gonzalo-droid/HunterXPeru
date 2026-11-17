@@ -101,6 +101,7 @@ private const val BOARD_LIMIT = 6
 @Composable
 fun HomeRoute(
     onOpenSearch: () -> Unit,
+    onSeeAll: () -> Unit,
     onOpenDetail: (String) -> Unit,
     onOpenRegime: () -> Unit,
     viewModel: HomeViewModel = koinViewModel(),
@@ -111,6 +112,7 @@ fun HomeRoute(
     HomeScreen(
         state = state,
         onOpenSearch = onOpenSearch,
+        onSeeAll = onSeeAll,
         onOpenDetail = onOpenDetail,
         onOpenRegime = onOpenRegime,
         onCall = { actions.dial(AppConfig.REPORT_PHONE_URI) },
@@ -124,6 +126,7 @@ fun HomeRoute(
 fun HomeScreen(
     state: HomeUiState,
     onOpenSearch: () -> Unit,
+    onSeeAll: () -> Unit,
     onOpenDetail: (String) -> Unit,
     onOpenRegime: () -> Unit,
     onCall: () -> Unit,
@@ -144,8 +147,8 @@ fun HomeScreen(
             RegimeBanner(onOpenRegime)
             when {
                 state.isLoading && state.top.isEmpty() -> HomeSkeleton()
-                state.error != null -> ErrorState(state.error, onRetry)
-                else -> ClassSBoard(state.top, onOpenSearch, onOpenDetail)
+                state.error != null -> ErrorState(state.error, onRetry, onCall)
+                else -> ClassSBoard(state.top, onSeeAll, onOpenDetail)
             }
             NearSection(state, onOpenDetail, onChoose = { showPicker = true }, onRetry = onRetryNear)
             AdBanner(AdPlacement.HOME_BANNER, Modifier.fillMaxWidth())
@@ -360,7 +363,7 @@ private fun DepartamentoSheet(
                 }
             }
             if (selectedId != null) {
-                TextAction(stringResource(Res.string.home_near_clear), { onPick(null) }, color = Cz.colors.action)
+                TextAction(stringResource(Res.string.home_near_clear), { onPick(null) })
             }
             SecondaryButton(stringResource(Res.string.close), onDismiss, Modifier.fillMaxWidth())
         }

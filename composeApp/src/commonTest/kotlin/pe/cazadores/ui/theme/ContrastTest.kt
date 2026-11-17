@@ -43,6 +43,7 @@ class ContrastTest {
             "onRankA/rankA" to (c.onRankA to c.rankA),
             "onRankB/rankB" to (c.onRankB to c.rankB),
             "onRankC/rankC" to (c.onRankC to c.rankC),
+            "ink/surfaceAlt" to (c.ink to c.surfaceAlt),
             "action/bg (texto rojo)" to (c.action to c.bg),
             "snackbar texto" to (c.bg to c.ink),
             "snackbar acción" to ((if (c.isDark) c.levelExtremo else c.reward) to c.ink),

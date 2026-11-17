@@ -75,6 +75,12 @@ fun AppNavHost(
                             launchSingleTop = true
                         }
                     },
+                    onSeeAll = {
+                        navController.navigate(Route.Search(sortByReward = true)) {
+                            popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                            launchSingleTop = true
+                        }
+                    },
                     onOpenDetail = { navController.navigate(Route.Detail(it)) },
                     onOpenRegime = { navController.navigate(Route.SpecialRegime) },
                 )
@@ -82,6 +88,7 @@ fun AppNavHost(
             composable<Route.Search> { entry ->
                 SearchRoute(
                     focusSearch = entry.toRoute<Route.Search>().focus,
+                    sortByReward = entry.toRoute<Route.Search>().sortByReward,
                     onOpenDetail = { navController.navigate(Route.Detail(it)) },
                 )
             }
