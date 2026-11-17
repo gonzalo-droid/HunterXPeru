@@ -14,8 +14,11 @@ Registro de lo que se verificó contra la API real y de las decisiones que cambi
 - Peligrosidad estimada **solo por delito** (palabras clave; sin coincidencia: "Nivel base"), nunca por monto.
 - Postergados (ver D16): filtro por clase y posición nacional.
 - "Cerca de ti" usa el departamento elegido por la persona (DataStore); sin elegir muestra la invitación.
-- Verificación final: Android 360 dp (release, R8) a letra 1,0/1,3/2,0 y tema oscuro; iPhone SE a letra
-  normal y accesibilidad XL. Defecto hallado y corregido: botón "Cerrar" de la leyenda ilegible en oscuro.
+- Verificación final: Android a 360 dp (release, R8) con letra 1,0/1,3/2,0 y una pasada en oscuro.
+  Defecto hallado y corregido: botón "Cerrar" de la leyenda ilegible en oscuro.
+- **No probado:** Android a ≈ 320 dp (solo se midió 360 dp). En iOS (iPhone SE) solo se capturó Inicio
+  (normal, accesibilidad XL y oscuro); Ficha, Buscar, Régimen, Leyenda y Mis carteles siguen pendientes
+  en iOS. `ios-01-att.jpg` e `ios-03-ficha-deep-link.jpg` muestran el diseño anterior.
 
 ### D17. Compartir el cartel como imagen
 - El botón Compartir de la ficha dibuja `SharePosterContent` fuera de pantalla (1080 × 1350 px, densidad
