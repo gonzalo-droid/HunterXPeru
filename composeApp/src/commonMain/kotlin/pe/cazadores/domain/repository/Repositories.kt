@@ -13,7 +13,8 @@ import pe.cazadores.domain.model.ThemeMode
 interface CriminalRepository {
     /** [page] es 1-indexed. Sin red, la página 1 sale de la caché de esos mismos filtros. */
     suspend fun search(filters: SearchFilters, page: Int): AppResult<SearchPage>
-    suspend fun topWanted(): AppResult<List<Criminal>>
+    /** Los [limit] de mayor recompensa (la API solo entrega 5). */
+    suspend fun topWanted(limit: Int): AppResult<List<Criminal>>
     suspend fun detail(hash: String): AppResult<Criminal>
     suspend fun homeStats(): AppResult<HomeStats>
     /** Lugar de su recompensa en el país. Solo con el padrón local; `null` si no se puede saber. */
@@ -39,11 +40,8 @@ interface CatalogRepository {
 interface SettingsRepository {
     val onboardingDone: Flow<Boolean>
     val themeMode: Flow<ThemeMode>
-    /** Departamento elegido para "Cerca de ti" (null = sin elegir). */
-    val nearDepartamentoId: Flow<String?>
     suspend fun completeOnboarding()
     suspend fun setThemeMode(mode: ThemeMode)
-    suspend fun setNearDepartamento(id: String?)
 }
 
 /** Estado de la conexión (expect/actual por plataforma). */
