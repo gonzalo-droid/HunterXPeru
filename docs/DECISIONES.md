@@ -5,10 +5,11 @@ Registro de lo que se verificó contra la API real y de las decisiones que cambi
 
 ## 2026-11-18 · Publicación
 
-### D22. Paquete Android `com.nekodojo.peruxhunter` y clave de subida propia
-- La app Flutter nunca se publicó, así que no hay que reemplazar nada en Play: el `applicationId` deja de
-  ser `com.cazadores.cazadores_peru` (D0) y pasa a `com.nekodojo.peruxhunter`. Una vez publicado ya no
-  se puede cambiar. El bundle de iOS (`com.cazadores.cazadoresPeru`) no cambia por ahora.
+### D22. Identificador `com.nekodojo.peruxhunter` en ambas plataformas y clave de subida propia
+- La app Flutter nunca se publicó, así que no hay nada que reemplazar en las tiendas. Android
+  (`applicationId`, antes `com.cazadores.cazadores_peru`, D0) e iOS (`BUNDLE_ID` en `Config.xcconfig`,
+  antes `com.cazadores.cazadoresPeru`) pasan a `com.nekodojo.peruxhunter`. Una vez publicada la app
+  ya no se puede cambiar.
 - El release se firma con una clave de subida nueva, guardada fuera del repo
   (`~/.config/cazadores-signing/upload-keystore.jks`) y leída desde `local.properties`
   (`RELEASE_STORE_FILE`, `RELEASE_STORE_PASSWORD`, `RELEASE_KEY_ALIAS`, `RELEASE_KEY_PASSWORD`). Sin ellas,

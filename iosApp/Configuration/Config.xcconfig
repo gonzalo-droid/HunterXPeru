@@ -1,6 +1,6 @@
 // Valores no secretos del target iOS.
 TEAM_ID=
-BUNDLE_ID=com.cazadores.cazadoresPeru
+BUNDLE_ID=com.nekodojo.peruxhunter
 APP_NAME=CazadoresPeru
 MARKETING_VERSION=2.0.0
 CURRENT_PROJECT_VERSION=2
