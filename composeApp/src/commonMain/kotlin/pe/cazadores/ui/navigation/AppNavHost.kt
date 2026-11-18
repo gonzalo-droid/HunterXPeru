@@ -20,6 +20,7 @@ import pe.cazadores.ads.AdsController
 import pe.cazadores.ui.screens.about.AboutRoute
 import pe.cazadores.ui.screens.detail.DetailRoute
 import pe.cazadores.ui.screens.home.HomeRoute
+import pe.cazadores.ui.screens.legal.LegalRoute
 import pe.cazadores.ui.screens.onboarding.OnboardingScreen
 import pe.cazadores.ui.screens.saved.SavedRoute
 import pe.cazadores.ui.screens.settings.SettingsRoute
@@ -103,6 +104,7 @@ fun AppNavHost(
                 SettingsRoute(
                     onOpenRegime = { navController.navigate(Route.SpecialRegime) },
                     onOpenAbout = { navController.navigate(Route.About) },
+                    onOpenLegal = { navController.navigate(Route.Legal(it)) },
                 )
             }
             composable<Route.Detail> { entry ->
@@ -114,6 +116,9 @@ fun AppNavHost(
             }
             composable<Route.SpecialRegime> { SpecialRegimeRoute(onBack = { navController.navigateUp() }) }
             composable<Route.About> { AboutRoute(onBack = { navController.navigateUp() }) }
+            composable<Route.Legal> { entry ->
+                LegalRoute(page = entry.toRoute<Route.Legal>().page, onBack = { navController.navigateUp() })
+            }
         }
     }
 }

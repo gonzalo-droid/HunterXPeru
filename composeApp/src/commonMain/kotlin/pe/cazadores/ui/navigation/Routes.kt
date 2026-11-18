@@ -1,6 +1,7 @@
 package pe.cazadores.ui.navigation
 
 import kotlinx.serialization.Serializable
+import pe.cazadores.ui.screens.legal.LegalPage
 
 /** Rutas type-safe. Las cuatro pestañas viven dentro de la barra inferior; la ficha va a pantalla completa. */
 sealed interface Route {
@@ -15,6 +16,9 @@ sealed interface Route {
 
     /** Propósito del proyecto y cómo apoyarlo (desde Ajustes). */
     @Serializable data object About : Route
+
+    /** Política de privacidad o términos en una vista web dentro de la app (desde Ajustes). */
+    @Serializable data class Legal(val page: LegalPage) : Route
 
     /** Ficha. También es el destino del deep link `cazadores://criminal/{hash}`. */
     @Serializable data class Detail(val hash: String) : Route

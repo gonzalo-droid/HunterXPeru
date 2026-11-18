@@ -165,6 +165,8 @@
     <string name="settings_about">App no oficial</string>
     <string name="settings_about_body">Cazadores Perú es una app independiente. No está afiliada al Ministerio del Interior ni a la Policía Nacional del Perú. Muestra datos públicos del Programa de Recompensas, que pueden cambiar sin aviso: verifica siempre en recompensas.pe. La recompensa la otorga el Estado tras validar la información.</string>
     <string name="settings_version">Versión %1$s</string>
+    <string name="settings_legal_open_browser">Abrir en el navegador</string>
+    <string name="settings_legal_error">No pudimos abrir esta página. Intenta de nuevo o ábrela en el navegador.</string>
 
     <!-- Onboarding -->
     <string name="onboarding_step">Paso %1$d de %2$d</string>
