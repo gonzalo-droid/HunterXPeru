@@ -17,11 +17,14 @@ class AndroidExternalActions(private val context: Context) : ExternalActions {
     }
 
     override fun email(to: String, subject: String, body: String) {
-        val uri = Uri.parse("mailto:" + Uri.encode(to)).buildUpon()
-            .appendQueryParameter("subject", subject)
-            .appendQueryParameter("body", body)
-            .build()
-        launch(Intent(Intent.ACTION_SENDTO, uri))
+        // Gmail y otros clientes no decodifican "%40" en el mailto ni leen el destinatario de la URI:
+        // va sin codificar en "mailto:" y además en EXTRA_EMAIL/SUBJECT/TEXT, que es lo que leen.
+        val intent = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:$to")).apply {
+            putExtra(Intent.EXTRA_EMAIL, arrayOf(to))
+            putExtra(Intent.EXTRA_SUBJECT, subject)
+            putExtra(Intent.EXTRA_TEXT, body)
+        }
+        launch(intent)
     }
 
     override fun share(text: String) {
