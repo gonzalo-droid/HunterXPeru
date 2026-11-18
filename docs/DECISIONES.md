@@ -5,6 +5,32 @@ Registro de lo que se verificó contra la API real y de las decisiones que cambi
 
 ## 2026-11-18 · Ajustes tras pruebas internas
 
+### D28. Privacidad y términos dentro de la app
+- `Route.Legal(LegalPage)` con enum: la URL sale de `AppConfig`, un deep link no puede cargar otra.
+- WebView sin JavaScript (las páginas de nekodojo.app son HTML servido), sin acceso a archivos ni DOM storage.
+  HTTPS del mismo host se queda dentro; otros hosts, `mailto` y `tel` salen por `ExternalActions`; el resto se ignora.
+- HTTP ≥ 400 cuenta como fallo: error con "Reintentar" y "Abrir en el navegador".
+- Android 7.0 (minSdk 24) no confía en ISRG Root X1 (Let's Encrypt): ahí queda el botón del navegador.
+- Al 2026-11-18 ambas URLs dan 404: hay que publicarlas antes de subir a tienda.
+
+### D27. Buscar: tres órdenes
+- Alfabéticamente, Mayor recompensa (por defecto) y Menor recompensa. Sin "Más recientes": la API no tiene
+  fecha de alta (el id solo aproxima el orden de registro) y se descartó.
+- API verificada: `sortBy` acepta `nombreCompleto` y `montoRecompensa` (asc/desc); `apellidoPaterno` y
+  `nombres` dan HTTP 500. El padrón ordena en local por el nombre mostrado sin tildes; recompensa 0 al final.
+- Con padrón el orden alfabético es por apellido ("APELLIDOS, NOMBRES"); con la API, por nombre (así lo muestra).
+
+### D26. Inicio sin "Cerca de ti"
+- Se elimina la sección, su hoja de departamentos y el ajuste `near_departamento`: el filtro por
+  departamento vive solo en Buscar. "Más buscados" se limita a 6 en `GetTopWantedUseCase`
+  (con padrón salen 6; la API `top5` entrega 5).
+
+### D25. Correo, orientación y compartir
+- Android: `mailto:` con el destinatario sin codificar y además `EXTRA_EMAIL` (Gmail no leía `%40`).
+- Solo vertical en Android e iOS; en iPad exige `UIRequiresFullScreen`.
+- Compartir lleva enlaces de Play y App Store (ID 6836196201); se quita `cazadores://`, que las apps de
+  mensajería no abren como enlace.
+
 ### D24. Tarjetas: nombre, recompensa y delito (propuesta D)
 - Mezcla de las propuestas A y B (maqueta "Tarjetas PeruXHunter"). Orden de lectura en la tarjeta de
   Buscar y en el mini cartel: apellidos (fuertes) con los nombres debajo en tono suave → recompensa grande en
