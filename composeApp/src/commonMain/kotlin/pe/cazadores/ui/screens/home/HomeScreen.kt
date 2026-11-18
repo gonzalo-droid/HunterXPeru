@@ -41,16 +41,13 @@ import org.koin.compose.viewmodel.koinViewModel
 import pe.cazadores.ads.AdBanner
 import pe.cazadores.ads.AdPlacement
 import pe.cazadores.core.DateFormatter
-import pe.cazadores.core.RewardClassCalculator
 import pe.cazadores.core.config.AppConfig
 import pe.cazadores.domain.model.Criminal
-import pe.cazadores.domain.model.RewardClass
 import pe.cazadores.platform.ExternalActions
 import pe.cazadores.resources.Res
 import pe.cazadores.resources.detail_regime_cta
 import pe.cazadores.resources.home_call_cd
 import pe.cazadores.resources.home_call_overline
-import pe.cazadores.resources.home_class_s
 import pe.cazadores.resources.home_overline
 import pe.cazadores.resources.home_regime_title
 import pe.cazadores.resources.home_search_hint
@@ -116,7 +113,7 @@ fun HomeScreen(
             when {
                 state.isLoading && state.top.isEmpty() -> HomeSkeleton()
                 state.error != null -> ErrorState(state.error, onRetry, onCall)
-                else -> ClassSBoard(state.top, onSeeAll, onOpenDetail)
+                else -> TopBoard(state.top, onSeeAll, onOpenDetail)
             }
             AdBanner(AdPlacement.HOME_BANNER, Modifier.fillMaxWidth())
             Text(stringResource(Res.string.source_note), style = Cz.type.caption, color = Cz.colors.inkMuted)
@@ -219,19 +216,17 @@ private fun SectionHeader(title: String, action: String?, onAction: () -> Unit) 
     }
 }
 
-/** Carteles clavados de Clase S; si ninguno del top lo es, el top tal cual (ya viene recortado a 6). */
+/** Los más buscados por recompensa, sin filtrar por clase (ya vienen recortados a 6); el sello va en cada cartel. */
 @Composable
-private fun ClassSBoard(top: List<Criminal>, onSeeAll: () -> Unit, onOpenDetail: (String) -> Unit) {
+private fun TopBoard(top: List<Criminal>, onSeeAll: () -> Unit, onOpenDetail: (String) -> Unit) {
     if (top.isEmpty()) return
-    val classS = top.filter { RewardClassCalculator.of(it.reward) == RewardClass.S }
-    val shown = classS.ifEmpty { top }
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         SectionHeader(
-            title = if (classS.isEmpty()) stringResource(Res.string.home_top) else stringResource(Res.string.home_class_s),
+            title = stringResource(Res.string.home_top),
             action = stringResource(Res.string.home_see_all),
             onAction = onSeeAll,
         )
-        PosterGrid(shown, onOpenDetail)
+        PosterGrid(top, onOpenDetail)
     }
 }
 

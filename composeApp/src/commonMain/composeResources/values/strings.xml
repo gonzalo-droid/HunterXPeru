@@ -119,11 +119,10 @@
     <string name="home_search_hint">Buscar por nombre</string>
     <string name="home_call_overline">¿Viste a alguien? Línea gratuita</string>
     <string name="home_call_cd">Llamar a la línea gratuita %1$s</string>
-    <string name="home_top">Mayores recompensas</string>
+    <string name="home_top">Los más buscados</string>
     <string name="home_title_count">%1$d SE BUSCAN</string>
     <string name="home_title_neutral">Tablón de recompensas</string>
     <string name="home_regime_title">Hasta S/&#160;500&#160;000 por extorsión y sicariato</string>
-    <string name="home_class_s">Clase S ★★★★</string>
     <string name="home_see_all">Ver todos</string>
 
     <!-- Mis carteles -->

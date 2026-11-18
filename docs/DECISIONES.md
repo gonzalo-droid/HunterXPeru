@@ -23,7 +23,8 @@ Registro de lo que se verificó contra la API real y de las decisiones que cambi
 ### D26. Inicio sin "Cerca de ti"
 - Se elimina la sección, su hoja de departamentos y el ajuste `near_departamento`: el filtro por
   departamento vive solo en Buscar. "Más buscados" se limita a 6 en `GetTopWantedUseCase`
-  (con padrón salen 6; la API `top5` entrega 5).
+  (con padrón salen 6; la API `top5` entrega 5). El tablero ya no filtra por Clase S (solo hay 3 en el
+  padrón): muestra los 6 de mayor recompensa bajo "Los más buscados", con el sello de clase en cada cartel.
 
 ### D25. Correo, orientación y compartir
 - Android: `mailto:` con el destinatario sin codificar y además `EXTRA_EMAIL` (Gmail no leía `%40`).
