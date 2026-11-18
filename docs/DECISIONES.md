@@ -3,6 +3,19 @@
 Registro de lo que se verificó contra la API real y de las decisiones que cambian o precisan
 `docs/kmp-migration/`. La más reciente va arriba.
 
+## 2026-11-18 · Publicación
+
+### D22. Paquete Android `com.nekodojo.peruxhunter` y clave de subida propia
+- La app Flutter nunca se publicó, así que no hay que reemplazar nada en Play: el `applicationId` deja de
+  ser `com.cazadores.cazadores_peru` (D0) y pasa a `com.nekodojo.peruxhunter`. Una vez publicado ya no
+  se puede cambiar. El bundle de iOS (`com.cazadores.cazadoresPeru`) no cambia por ahora.
+- El release se firma con una clave de subida nueva, guardada fuera del repo
+  (`~/.config/cazadores-signing/upload-keystore.jks`) y leída desde `local.properties`
+  (`RELEASE_STORE_FILE`, `RELEASE_STORE_PASSWORD`, `RELEASE_KEY_ALIAS`, `RELEASE_KEY_PASSWORD`). Sin ellas,
+  el release se firma con la clave de debug y Gradle avisa: sirve para probar en local, Play lo rechaza.
+- En Play se activa *Play App Signing*: Google guarda la clave de firma de la app; si se pierde la de
+  subida, se puede pedir otra.
+
 ## 2026-11-17 · Padrón desde Firebase
 
 ### D21. La app lee el padrón semanal de Firebase; la API queda de respaldo
@@ -206,4 +219,4 @@ devuelve "0 resultados" engaña al usuario. La lista no trae el sexo, así que t
 ### D0. Estructura `androidApp` + `composeApp` + `iosApp`
 AGP 9 no permite `com.android.application` y Kotlin Multiplatform en el mismo módulo: el punto de entrada
 Android vive en `androidApp` y todo el código compartido en `composeApp` (biblioteca KMP). Se conserva
-`applicationId = com.cazadores.cazadores_peru` para reemplazar a la app Flutter en Play; versión 2.0.0 (2).
+`applicationId = com.cazadores.cazadores_peru` para reemplazar a la app Flutter en Play (cambiado en D22); versión 2.0.0 (2).

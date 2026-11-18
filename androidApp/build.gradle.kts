@@ -15,17 +15,32 @@ val localProps = Properties().apply {
 val testAdmobAppId = "ca-app-pub-3940256099942544~3347511713"
 val testAdmobBanner = "ca-app-pub-3940256099942544/9214589741"
 
+// Clave de subida a Play (fuera del repo). Sin ella, el release se firma con la clave de debug:
+// sirve para probar en local, pero Play rechaza ese AAB.
+val releaseStoreFile = localProps.getProperty("RELEASE_STORE_FILE")?.let { file(it) }?.takeIf { it.exists() }
+
 android {
     namespace = "pe.cazadores.app"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        // Se conserva el applicationId de la app Flutter para que esta versión la reemplace en Play.
-        applicationId = "com.cazadores.cazadores_peru"
+        // D22. Una vez publicado en Play no se puede cambiar.
+        applicationId = "com.nekodojo.peruxhunter"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = libs.versions.app.versionCode.get().toInt()
         versionName = libs.versions.app.versionName.get()
+    }
+
+    signingConfigs {
+        if (releaseStoreFile != null) {
+            create("release") {
+                storeFile = releaseStoreFile
+                storePassword = localProps.getProperty("RELEASE_STORE_PASSWORD")
+                keyAlias = localProps.getProperty("RELEASE_KEY_ALIAS") ?: "upload"
+                keyPassword = localProps.getProperty("RELEASE_KEY_PASSWORD") ?: localProps.getProperty("RELEASE_STORE_PASSWORD")
+            }
+        }
     }
 
     buildTypes {
@@ -39,8 +54,12 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             manifestPlaceholders["admobAppId"] = localProps.getProperty("ADMOB_APP_ID_ANDROID") ?: testAdmobAppId
             resValue("string", "admob_banner_id", localProps.getProperty("ADMOB_BANNER_ANDROID") ?: testAdmobBanner)
-            // Firma de debug para probar el build de release en local. Reemplazar antes de publicar.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = if (releaseStoreFile != null) {
+                signingConfigs.getByName("release")
+            } else {
+                logger.warn("Release firmado con la clave de debug: falta RELEASE_STORE_FILE en local.properties (Play lo rechazará).")
+                signingConfigs.getByName("debug")
+            }
         }
     }
     buildFeatures {

@@ -25,6 +25,6 @@ Mejoras detectadas que quedaron para después. Las decisiones tomadas van en `DE
      la sacan de `PhotoCache`.
   3. Test en `PadronStoreTest`: el contador sube después de guardar las miniaturas.
 - **Cómo reproducirlo:** el caso es que el manifest llega (300 KB) y el zip de miniaturas (3,8 MB)
-  todavía no. Borrar los datos de la app (`adb shell pm clear com.cazadores.cazadores_peru`), bajar la
+  todavía no. Borrar los datos de la app (`adb shell pm clear com.nekodojo.peruxhunter`), bajar la
   velocidad de red del emulador (en la consola del emulador, `network speed gsm`), abrir la app y mirar
   Inicio cuando terminen de bajar las miniaturas.
