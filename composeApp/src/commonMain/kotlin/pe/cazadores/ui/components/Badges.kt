@@ -13,10 +13,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.stringResource
-import pe.cazadores.core.RewardFormatter
 import pe.cazadores.domain.model.DangerLevel
 import pe.cazadores.domain.model.RewardClass
 import pe.cazadores.resources.Res
@@ -25,27 +23,8 @@ import pe.cazadores.resources.danger_cd
 import pe.cazadores.resources.danger_extremo
 import pe.cazadores.resources.danger_muy_alto
 import pe.cazadores.resources.rank_cd
-import pe.cazadores.resources.reward_cd
-import pe.cazadores.resources.reward_none
 import pe.cazadores.ui.theme.CazadoresShapes
 import pe.cazadores.ui.theme.Cz
-
-/** Recompensa sobre amarillo, siempre con texto tinta. */
-@Composable
-fun RewardBadge(amount: Double, modifier: Modifier = Modifier, style: TextStyle = Cz.type.amountSmall) {
-    val text = RewardFormatter.format(amount) ?: stringResource(Res.string.reward_none)
-    val spoken = stringResource(Res.string.reward_cd, RewardFormatter.spoken(amount))
-    Text(
-        text = text,
-        style = style,
-        color = Cz.colors.onReward,
-        maxLines = 1,
-        modifier = modifier
-            .semantics { contentDescription = spoken }
-            .background(Cz.colors.reward, CazadoresShapes.badge)
-            .padding(horizontal = 8.dp, vertical = 2.dp),
-    )
-}
 
 @Composable
 fun dangerLabel(level: DangerLevel): String = stringResource(

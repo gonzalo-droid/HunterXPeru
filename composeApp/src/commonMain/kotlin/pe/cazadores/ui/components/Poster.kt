@@ -53,6 +53,8 @@ import pe.cazadores.core.RewardFormatter
 import pe.cazadores.core.text.sentenceCase
 import pe.cazadores.domain.model.Criminal
 import pe.cazadores.domain.model.RewardClass
+import pe.cazadores.core.text.splitDisplayName
+import androidx.compose.ui.graphics.Color
 import pe.cazadores.resources.Res
 import pe.cazadores.resources.poster_for
 import pe.cazadores.resources.poster_more_crimes
@@ -67,7 +69,12 @@ import pe.cazadores.ui.theme.Cz
  * recurso, se parte en varias líneas: nunca se recortan dígitos.
  */
 @Composable
-private fun PosterAmount(amount: Double, modifier: Modifier = Modifier, preferred: TextStyle = Cz.type.amount) {
+internal fun PosterAmount(
+    amount: Double,
+    modifier: Modifier = Modifier,
+    preferred: TextStyle = Cz.type.amount,
+    color: Color = Cz.colors.onPaper,
+) {
     val text = RewardFormatter.format(amount) ?: stringResource(Res.string.reward_none)
     val spoken = stringResource(Res.string.reward_cd, RewardFormatter.spoken(amount))
     val styles = listOf(preferred, Cz.type.amountSmall, Cz.type.caption).distinct()
@@ -77,7 +84,7 @@ private fun PosterAmount(amount: Double, modifier: Modifier = Modifier, preferre
     Text(
         text = text,
         style = styles[step.coerceAtMost(styles.lastIndex)],
-        color = Cz.colors.onPaper,
+        color = color,
         maxLines = if (last) Int.MAX_VALUE else 1,
         softWrap = last,
         overflow = TextOverflow.Visible,
@@ -170,10 +177,15 @@ fun WantedPoster(
     }
 }
 
-/** Cartel clavado para el tablón y Mis carteles: sin `display`, nombre 2 líneas, delito 1, monto pequeño. */
+/**
+ * Cartel clavado para el tablón y Mis carteles (propuesta D, D24): foto con el sello S/A/B en la esquina,
+ * apellidos y nombres, recompensa y delito (hasta 3 líneas, con filete vino). La clase C no lleva sello.
+ */
 @Composable
 fun PosterMini(criminal: Criminal, onClick: () -> Unit, modifier: Modifier = Modifier, onRemove: (() -> Unit)? = null) {
     val removeLabel = stringResource(Res.string.saved_remove_action)
+    val rewardClass = remember(criminal.reward) { RewardClassCalculator.of(criminal.reward) }?.takeIf { it != RewardClass.C }
+    val name = remember(criminal.displayName) { criminal.displayName.splitDisplayName() }
     Column(
         modifier
             .clip(CazadoresShapes.card)
@@ -193,6 +205,8 @@ fun PosterMini(criminal: Criminal, onClick: () -> Unit, modifier: Modifier = Mod
                 full = false,
                 modifier = Modifier.fillMaxWidth().aspectRatio(4f / 5f),
             )
+            // Sello opaco en la esquina superior izquierda: no tapa la cara ni el botón de quitar.
+            if (rewardClass != null) RankBadge(rewardClass, Modifier.align(Alignment.TopStart).padding(6.dp))
             if (onRemove != null) {
                 // Botón propio (no hijo fusionado): talla táctil mínima y contraste sobre cualquier foto.
                 Box(
@@ -208,24 +222,11 @@ fun PosterMini(criminal: Criminal, onClick: () -> Unit, modifier: Modifier = Mod
                 }
             }
         }
-        Text(
-            criminal.displayName,
-            style = Cz.type.title,
-            color = Cz.colors.onPaper,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-        )
-        val crime = remember(criminal) { DangerLevelCalculator.assess(criminal.crimes).headlineCrime } ?: criminal.mainCrime
-        if (crime.isNotBlank()) {
-            Text(
-                crime.sentenceCase(),
-                style = Cz.type.caption,
-                color = Cz.colors.onPaperMuted,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-        }
+        CardName(name, color = Cz.colors.onPaper, mutedColor = Cz.colors.onPaperMuted, small = true)
         PosterAmount(criminal.reward, preferred = Cz.type.amountSmall)
+        val crime = remember(criminal) { DangerLevelCalculator.assess(criminal.crimes).headlineCrime } ?: criminal.mainCrime
+        // El cartel es papel en ambos temas: el filete vino siempre se ve.
+        CardCrime(crime, color = Cz.colors.onPaper, rule = Cz.colors.posterRed)
     }
 }
 

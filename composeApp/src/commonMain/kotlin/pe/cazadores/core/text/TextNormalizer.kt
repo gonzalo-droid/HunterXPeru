@@ -20,3 +20,18 @@ fun String.titleCase(): String = trim().lowercase().split(' ').filter { it.isNot
     .replaceFirstChar { it.uppercaseChar() }
 
 private val LOWERCASE_WORDS = setOf("de", "del", "la", "las", "los", "y")
+
+/** Nombre partido para las tarjetas: apellidos (fuertes) y nombres (suaves, debajo). */
+data class SplitName(val surnames: String, val givenNames: String?)
+
+/**
+ * "MONTEVERDE BUSSALLEU, GONZALO EDUARDO" → apellidos "MONTEVERDE BUSSALLEU" y nombres "Gonzalo Eduardo".
+ * Sin coma (nombre de la API, que no separa partes) todo queda en un solo bloque, como antes.
+ */
+fun String.splitDisplayName(): SplitName {
+    val comma = indexOf(',')
+    if (comma < 0) return SplitName(trim(), null)
+    val surnames = substring(0, comma).trim()
+    val given = substring(comma + 1).trim().takeIf { it.isNotEmpty() }?.titleCase()
+    return if (surnames.isEmpty()) SplitName(given ?: trim(), null) else SplitName(surnames, given)
+}

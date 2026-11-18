@@ -5,6 +5,17 @@ Registro de lo que se verificó contra la API real y de las decisiones que cambi
 
 ## 2026-11-18 · Ajustes tras pruebas internas
 
+### D24. Tarjetas: nombre, recompensa y delito (propuesta D)
+- Mezcla de las propuestas A y B (maqueta "Tarjetas PeruXHunter"). Orden de lectura en la tarjeta de
+  Buscar y en el mini cartel: apellidos (fuertes) con los nombres debajo en tono suave → recompensa grande en
+  tinta, sin píldora → delito titular como texto con filete vino, hasta 3 líneas (antes 1 con "…").
+- El sello de clase solo aparece para S, A y B: la clase C es el 93 % del padrón y no distinguía a nadie
+  (sigue en la Ficha y en la leyenda). En el mini cartel va en la esquina de la foto; en la lista, junto al monto.
+- Sin ubicación en las tarjetas: queda en la Ficha y en los filtros.
+- El nombre se parte por la coma de "APELLIDOS, NOMBRES" (padrón, D21); sin coma (API) va en un solo bloque.
+- En oscuro el filete de la lista usa `action` (el vino casi no se ve sobre `surface`); es decorativo.
+- Verificado en iPhone 16: claro, oscuro y letra extra grande (el tablón pasa a una columna, nada se corta).
+
 ### D23. Sin "Peligrosidad" en la Ficha
 - Se quita el medidor de peligrosidad de la Ficha (pedido tras la prueba interna) y la nota que lo
   explicaba en la leyenda de clases. Se mantiene el cálculo por delito: da el titular "POR <delito>"
