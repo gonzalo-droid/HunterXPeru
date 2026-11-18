@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -28,11 +29,13 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -67,7 +70,6 @@ import pe.cazadores.resources.onboarding_step
 import pe.cazadores.ui.components.BrandMark
 import pe.cazadores.ui.components.RankBadge
 import pe.cazadores.ui.components.StatusBarAppearance
-import pe.cazadores.ui.components.TextAction
 import pe.cazadores.ui.theme.CazadoresDimens
 import pe.cazadores.ui.theme.CazadoresShapes
 import pe.cazadores.ui.theme.Cz
@@ -101,7 +103,16 @@ fun OnboardingScreen(onFinish: () -> Unit) {
                 color = Cz.colors.onHeaderMuted,
                 modifier = Modifier.weight(1f).semantics { liveRegion = LiveRegionMode.Polite },
             )
-            if (!isLast) TextAction(stringResource(Res.string.onboarding_skip), onFinish, color = Cz.colors.onHeader)
+            // En el último paso "Omitir" sobra, pero se conserva su hueco: la fila mide lo que el botón (48 dp, más
+            // que la marca de 32 dp) y quitarlo subía todo 16 dp. Invisible, deshabilitado (ni clic ni foco) y fuera
+            // de TalkBack/VoiceOver.
+            TextButton(
+                onClick = onFinish,
+                enabled = !isLast,
+                modifier = Modifier.defaultMinSize(minHeight = CazadoresDimens.touchTarget)
+                    .then(if (isLast) Modifier.alpha(0f).clearAndSetSemantics {} else Modifier),
+                colors = ButtonDefaults.textButtonColors(contentColor = Cz.colors.onHeader),
+            ) { Text(stringResource(Res.string.onboarding_skip), style = Cz.type.bodyStrong) }
         }
 
         HorizontalPager(state = pager, modifier = Modifier.weight(1f).fillMaxWidth()) { page ->
