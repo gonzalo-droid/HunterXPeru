@@ -25,3 +25,5 @@ private tailrec fun Context.findActivity(): Activity? = when (this) {
     is ContextWrapper -> baseContext.findActivity()
     else -> null
 }
+
+internal actual val sheetSharesAppWindow: Boolean = false

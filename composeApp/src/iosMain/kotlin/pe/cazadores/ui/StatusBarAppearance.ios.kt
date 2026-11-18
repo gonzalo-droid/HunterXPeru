@@ -15,3 +15,5 @@ internal actual fun rememberStatusBarApplier(): (lightIcons: Boolean) -> Unit = 
         animated = true,
     )
 }
+
+internal actual val sheetSharesAppWindow: Boolean = true

@@ -60,14 +60,22 @@ fun StatusBarAppearance(lightIcons: Boolean) {
 }
 
 /**
- * Para pantallas con íconos claros (p. ej. Inicio) que abren un `ModalBottomSheet`: la hoja expandida
- * se dibuja bajo la barra de estado y, con su superficie clara, los íconos blancos desaparecen de golpe.
- * Android lo resuelve en la ventana del diálogo de la hoja; iOS no, así que mientras la hoja cubre la
- * barra de estado se apila el estilo que corresponde a la superficie. Llamar fuera del contenido de la hoja.
+ * true si el `ModalBottomSheet` se dibuja en la misma ventana que la pantalla (iOS). En Android la hoja vive
+ * en su propia ventana de diálogo, que ya ajusta los íconos, así que ahí no se toca la pila.
+ */
+internal expect val sheetSharesAppWindow: Boolean
+
+/**
+ * Para cualquier `ModalBottomSheet`: la hoja expandida (contenido alto o letra grande) se dibuja bajo la
+ * barra de estado y, si su superficie no combina con los íconos de la pantalla de abajo, estos desaparecen
+ * (p. ej. íconos blancos de Inicio, o del tema oscuro, sobre una hoja clara). Mientras la hoja cubre la
+ * barra de estado se apila el estilo de su superficie: [lightIcons] = true si la superficie es oscura.
+ * Solo actúa en iOS (ver [sheetSharesAppWindow]). Llamar fuera del contenido de la hoja.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SheetStatusBarAppearance(sheetState: SheetState) {
+fun SheetStatusBarAppearance(sheetState: SheetState, lightIcons: Boolean = Cz.colors.isDark) {
+    if (!sheetSharesAppWindow) return
     val statusBarTop = WindowInsets.statusBars.getTop(LocalDensity.current)
     val coversStatusBar by remember(sheetState, statusBarTop) {
         derivedStateOf {
@@ -75,5 +83,5 @@ fun SheetStatusBarAppearance(sheetState: SheetState) {
             statusBarTop > 0 && offset != null && offset < statusBarTop
         }
     }
-    if (coversStatusBar) StatusBarAppearance(lightIcons = Cz.colors.isDark)
+    if (coversStatusBar) StatusBarAppearance(lightIcons = lightIcons)
 }
