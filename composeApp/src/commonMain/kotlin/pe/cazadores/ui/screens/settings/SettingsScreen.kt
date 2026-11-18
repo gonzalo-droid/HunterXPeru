@@ -66,6 +66,7 @@ import pe.cazadores.resources.settings_title
 import pe.cazadores.resources.settings_version
 import pe.cazadores.ui.components.ScreenTitle
 import pe.cazadores.ui.components.SectionLabel
+import pe.cazadores.ui.screens.legal.LegalPage
 import pe.cazadores.ui.screens.legend.RankLegendSheet
 import pe.cazadores.ui.theme.CazadoresDimens
 import pe.cazadores.ui.theme.CazadoresShapes
@@ -77,6 +78,7 @@ fun SettingsRoute(
     viewModel: SettingsViewModel = koinViewModel(),
     onOpenRegime: () -> Unit,
     onOpenAbout: () -> Unit,
+    onOpenLegal: (LegalPage) -> Unit,
     actions: ExternalActions = koinInject(),
     ads: AdsController = koinInject(),
 ) {
@@ -93,6 +95,7 @@ fun SettingsRoute(
         onOpenRegime = onOpenRegime,
         onOpenRanks = { showLegend = true },
         onOpenAbout = onOpenAbout,
+        onOpenLegal = onOpenLegal,
     )
     if (showLegend) RankLegendSheet(onDismiss = { showLegend = false })
 }
@@ -109,6 +112,7 @@ fun SettingsScreen(
     onOpenRegime: () -> Unit,
     onOpenRanks: () -> Unit,
     onOpenAbout: () -> Unit,
+    onOpenLegal: (LegalPage) -> Unit,
 ) {
     Column(
         Modifier.fillMaxSize().background(Cz.colors.bg).statusBarsPadding().verticalScroll(rememberScrollState())
@@ -182,9 +186,9 @@ fun SettingsScreen(
                 LinkRow(stringResource(Res.string.settings_ads_prefs), CzIcons.Shield, onAdsPreferences)
                 Divider()
             }
-            LinkRow(stringResource(Res.string.settings_privacy_policy), CzIcons.External) { onOpenUrl(AppConfig.PRIVACY_POLICY_URL) }
+            LinkRow(stringResource(Res.string.settings_privacy_policy), CzIcons.ChevronRight) { onOpenLegal(LegalPage.PRIVACY) }
             Divider()
-            LinkRow(stringResource(Res.string.settings_terms), CzIcons.External) { onOpenUrl(AppConfig.TERMS_URL) }
+            LinkRow(stringResource(Res.string.settings_terms), CzIcons.ChevronRight) { onOpenLegal(LegalPage.TERMS) }
         }
 
         Group(stringResource(Res.string.settings_info_section)) {
