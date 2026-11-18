@@ -17,8 +17,16 @@ sealed interface Route {
     /** Propósito del proyecto y cómo apoyarlo (desde Ajustes). */
     @Serializable data object About : Route
 
-    /** Política de privacidad o términos en una vista web dentro de la app (desde Ajustes). */
-    @Serializable data class Legal(val page: LegalPage) : Route
+    /**
+     * Política de privacidad o términos en una vista web dentro de la app (desde Ajustes).
+     * El argumento viaja como el nombre del enum: en iOS, Navigation no trae `NavType` para enums
+     * y la app se cerraba al armar el grafo. Un nombre desconocido cae en la política de privacidad.
+     */
+    @Serializable data class Legal(val pageName: String) : Route {
+        constructor(page: LegalPage) : this(page.name)
+
+        val page: LegalPage get() = LegalPage.entries.firstOrNull { it.name == pageName } ?: LegalPage.PRIVACY
+    }
 
     /** Ficha. También es el destino del deep link `cazadores://criminal/{hash}`. */
     @Serializable data class Detail(val hash: String) : Route
