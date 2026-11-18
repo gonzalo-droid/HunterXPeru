@@ -89,9 +89,9 @@ class CriminalRepositoryImpl(
         }
     }
 
-    override suspend fun topWanted(): AppResult<List<Criminal>> {
-        padron.current()?.let { return it.success(PadronQuery.topWanted(it)) }
-        val remote = remote { api.top5().map { it.toDomain() } }
+    override suspend fun topWanted(limit: Int): AppResult<List<Criminal>> {
+        padron.current()?.let { return it.success(PadronQuery.topWanted(it, limit)) }
+        val remote = remote { api.top5().map { it.toDomain() }.take(limit) }
         return when (remote) {
             is AppResult.Success -> {
                 storeSearch(TOP_KEY, SearchPage(remote.data, 1, remote.data.size, 1, true))
@@ -99,7 +99,7 @@ class CriminalRepositoryImpl(
             }
             is AppResult.Failure ->
                 if (remote.error.allowsCacheFallback) {
-                    cachedSearch(TOP_KEY)?.let { AppResult.Success(it.data.items, it.cachedAtMillis) } ?: remote
+                    cachedSearch(TOP_KEY)?.let { AppResult.Success(it.data.items.take(limit), it.cachedAtMillis) } ?: remote
                 } else {
                     remote
                 }

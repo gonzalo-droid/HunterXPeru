@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import pe.cazadores.core.result.AppResult
+import pe.cazadores.core.result.map
 import pe.cazadores.domain.model.Catalogs
 import pe.cazadores.domain.model.Criminal
 import pe.cazadores.domain.model.HomeStats
@@ -16,7 +17,12 @@ import pe.cazadores.domain.repository.CriminalRepository
 import pe.cazadores.domain.repository.FavoritesRepository
 
 class GetTopWantedUseCase(private val repository: CriminalRepository) {
-    suspend operator fun invoke(): AppResult<List<Criminal>> = repository.topWanted()
+    /** Inicio muestra a lo sumo [LIMIT] carteles; "Ver todos" lleva a Buscar. */
+    suspend operator fun invoke(): AppResult<List<Criminal>> = repository.topWanted(LIMIT).map { it.take(LIMIT) }
+
+    companion object {
+        const val LIMIT = 6
+    }
 }
 
 class SearchCriminalsUseCase(private val repository: CriminalRepository) {

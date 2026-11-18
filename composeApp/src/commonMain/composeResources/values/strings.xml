@@ -124,17 +124,6 @@
     <string name="home_title_neutral">Tablón de recompensas</string>
     <string name="home_regime_title">Hasta S/&#160;500&#160;000 por extorsión y sicariato</string>
     <string name="home_class_s">Clase S ★★★★</string>
-    <string name="home_near_title">Cerca de ti</string>
-    <string name="home_near_prompt">Elige tu departamento y mira quién se busca cerca de ti.</string>
-    <string name="home_near_pick">Elegir departamento</string>
-    <string name="home_near_change">Cambiar</string>
-    <string name="home_near_in">Mayores recompensas en %1$s</string>
-    <string name="home_near_empty">No hay carteles en %1$s por ahora.</string>
-    <string name="home_near_error">No pudimos cargar esta sección.</string>
-    <string name="home_near_retry">Reintentar</string>
-    <string name="home_near_sheet_title">Tu departamento</string>
-    <string name="home_near_sheet_unavailable">No se pudo cargar la lista de departamentos.</string>
-    <string name="home_near_clear">Quitar elección</string>
     <string name="home_see_all">Ver todos</string>
 
     <!-- Mis carteles -->
