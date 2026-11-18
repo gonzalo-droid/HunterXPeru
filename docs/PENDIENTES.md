@@ -28,3 +28,11 @@ Mejoras detectadas que quedaron para después. Las decisiones tomadas van en `DE
   todavía no. Borrar los datos de la app (`adb shell pm clear com.nekodojo.peruxhunter`), bajar la
   velocidad de red del emulador (en la consola del emulador, `network speed gsm`), abrir la app y mirar
   Inicio cuando terminen de bajar las miniaturas.
+
+## Compilar iOS con Xcode 27 antes de abril de 2027
+
+- **Detectado:** 2026-11-18, al subir el primer build (2.0.0 (2)) a TestFlight.
+- **Aviso de App Store Connect:** el build se hizo con el SDK de iOS 26.2. Desde abril de 2027, Apple solo
+  acepta builds hechos con el SDK de iOS 27 o posterior (Xcode 27). Hoy no bloquea nada.
+- **Qué hacer:** instalar Xcode 27 cuando salga, compilar y probar en el simulador, y subir los builds
+  siguientes con esa versión. No requiere cambios de código previstos.
