@@ -88,6 +88,7 @@ import pe.cazadores.ui.components.ErrorState
 import pe.cazadores.ui.components.OfflineBanner
 import pe.cazadores.ui.components.PosterGrid
 import pe.cazadores.ui.components.SecondaryButton
+import pe.cazadores.ui.components.SheetStatusBarAppearance
 import pe.cazadores.ui.components.SkeletonBlock
 import pe.cazadores.ui.components.StatusBarAppearance
 import pe.cazadores.ui.components.TextAction
@@ -327,9 +328,11 @@ private fun DepartamentoSheet(
     onPick: (String?) -> Unit,
     onDismiss: () -> Unit,
 ) {
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    SheetStatusBarAppearance(sheetState)
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        sheetState = sheetState,
         containerColor = Cz.colors.surface,
         contentColor = Cz.colors.ink,
         shape = CazadoresShapes.sheet,
