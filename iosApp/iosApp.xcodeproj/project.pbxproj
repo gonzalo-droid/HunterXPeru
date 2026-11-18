@@ -14,6 +14,7 @@
 		C7A1000000000000000000C1 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = C7A1000000000000000000B1 /* GoogleMobileAds */; };
 		C7A1000000000000000000C2 /* GoogleUserMessagingPlatform in Frameworks */ = {isa = PBXBuildFile; productRef = C7A1000000000000000000B2 /* GoogleUserMessagingPlatform */; };
 		C7A1000000000000000000D2 /* AdsBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A1000000000000000000D1 /* AdsBridge.swift */; };
+		C7A1000000000000000000E2 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = C7A1000000000000000000E1 /* PrivacyInfo.xcprivacy */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -25,6 +26,7 @@
 		7555FF8C242A565B00829871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AB3632DC29227652001CCB65 /* Config.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 		C7A1000000000000000000D1 /* AdsBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdsBridge.swift; sourceTree = "<group>"; };
+		C7A1000000000000000000E1 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -80,6 +82,7 @@
 				058557BA273AAA24004C7B11 /* Assets.xcassets */,
 				7555FF82242A565900829871 /* ContentView.swift */,
 				7555FF8C242A565B00829871 /* Info.plist */,
+				C7A1000000000000000000E1 /* PrivacyInfo.xcprivacy */,
 				2152FB032600AC8F00CF470E /* iOSApp.swift */,
 				058557D7273AAEEB004C7B11 /* Preview Content */,
 			);
@@ -164,6 +167,7 @@
 			files = (
 				058557D9273AAEEB004C7B11 /* Preview Assets.xcassets in Resources */,
 				058557BB273AAA24004C7B11 /* Assets.xcassets in Resources */,
+				C7A1000000000000000000E2 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
