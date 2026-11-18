@@ -34,6 +34,7 @@ import pe.cazadores.resources.rank_label
 import pe.cazadores.ui.components.RankBadge
 import pe.cazadores.ui.components.SecondaryButton
 import pe.cazadores.ui.components.SheetStatusBarAppearance
+import pe.cazadores.ui.components.sheetWindowProperties
 import pe.cazadores.ui.theme.CazadoresDimens
 import pe.cazadores.ui.theme.CazadoresShapes
 import pe.cazadores.ui.theme.Cz
@@ -57,6 +58,7 @@ fun RankLegendSheet(onDismiss: () -> Unit) {
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
+        properties = sheetWindowProperties(sheetState, sheetLightIcons = false),
         containerColor = Cz.colors.paper,
         contentColor = Cz.colors.onPaper,
         shape = CazadoresShapes.sheet,

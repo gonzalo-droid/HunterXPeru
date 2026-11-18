@@ -3,6 +3,7 @@ package pe.cazadores.ui.components
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheetProperties
 import androidx.compose.material3.SheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -33,6 +34,9 @@ internal object StatusBarStack {
         entries[index] = token to lightIcons
         return entries.last().second
     }
+
+    /** Estilo vigente (el de la pantalla visible), o null si no hay ninguno. */
+    fun top(): Boolean? = entries.lastOrNull()?.second
 
     fun remove(token: Any): Boolean? {
         entries.removeAll { it.first === token }
@@ -76,12 +80,30 @@ internal expect val sheetSharesAppWindow: Boolean
 @Composable
 fun SheetStatusBarAppearance(sheetState: SheetState, lightIcons: Boolean = Cz.colors.isDark) {
     if (!sheetSharesAppWindow) return
+    if (rememberSheetCoversStatusBar(sheetState)) StatusBarAppearance(lightIcons = lightIcons)
+}
+
+/** true mientras la hoja expandida llega a la barra de estado. */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal fun rememberSheetCoversStatusBar(sheetState: SheetState): Boolean {
     val statusBarTop = WindowInsets.statusBars.getTop(LocalDensity.current)
-    val coversStatusBar by remember(sheetState, statusBarTop) {
+    val covers by remember(sheetState, statusBarTop) {
         derivedStateOf {
             val offset = runCatching { sheetState.requireOffset() }.getOrNull()
             statusBarTop > 0 && offset != null && offset < statusBarTop
         }
     }
-    if (coversStatusBar) StatusBarAppearance(lightIcons = lightIcons)
+    return covers
 }
+
+/**
+ * Propiedades para un `ModalBottomSheet` cuya superficie no sigue el tema (p. ej. el papel de la leyenda).
+ * En Android la hoja vive en su propia ventana y Material elige los íconos por el color del contenido de la
+ * hoja aunque esta no llegue a la barra: sobre el velo del tema oscuro quedaban íconos negros invisibles.
+ * Aquí la ventana de la hoja usa los íconos de la pantalla de abajo y solo pasa a los de su superficie
+ * ([sheetLightIcons] = true si es oscura) mientras la cubre. En iOS no cambia nada (ver [SheetStatusBarAppearance]).
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal expect fun sheetWindowProperties(sheetState: SheetState, sheetLightIcons: Boolean): ModalBottomSheetProperties

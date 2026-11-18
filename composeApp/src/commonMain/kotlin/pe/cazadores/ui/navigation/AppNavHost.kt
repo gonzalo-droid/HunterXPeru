@@ -8,7 +8,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -73,13 +72,13 @@ fun AppNavHost(
                 HomeRoute(
                     onOpenSearch = {
                         navController.navigate(Route.Search(focus = true)) {
-                            popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                            popUpTo<Route.Home> { saveState = true }
                             launchSingleTop = true
                         }
                     },
                     onSeeAll = {
                         navController.navigate(Route.Search(sortByReward = true)) {
-                            popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                            popUpTo<Route.Home> { saveState = true }
                             launchSingleTop = true
                         }
                     },
@@ -123,10 +122,15 @@ fun AppNavHost(
     }
 }
 
-/** Cambio de pestaña estándar: un solo ejemplar de cada pestaña y estado guardado. */
+/**
+ * Cambio de pestaña estándar: un solo ejemplar de cada pestaña y estado guardado.
+ * Se sube hasta Inicio y no hasta el destino inicial del grafo: tras el onboarding ese destino es
+ * `Onboarding`, que ya no está en la pila; `popUpTo` no hacía nada, las pestañas se apilaban sobre Inicio
+ * y, al recrear la actividad, "restaurar Inicio" devolvía [Inicio, Buscar].
+ */
 fun NavHostController.navigateToTab(tab: TopLevel) {
     navigate(tab.route) {
-        popUpTo(graph.findStartDestination().id) { saveState = true }
+        popUpTo<Route.Home> { saveState = true }
         launchSingleTop = true
         restoreState = true
     }

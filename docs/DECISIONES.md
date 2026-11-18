@@ -5,6 +5,14 @@ Registro de lo que se verificó contra la API real y de las decisiones que cambi
 
 ## 2026-11-18 · Ajustes tras pruebas internas
 
+### D29. Pestañas y barra de estado de las hojas
+- Las pestañas hacen `popUpTo<Route.Home>` y no al destino inicial del grafo: tras el onboarding ese destino
+  era `Onboarding`, ya fuera de la pila, y el `popUpTo` no hacía nada; al recrear la actividad "Inicio" abría Buscar.
+- Rutas de navegación sin enums como argumento (iOS no los soporta): se pasa el nombre como texto.
+- Hojas con superficie fija (papel de la leyenda): en Android la ventana de la hoja usa los íconos de la
+  pantalla de abajo y solo los de su superficie cuando la cubre (`sheetWindowProperties`); en iOS lo hace
+  `SheetStatusBarAppearance`.
+
 ### D28. Privacidad y términos dentro de la app
 - `Route.Legal(LegalPage)` con enum: la URL sale de `AppConfig`, un deep link no puede cargar otra.
 - WebView sin JavaScript (las páginas de nekodojo.app son HTML servido), sin acceso a archivos ni DOM storage.
