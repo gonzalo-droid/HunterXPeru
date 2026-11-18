@@ -14,9 +14,14 @@ object PageTranslation {
 
     fun toUiPage(responseNumber: Int): Int = responseNumber + 1
 
+    /**
+     * Verificado contra producción (2026-11-18): `nombreCompleto` y `montoRecompensa` aceptan `asc` y `desc`.
+     * `nombreCompleto` es el mismo texto que muestran las tarjetas de la API; `apellidoPaterno` o `nombres`
+     * responden HTTP 500 ("No property ... found for type RequisitoriadosView").
+     */
     fun sortField(sort: SortOrder): Pair<String, String> = when (sort) {
-        SortOrder.RECENT -> "id" to "desc"
+        SortOrder.NAME -> "nombreCompleto" to "asc"
         SortOrder.REWARD -> "montoRecompensa" to "desc"
-        SortOrder.REGION -> "departamento" to "asc"
+        SortOrder.REWARD_ASC -> "montoRecompensa" to "asc"
     }
 }

@@ -36,14 +36,18 @@ enum class DangerLevel(val marks: Int) { EXTREMO(3), MUY_ALTO(2), ALTO(1) }
 /** Rango de recompensa calculado por la app (no oficial): más estrellas, mayor recompensa. */
 enum class RewardClass(val stars: Int) { S(4), A(3), B(2), C(1) }
 
-enum class SortOrder { RECENT, REWARD, REGION }
+/**
+ * Orden de la búsqueda. No hay "más recientes": la API no expone fecha de alta.
+ * [REWARD] es mayor → menor (lo usan Inicio y el atajo "ver por recompensa").
+ */
+enum class SortOrder { NAME, REWARD, REWARD_ASC }
 
 data class SearchFilters(
     val query: String = "",
     val departamentoId: String? = null,
     val provinciaId: String? = null,
     val delitoId: Int? = null,
-    val sort: SortOrder = SortOrder.RECENT,
+    val sort: SortOrder = SortOrder.REWARD,
 ) {
     /** Filtros de la hoja (sin contar el texto ni el orden). */
     val activeCount: Int get() = listOfNotNull(departamentoId, provinciaId, delitoId).size

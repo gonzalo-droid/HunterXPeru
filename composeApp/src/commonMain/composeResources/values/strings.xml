@@ -41,9 +41,9 @@
     <string name="remove_filter_cd">Quitar filtro %1$s</string>
     <string name="results_count">%1$s resultados</string>
     <string name="results_count_one">1 resultado</string>
-    <string name="sort_recent">Más recientes</string>
+    <string name="sort_name">Alfabéticamente</string>
     <string name="sort_reward">Mayor recompensa</string>
-    <string name="sort_region">Por región</string>
+    <string name="sort_reward_asc">Menor recompensa</string>
     <string name="sort_cd">Ordenar: %1$s</string>
     <string name="empty_search_title">Sin resultados</string>
     <string name="empty_search_body">No hay personas que coincidan con «%1$s» y los filtros elegidos.</string>

@@ -10,9 +10,8 @@ import pe.cazadores.domain.model.SearchPage
 import pe.cazadores.domain.model.SortOrder
 
 /**
- * Búsqueda, orden y posición sobre el padrón local. Imita a la API donde coincide (orden "recientes" =
- * id descendente, top 5 = mayores recompensas) y la mejora donde fallaba: el texto ignora tildes y
- * busca cada palabra por separado.
+ * Búsqueda, orden y posición sobre el padrón local. Imita a la API donde coincide (top 5 = mayores
+ * recompensas) y la mejora donde fallaba: el texto ignora tildes y busca cada palabra por separado.
  *
  * El manifest trae nombres (no ids) de ubicación y delito: los filtros se traducen con [catalogs].
  */
@@ -68,10 +67,19 @@ internal object PadronQuery {
     private fun Criminal.searchText(): String =
         listOfNotNull(displayName, nombres, apellidoPaterno, apellidoMaterno).joinToString(" ").normalizedForMatch()
 
+    /** Desempate por id en todos los órdenes: la paginación necesita un orden estable. */
     private fun comparator(sort: SortOrder): Comparator<Criminal> = when (sort) {
-        SortOrder.RECENT -> compareByDescending { it.id }
+        SortOrder.NAME -> compareBy<Criminal, String?>(nullsLast()) { it.nameSortKey() }.thenBy { it.id }
         SortOrder.REWARD -> compareByDescending<Criminal> { it.reward }.thenByDescending { it.id }
-        SortOrder.REGION -> compareBy<Criminal, String?>(nullsLast()) { it.departamento?.normalizedForMatch() }
-            .thenByDescending { it.id }
+        // Sin recompensa (0) al final: "menor recompensa" quiere decir la más baja que se paga.
+        SortOrder.REWARD_ASC -> compareBy<Criminal, Double?>(nullsLast()) { it.reward.takeIf { r -> r > 0.0 } }
+            .thenBy { it.id }
     }
+
+    /**
+     * El nombre tal como se ve en la tarjeta, sin tildes ni mayúsculas. La coma pasa a espacio para que
+     * "GÓMEZ, LUIS" quede antes que "GÓMEZ ROJAS, ANA" (apellido corto primero). Vacío → al final.
+     */
+    private fun Criminal.nameSortKey(): String? =
+        displayName.normalizedForMatch().replace(',', ' ').trim().ifEmpty { null }
 }
