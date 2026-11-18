@@ -103,9 +103,13 @@ class ViewModelsTest {
     @Test fun sortChangeReloadsFromFirstPage() = runTest(dispatcher) {
         val vm = SearchViewModel(SearchCriminalsUseCase(criminals), GetCatalogsUseCase(FakeCatalogRepository()))
         advanceUntilIdle()
-        vm.onSortChange(SortOrder.REWARD)
+        assertEquals(SortOrder.REWARD, criminals.searchCalls.first().first.sort, "Orden inicial: mayor recompensa")
+        vm.onSortChange(SortOrder.NAME)
         advanceUntilIdle()
-        assertEquals(SortOrder.REWARD to 1, criminals.searchCalls.last().first.sort to criminals.searchCalls.last().second)
+        assertEquals(SortOrder.NAME to 1, criminals.searchCalls.last().first.sort to criminals.searchCalls.last().second)
+        vm.onSortChange(SortOrder.REWARD_ASC)
+        advanceUntilIdle()
+        assertEquals(SortOrder.REWARD_ASC to 1, criminals.searchCalls.last().first.sort to criminals.searchCalls.last().second)
     }
 
     @Test fun detailNotFoundAndFavoriteToggle() = runTest(dispatcher) {

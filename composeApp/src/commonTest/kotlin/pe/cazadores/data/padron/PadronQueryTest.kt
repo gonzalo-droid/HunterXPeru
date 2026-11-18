@@ -47,12 +47,39 @@ class PadronQueryTest {
 
     @Test fun sortingAndPaging() {
         assertEquals(listOf(1, 3, 2, 4), search(SearchFilters(sort = SortOrder.REWARD)).items.map { it.id })
-        assertEquals(listOf(3, 2, 1, 4), search(SearchFilters(sort = SortOrder.REGION)).items.map { it.id }, "Sin departamento al final")
+        assertEquals(listOf(4, 2, 3, 1), search(SearchFilters(sort = SortOrder.REWARD_ASC)).items.map { it.id }, "Empate en 100 000: id menor primero")
+        assertEquals(listOf(4, 3, 1, 2), search(SearchFilters(sort = SortOrder.NAME)).items.map { it.id }, "Ñ y tildes se ordenan como N y vocales")
+        assertEquals(SortOrder.REWARD, SearchFilters().sort, "Por defecto, mayor recompensa")
         val page2 = search(SearchFilters(), page = 2, size = 3)
-        assertEquals(listOf(1), page2.items.map { it.id })
+        assertEquals(listOf(4), page2.items.map { it.id })
         assertEquals(4, page2.totalElements)
         assertEquals(2, page2.totalPages)
         assertTrue(page2.isLast)
+    }
+
+    @Test fun nameSortPutsShortSurnameFirstAndBlankLast() {
+        val names = Padron(
+            version = 1,
+            generatedAtMillis = 0,
+            criminals = listOf(
+                c(10, "gómez rojas, ana", 1.0),
+                c(11, "", 1.0),
+                c(12, "GOMEZ, LUIS", 1.0),
+                c(13, "Gómez, Luis", 1.0),
+            ),
+        )
+        val ids = PadronQuery.search(names, SearchFilters(sort = SortOrder.NAME), catalogs, 1, 20).items.map { it.id }
+        assertEquals(listOf(12, 13, 10, 11), ids, "Mismo nombre normalizado: desempata el id")
+    }
+
+    @Test fun rewardAscendingPutsZeroLast() {
+        val rewards = Padron(
+            version = 1,
+            generatedAtMillis = 0,
+            criminals = listOf(c(20, "A", 0.0), c(21, "B", 50_000.0), c(22, "C", 10_000.0), c(23, "D", 10_000.0)),
+        )
+        val ids = PadronQuery.search(rewards, SearchFilters(sort = SortOrder.REWARD_ASC), catalogs, 1, 20).items.map { it.id }
+        assertEquals(listOf(22, 23, 21, 20), ids)
     }
 
     @Test fun positionCountsTies() {
