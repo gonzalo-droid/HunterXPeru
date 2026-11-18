@@ -19,9 +19,6 @@ fun createDataStore(absolutePath: String): DataStore<Preferences> =
 class SettingsDataSource(private val store: DataStore<Preferences>) {
     private val onboardingDone = booleanPreferencesKey("onboarding_done")
     private val themeMode = stringPreferencesKey("theme_mode")
-    private val nearDepartamento = stringPreferencesKey("near_departamento")
-
-    val nearDepartamentoFlow: Flow<String?> = store.data.map { it[nearDepartamento] }
 
     val onboardingDoneFlow: Flow<Boolean> = store.data.map { it[onboardingDone] ?: false }
 
@@ -31,10 +28,6 @@ class SettingsDataSource(private val store: DataStore<Preferences>) {
 
     suspend fun setOnboardingDone() {
         store.edit { it[onboardingDone] = true }
-    }
-
-    suspend fun setNearDepartamento(id: String?) {
-        store.edit { if (id == null) it.remove(nearDepartamento) else it[nearDepartamento] = id }
     }
 
     suspend fun setThemeMode(mode: ThemeMode) {

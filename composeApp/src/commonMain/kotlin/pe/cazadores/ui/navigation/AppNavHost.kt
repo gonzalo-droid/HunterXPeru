@@ -8,7 +8,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -20,6 +19,7 @@ import pe.cazadores.ads.AdsController
 import pe.cazadores.ui.screens.about.AboutRoute
 import pe.cazadores.ui.screens.detail.DetailRoute
 import pe.cazadores.ui.screens.home.HomeRoute
+import pe.cazadores.ui.screens.legal.LegalRoute
 import pe.cazadores.ui.screens.onboarding.OnboardingScreen
 import pe.cazadores.ui.screens.saved.SavedRoute
 import pe.cazadores.ui.screens.settings.SettingsRoute
@@ -72,13 +72,13 @@ fun AppNavHost(
                 HomeRoute(
                     onOpenSearch = {
                         navController.navigate(Route.Search(focus = true)) {
-                            popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                            popUpTo<Route.Home> { saveState = true }
                             launchSingleTop = true
                         }
                     },
                     onSeeAll = {
                         navController.navigate(Route.Search(sortByReward = true)) {
-                            popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                            popUpTo<Route.Home> { saveState = true }
                             launchSingleTop = true
                         }
                     },
@@ -103,6 +103,7 @@ fun AppNavHost(
                 SettingsRoute(
                     onOpenRegime = { navController.navigate(Route.SpecialRegime) },
                     onOpenAbout = { navController.navigate(Route.About) },
+                    onOpenLegal = { navController.navigate(Route.Legal(it)) },
                 )
             }
             composable<Route.Detail> { entry ->
@@ -114,14 +115,22 @@ fun AppNavHost(
             }
             composable<Route.SpecialRegime> { SpecialRegimeRoute(onBack = { navController.navigateUp() }) }
             composable<Route.About> { AboutRoute(onBack = { navController.navigateUp() }) }
+            composable<Route.Legal> { entry ->
+                LegalRoute(page = entry.toRoute<Route.Legal>().page, onBack = { navController.navigateUp() })
+            }
         }
     }
 }
 
-/** Cambio de pestaña estándar: un solo ejemplar de cada pestaña y estado guardado. */
+/**
+ * Cambio de pestaña estándar: un solo ejemplar de cada pestaña y estado guardado.
+ * Se sube hasta Inicio y no hasta el destino inicial del grafo: tras el onboarding ese destino es
+ * `Onboarding`, que ya no está en la pila; `popUpTo` no hacía nada, las pestañas se apilaban sobre Inicio
+ * y, al recrear la actividad, "restaurar Inicio" devolvía [Inicio, Buscar].
+ */
 fun NavHostController.navigateToTab(tab: TopLevel) {
     navigate(tab.route) {
-        popUpTo(graph.findStartDestination().id) { saveState = true }
+        popUpTo<Route.Home> { saveState = true }
         launchSingleTop = true
         restoreState = true
     }

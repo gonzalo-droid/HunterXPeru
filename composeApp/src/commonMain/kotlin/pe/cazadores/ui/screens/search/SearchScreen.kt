@@ -83,9 +83,9 @@ import pe.cazadores.resources.search_field_label
 import pe.cazadores.resources.search_field_placeholder
 import pe.cazadores.resources.search_title
 import pe.cazadores.resources.sort_cd
-import pe.cazadores.resources.sort_recent
-import pe.cazadores.resources.sort_region
+import pe.cazadores.resources.sort_name
 import pe.cazadores.resources.sort_reward
+import pe.cazadores.resources.sort_reward_asc
 import pe.cazadores.ui.components.CriminalCard
 import pe.cazadores.ui.components.ErrorState
 import pe.cazadores.ui.components.ListSkeleton
@@ -369,9 +369,9 @@ private fun ResultsCount(total: Int?, modifier: Modifier) {
 @Composable
 private fun sortLabel(sort: SortOrder) = stringResource(
     when (sort) {
-        SortOrder.RECENT -> Res.string.sort_recent
+        SortOrder.NAME -> Res.string.sort_name
         SortOrder.REWARD -> Res.string.sort_reward
-        SortOrder.REGION -> Res.string.sort_region
+        SortOrder.REWARD_ASC -> Res.string.sort_reward_asc
     },
 )
 

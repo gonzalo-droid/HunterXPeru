@@ -58,6 +58,7 @@ import pe.cazadores.resources.report_when_hint
 import pe.cazadores.resources.report_where
 import pe.cazadores.resources.report_where_hint
 import pe.cazadores.ui.components.SecondaryButton
+import pe.cazadores.ui.components.SheetStatusBarAppearance
 import pe.cazadores.ui.theme.CazadoresDimens
 import pe.cazadores.ui.theme.CazadoresShapes
 import pe.cazadores.ui.theme.Cz
@@ -80,9 +81,11 @@ fun ReportSheet(
     val subject = stringResource(Res.string.report_email_subject, criminal.displayName, id)
     val body = stringResource(Res.string.report_email_body, criminal.displayName, id, where.trim(), whenText.trim(), details.trim())
 
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    SheetStatusBarAppearance(sheetState)
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        sheetState = sheetState,
         containerColor = Cz.colors.surface,
         shape = CazadoresShapes.sheet,
     ) {

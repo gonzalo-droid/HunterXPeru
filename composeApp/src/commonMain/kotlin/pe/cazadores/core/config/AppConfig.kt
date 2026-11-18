@@ -16,18 +16,16 @@ object AppConfig {
     /** Correo de denuncias, confirmado como vigente. */
     const val REPORT_EMAIL = "denuncias@mininter.gob.pe"
 
-    /**
-     * TODO(Gonzalo): ID numérico de App Store Connect (Información de la app → ID de Apple).
-     * Vacío: "Calificar" muestra la ventana de reseña del sistema en vez de abrir la App Store.
-     */
-    const val IOS_APP_STORE_ID = ""
+    /** ID numérico de App Store Connect (Información de la app → ID de Apple). */
+    const val IOS_APP_STORE_ID = "6836196201"
 
-    /** TODO(Gonzalo): URLs propias publicadas antes de subir a tienda (Play las exige con AdMob). */
-    const val PRIVACY_POLICY_URL = "https://example.com/cazadores/privacidad"
-    const val TERMS_URL = "https://example.com/cazadores/terminos"
+    /** Páginas legales propias; se abren dentro de la app. */
+    const val PRIVACY_POLICY_URL = "https://nekodojo.app/apps/peruxhunter/privacy"
+    const val TERMS_URL = "https://nekodojo.app/apps/peruxhunter/terms"
 
-    /** Enlace que se comparte desde "Sobre este proyecto". Play acepta el applicationId heredado de Flutter. */
+    /** Enlaces de descarga que acompañan a lo que se comparte (cartel y "Compartir la app"). */
     const val PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=com.nekodojo.peruxhunter"
+    const val APP_STORE_URL = "https://apps.apple.com/app/id$IOS_APP_STORE_ID"
 
     const val SOURCE_URL = "https://recompensas.pe"
     const val DEEP_LINK_BASE = "cazadores://criminal/"
