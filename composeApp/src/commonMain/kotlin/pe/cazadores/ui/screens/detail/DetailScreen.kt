@@ -74,7 +74,6 @@ import pe.cazadores.resources.Res
 import pe.cazadores.resources.back
 import pe.cazadores.resources.call_line
 import pe.cazadores.resources.detail_crimes
-import pe.cazadores.resources.detail_danger
 import pe.cazadores.resources.detail_regime_body
 import pe.cazadores.resources.detail_regime_cta
 import pe.cazadores.resources.detail_department
@@ -105,7 +104,6 @@ import pe.cazadores.resources.reward_none
 import pe.cazadores.resources.share_text
 import pe.cazadores.ui.components.CallButton
 import pe.cazadores.ui.components.CriminalPhoto
-import pe.cazadores.ui.components.DangerMeter
 import pe.cazadores.ui.components.WantedPoster
 import pe.cazadores.ui.components.ErrorState
 import pe.cazadores.ui.components.MessageState
@@ -323,16 +321,6 @@ private fun DetailBody(content: DetailContent.Loaded, onOpenLegend: () -> Unit, 
 
         content.position?.let { PositionCard(it) }
 
-        // Medidor sobre papel, como el cartel: el sello y el medidor siempre son papel en ambos temas.
-        Column(
-            Modifier.fillMaxWidth().background(Cz.colors.paper, CazadoresShapes.card)
-                .border(1.dp, Cz.colors.paperLine, CazadoresShapes.card).padding(14.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            Text(stringResource(Res.string.detail_danger).uppercase(), style = Cz.type.overline, color = Cz.colors.onPaperMuted)
-            DangerMeter(content.danger)
-        }
-
         if (content.specialRegime) RegimeNotice(onOpenRegime)
 
         if (c.crimes.isNotEmpty()) {
@@ -378,7 +366,7 @@ private fun DetailBody(content: DetailContent.Loaded, onOpenLegend: () -> Unit, 
     }
 }
 
-/** Puesto nacional por recompensa, en papel como el medidor de peligrosidad. */
+/** Puesto nacional por recompensa, sobre papel como el cartel (papel en ambos temas). */
 @Composable
 private fun PositionCard(position: RewardPosition) {
     Column(

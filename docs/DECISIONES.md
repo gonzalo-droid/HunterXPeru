@@ -3,6 +3,13 @@
 Registro de lo que se verificó contra la API real y de las decisiones que cambian o precisan
 `docs/kmp-migration/`. La más reciente va arriba.
 
+## 2026-11-18 · Ajustes tras pruebas internas
+
+### D23. Sin "Peligrosidad" en la Ficha
+- Se quita el medidor de peligrosidad de la Ficha (pedido tras la prueba interna) y la nota que lo
+  explicaba en la leyenda de clases. Se mantiene el cálculo por delito: da el titular "POR <delito>"
+  del cartel y del cartel para compartir.
+
 ## 2026-11-18 · Publicación
 
 ### D22. Identificador `com.nekodojo.peruxhunter` en ambas plataformas y clave de subida propia

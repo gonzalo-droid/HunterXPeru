@@ -79,7 +79,6 @@
     <string name="detail_removed_msg">Quitado de tu lista</string>
     <string name="detail_photo_cd">Foto de %1$s</string>
     <string name="detail_id">ID %1$s</string>
-    <string name="detail_danger">Peligrosidad</string>
     <string name="detail_crimes">Delitos imputados</string>
     <string name="detail_department">Departamento</string>
     <string name="detail_province">Provincia</string>
@@ -190,8 +189,6 @@
     </plurals>
     <string name="rank_label">Clase %1$s</string>
     <string name="rank_cd">Clase %1$s, %2$d estrellas</string>
-    <string name="danger_meter_by">Estimado por la app según: %1$s. No es una calificación oficial.</string>
-    <string name="danger_meter_base">Nivel base: todos los buscados tienen delitos graves. No es una calificación oficial.</string>
     <!-- Ficha: aviso del régimen especial -->
     <string name="detail_regime_body">Este delito entra en el régimen especial: la recompensa puede llegar hasta S/ 500 000.</string>
     <string name="detail_regime_cta">Ver cómo funciona</string>
@@ -202,7 +199,6 @@
     <string name="legend_row_a">S/ 100 mil o más</string>
     <string name="legend_row_b">S/ 50 mil o más</string>
     <string name="legend_row_c">Menos de S/ 50 mil</string>
-    <string name="legend_danger_note">La peligrosidad es otra estimación de la app, según el delito: no depende de la clase ni del monto.</string>
     <string name="legend_close">Cerrar</string>
     <!-- Régimen especial -->
     <string name="regime_title">Recompensas por extorsión y sicariato</string>

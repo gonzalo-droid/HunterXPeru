@@ -24,7 +24,6 @@ import org.jetbrains.compose.resources.stringResource
 import pe.cazadores.domain.model.RewardClass
 import pe.cazadores.resources.Res
 import pe.cazadores.resources.legend_close
-import pe.cazadores.resources.legend_danger_note
 import pe.cazadores.resources.legend_intro
 import pe.cazadores.resources.legend_row_a
 import pe.cazadores.resources.legend_row_b
@@ -90,7 +89,6 @@ fun RankLegendSheet(onDismiss: () -> Unit) {
                         )
                     }
                 }
-                Text(stringResource(Res.string.legend_danger_note), style = Cz.type.caption, color = Cz.colors.onPaperMuted)
             }
             SecondaryButton(
                 text = stringResource(Res.string.legend_close),
