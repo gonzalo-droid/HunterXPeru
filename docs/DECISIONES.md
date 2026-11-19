@@ -5,6 +5,16 @@ Registro de lo que se verificó contra la API real y de las decisiones que cambi
 
 ## 2026-11-18 · Ajustes tras pruebas internas
 
+### D32. Departamentos y provincias solo locales
+- Salen únicamente de `composeResources/files/catalogs/{departamentos,provincias}.json`: no se piden a la
+  API ni se guardan en Room. Son fijos, y pedirlos costaba 26 llamadas (1 + una por departamento) que
+  bloqueaban Buscar: sin red y sin caché, unos 30 s de skeleton en la primera apertura.
+- Se quitan `departamentos()` y `provincias()` de `RecompensasApi`. Si algún día cambian, se actualiza
+  el JSON empaquetado.
+- Delitos salen al instante de la caché de Room, o del JSON empaquetado si no hay caché. Si la caché falta
+  o tiene más de 7 días, se pide `delitos` a la API en segundo plano (refresco semanal) y se actualizan
+  caché y memoria. Buscar nunca espera a la red por los catálogos.
+
 ### D31. Fotos del padrón: esperar la miniatura y pulso de carga
 - Antes, cada tarjeta pedía su foto una sola vez. Si el zip de miniaturas no había llegado y la descarga
   suelta fallaba, quedaba la silueta hasta cambiar de pestaña.
