@@ -82,5 +82,7 @@ Bottom bar de 4 pestañas: **Inicio · Buscar · Guardados · Ajustes**. Ficha a
 ## 5. Anuncios (AdMob)
 
 - Banner adaptativo anclado en Inicio y nativo/banner inline cada 8 resultados en Buscar y Guardados.
-- **Nunca** en Ficha, Reportar ni Onboarding (contexto sensible y de seguridad). Sin interstitials ni app-open.
+- Ficha: un banner al final, después de la fuente, lejos de "Llamar" y de "Reportar" (cambio del 2026-11-19).
+- Compartir el cartel: anuncio bonificado antes de compartir, con aviso previo; si no carga, se comparte igual.
+- **Nunca** en Reportar ni Onboarding (contexto sensible y de seguridad). Sin interstitials ni app-open.
 - Flujo de consentimiento: UMP al iniciar (EEA/UK) → en iOS, ATT después de UMP → recién entonces `MobileAds.initialize`. Entrada en Ajustes para reabrir el formulario de privacidad.

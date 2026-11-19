@@ -63,6 +63,7 @@ internal enum class WebLoadError { OFFLINE, OTHER }
 @Composable
 internal expect fun PlatformWebView(
     url: String,
+    javaScript: Boolean,
     isDark: Boolean,
     onLoadingChange: (Boolean) -> Unit,
     onError: (WebLoadError) -> Unit,
@@ -75,6 +76,7 @@ fun LegalRoute(page: LegalPage, onBack: () -> Unit, actions: ExternalActions = k
     LegalScreen(
         title = stringResource(page.title),
         url = page.url,
+        javaScript = page.needsJavaScript,
         onBack = onBack,
         onOpenExternal = actions::openUrl,
     )
@@ -82,7 +84,7 @@ fun LegalRoute(page: LegalPage, onBack: () -> Unit, actions: ExternalActions = k
 
 /** Política de privacidad o términos dentro de la app. Cabecera oscura como las demás pantallas secundarias. */
 @Composable
-fun LegalScreen(title: String, url: String, onBack: () -> Unit, onOpenExternal: (String) -> Unit) {
+fun LegalScreen(title: String, url: String, onBack: () -> Unit, onOpenExternal: (String) -> Unit, javaScript: Boolean = false) {
     StatusBarAppearance(lightIcons = true)
     // Cada intento recrea la vista web desde cero (Reintentar).
     var attempt by rememberSaveable { mutableIntStateOf(0) }
@@ -120,6 +122,7 @@ fun LegalScreen(title: String, url: String, onBack: () -> Unit, onOpenExternal: 
                 key(attempt) {
                     PlatformWebView(
                         url = url,
+                        javaScript = javaScript,
                         isDark = Cz.colors.isDark,
                         onLoadingChange = { isLoading ->
                             loading = isLoading

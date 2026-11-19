@@ -14,6 +14,7 @@ val localProps = Properties().apply {
 // IDs de prueba públicos de Google: se usan en debug y como respaldo si faltan los reales.
 val testAdmobAppId = "ca-app-pub-3940256099942544~3347511713"
 val testAdmobBanner = "ca-app-pub-3940256099942544/9214589741"
+val testAdmobRewarded = "ca-app-pub-3940256099942544/5224354917"
 
 // Clave de subida a Play (fuera del repo). Sin ella, el release se firma con la clave de debug:
 // sirve para probar en local, pero Play rechaza ese AAB.
@@ -47,6 +48,7 @@ android {
         debug {
             manifestPlaceholders["admobAppId"] = testAdmobAppId
             resValue("string", "admob_banner_id", testAdmobBanner)
+            resValue("string", "admob_rewarded_id", testAdmobRewarded)
         }
         release {
             isMinifyEnabled = true
@@ -54,6 +56,7 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             manifestPlaceholders["admobAppId"] = localProps.getProperty("ADMOB_APP_ID_ANDROID") ?: testAdmobAppId
             resValue("string", "admob_banner_id", localProps.getProperty("ADMOB_BANNER_ANDROID") ?: testAdmobBanner)
+            resValue("string", "admob_rewarded_id", localProps.getProperty("ADMOB_REWARDED_ANDROID") ?: testAdmobRewarded)
             signingConfig = if (releaseStoreFile != null) {
                 signingConfigs.getByName("release")
             } else {

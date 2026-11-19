@@ -15,4 +15,10 @@ interface IosAdsBridge {
     fun showPrivacyOptions(completion: (AdsConsentState) -> Unit)
     fun makeBannerView(widthPoints: Double): UIView
     fun bannerHeight(widthPoints: Double): Double
+
+    /** Carga un bonificado y lo guarda en Swift. Callbacks en el hilo principal. */
+    fun loadRewarded(onLoaded: () -> Unit, onFailed: () -> Unit)
+
+    /** Muestra el bonificado cargado y lo consume; sin anuncio, `FAILED`. */
+    fun showRewarded(completion: (RewardedOutcome) -> Unit)
 }

@@ -28,6 +28,8 @@
 	<string>$(ADMOB_APP_ID_IOS)</string>
 	<key>CZAdmobBannerId</key>
 	<string>$(ADMOB_BANNER_IOS)</string>
+	<key>CZAdmobRewardedId</key>
+	<string>$(ADMOB_REWARDED_IOS)</string>
 	<key>NSUserTrackingUsageDescription</key>
 	<string>Usamos este identificador solo para mostrarte anuncios más relevantes. La app funciona igual si no lo permites.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>

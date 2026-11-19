@@ -11,8 +11,17 @@ class CazadoresApplication : Application() {
         super.onCreate()
         initKoin {
             androidContext(this@CazadoresApplication)
-            // Debug: ID de prueba de Google. Release: ADMOB_BANNER_ANDROID de local.properties (ver build.gradle.kts).
-            modules(module { single { AndroidAdUnits(banner = getString(R.string.admob_banner_id)) } })
+            // Debug: IDs de prueba de Google. Release: ADMOB_*_ANDROID de local.properties (ver build.gradle.kts).
+            modules(
+                module {
+                    single {
+                        AndroidAdUnits(
+                            banner = getString(R.string.admob_banner_id),
+                            rewarded = getString(R.string.admob_rewarded_id),
+                        )
+                    }
+                },
+            )
         }
     }
 }

@@ -9,6 +9,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalDensity
 import pe.cazadores.ui.theme.Cz
@@ -80,7 +82,11 @@ internal expect val sheetSharesAppWindow: Boolean
 @Composable
 fun SheetStatusBarAppearance(sheetState: SheetState, lightIcons: Boolean = Cz.colors.isDark) {
     if (!sheetSharesAppWindow) return
-    if (rememberSheetCoversStatusBar(sheetState)) StatusBarAppearance(lightIcons = lightIcons)
+    // Una vez que la hoja cubre la barra se queda apilada hasta cerrarse: si dependiera del desplazamiento en
+    // vivo, cambiar el estilo de la barra (que mueve los insets) volvería a activar y desactivar el efecto.
+    var covered by remember(sheetState) { mutableStateOf(false) }
+    if (rememberSheetCoversStatusBar(sheetState)) covered = true
+    if (covered) StatusBarAppearance(lightIcons = lightIcons)
 }
 
 /** true mientras la hoja expandida llega a la barra de estado. */
