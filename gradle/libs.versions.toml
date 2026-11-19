@@ -1,7 +1,7 @@
 [versions]
 # Últimas versiones estables verificadas en Maven Central / Google Maven el 2026-11-16.
-app-versionName = "2.0.0"
-app-versionCode = "5"
+app-versionName = "2.1.0"
+app-versionCode = "6"
 kotlin = "2.4.21"
 agp = "9.5.1"
 ksp = "2.3.14"
