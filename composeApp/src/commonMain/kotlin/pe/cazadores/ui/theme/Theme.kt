@@ -30,6 +30,9 @@ object CazadoresDimens {
     val buttonHeightLarge = 56.dp
     val touchTarget = 48.dp
     val screenPadding = 20.dp
+
+    /** Ancho máximo del contenido en pantallas anchas (iPad, ventanas grandes). */
+    val contentMaxWidth = 720.dp
 }
 
 private fun CazadoresColors.toMaterial(): ColorScheme {
