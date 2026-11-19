@@ -5,6 +5,17 @@ Registro de lo que se verificó contra la API real y de las decisiones que cambi
 
 ## 2026-11-18 · Ajustes tras pruebas internas
 
+### D31. Fotos del padrón: esperar la miniatura y pulso de carga
+- Antes, cada tarjeta pedía su foto una sola vez. Si el zip de miniaturas no había llegado y la descarga
+  suelta fallaba, quedaba la silueta hasta cambiar de pestaña.
+- `PhotoRepository` suma `observeImage(key)` (Flow de Room sobre `padron_image`) e `imagesSyncing`
+  (`true` mientras se bajan las miniaturas). Sin cambio de esquema: es solo una consulta.
+- `CriminalPhoto` tiene tres estados: **pulso** mientras la foto puede llegar (mismo pulso que
+  `SkeletonBlock`), **foto**, y **silueta** solo cuando no hay nada que esperar. Una tarjeta sin foto sigue
+  escuchando mientras está en pantalla y se completa sola cuando se guarda.
+- `PadronStore` vuelve a lanzar `syncThumbs` cuando `NetworkMonitor` pasa a en línea y no hay descarga en
+  curso. Probado en el emulador: sin red → silueta; vuelve la red → pulso → foto, sin salir de Buscar.
+
 ### D29. Pestañas y barra de estado de las hojas
 - Las pestañas hacen `popUpTo<Route.Home>` y no al destino inicial del grafo: tras el onboarding ese destino
   era `Onboarding`, ya fuera de la pila, y el `popUpTo` no hacía nada; al recrear la actividad "Inicio" abría Buscar.

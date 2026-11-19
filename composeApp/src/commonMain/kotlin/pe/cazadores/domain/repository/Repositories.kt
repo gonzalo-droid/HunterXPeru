@@ -1,6 +1,7 @@
 package pe.cazadores.domain.repository
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 import pe.cazadores.core.result.AppResult
 import pe.cazadores.domain.model.Catalogs
 import pe.cazadores.domain.model.Criminal
@@ -24,6 +25,12 @@ interface CriminalRepository {
 /** Imágenes del padrón por su ruta en Storage (miniaturas y fotos de ficha). `null` si no se pudo obtener. */
 interface PhotoRepository {
     suspend fun image(key: String): ByteArray?
+
+    /** La imagen guardada en el teléfono; vuelve a emitir cuando se guarda (`null` mientras falte). */
+    fun observeImage(key: String): Flow<ByteArray?>
+
+    /** `true` mientras se bajan las miniaturas: una que falta todavía puede llegar. */
+    val imagesSyncing: StateFlow<Boolean>
 }
 
 interface FavoritesRepository {

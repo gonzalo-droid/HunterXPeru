@@ -1,5 +1,8 @@
 package pe.cazadores.data.padron
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
 import pe.cazadores.data.local.PadronDao
 import pe.cazadores.data.local.PadronImageEntity
 import pe.cazadores.data.local.PadronMetaEntity
@@ -43,14 +46,17 @@ internal fun record(hash: String, reward: Double = 50_000.0, name: String = "per
 internal class FakePadronDao : PadronDao {
     var meta: PadronMetaEntity? = null
     val images = LinkedHashMap<String, PadronImageEntity>()
+    /** Avisa de cambios en [images], como la invalidación de Room. */
+    private val changes = MutableStateFlow(0)
 
     override suspend fun meta() = meta
     override suspend fun upsertMeta(meta: PadronMetaEntity) { this.meta = meta }
     override suspend fun markChecked(checkedAt: Long) { meta = meta?.copy(checkedAt = checkedAt) }
     override suspend fun image(path: String) = images[path]
     override suspend fun imagePaths(prefix: String) = images.keys.filter { it.startsWith(prefix) }
-    override suspend fun upsertImages(images: List<PadronImageEntity>) { images.forEach { this.images[it.path] = it } }
-    override suspend fun deleteImages(paths: List<String>) { paths.forEach { images.remove(it) } }
+    override fun observeImage(path: String): Flow<PadronImageEntity?> = changes.map { images[path] }
+    override suspend fun upsertImages(images: List<PadronImageEntity>) { images.forEach { this.images[it.path] = it }; changes.value++ }
+    override suspend fun deleteImages(paths: List<String>) { paths.forEach { images.remove(it) }; changes.value++ }
     override suspend fun photosBeyond(keep: Int) =
         images.values.filter { it.path.startsWith("photos/") }.sortedByDescending { it.savedAt }.drop(keep).map { it.path }
 }

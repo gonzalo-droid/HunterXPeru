@@ -107,6 +107,10 @@ interface PadronDao {
     @Query("SELECT * FROM padron_image WHERE path = :path")
     suspend fun image(path: String): PadronImageEntity?
 
+    /** Emite de nuevo cada vez que cambia la tabla: una imagen que faltaba aparece al guardarse. */
+    @Query("SELECT * FROM padron_image WHERE path = :path")
+    fun observeImage(path: String): Flow<PadronImageEntity?>
+
     @Query("SELECT path FROM padron_image WHERE path LIKE :prefix || '%'")
     suspend fun imagePaths(prefix: String): List<String>
 

@@ -8,6 +8,7 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import pe.cazadores.data.remote.createStorageClient
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
@@ -135,4 +136,42 @@ class PadronStoreTest {
         assertNotNull(store.image("photos/${PadronStore.MAX_PHOTOS + 1}.jpg"), "La guardada se lee sin red")
         assertNull(store.image("photos/0.jpg"))
     }
+
+    @Test fun imagesSyncingWhileThumbsZipDownloads() = runTest {
+        publish(1, "a")
+        val store = store()
+        store.current()
+        assertTrue(store.imagesSyncing.value, "Con el manifest guardado, la miniatura todavía puede llegar")
+        settle()
+        assertEquals(false, store.imagesSyncing.value)
+    }
+
+    @Test fun observeImageEmitsOnceThumbsAreSaved() = runTest {
+        publish(1, "a")
+        val store = store()
+        val seen = mutableListOf<ByteArray?>()
+        backgroundScope.launch { store.observeImage("thumbs/a.jpg").collect { seen += it } }
+        store.current()
+        settle()
+        assertNull(seen.first(), "Antes del zip no hay miniatura")
+        assertContentEquals(byteArrayOf(1), seen.last())
+    }
+
+    @Test fun missingThumbsAreRetriedWhenNetworkReturns() = runTest {
+        publish(1, "a")
+        val zip = files.remove("data/thumbs-v1.zip")!!
+        val store = store()
+        store.current()
+        settle()
+        assertTrue(dao.images.isEmpty(), "El zip falló")
+        assertEquals(false, store.imagesSyncing.value, "Sin nada que esperar, la tarjeta puede mostrar la silueta")
+
+        files["data/thumbs-v1.zip"] = zip
+        online.value = false
+        settle()
+        online.value = true
+        settle()
+        assertEquals(setOf("thumbs/a.jpg"), dao.images.keys)
+    }
 }
+
