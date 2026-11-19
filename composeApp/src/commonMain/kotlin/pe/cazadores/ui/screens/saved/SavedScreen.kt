@@ -25,8 +25,8 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import pe.cazadores.ads.AD_EVERY_N_ITEMS
 import pe.cazadores.ads.AdPlacement
+import pe.cazadores.ads.adAfterRow
 import pe.cazadores.ads.InlineAdSlot
 import pe.cazadores.domain.model.Criminal
 import pe.cazadores.resources.Res
@@ -113,8 +113,8 @@ fun SavedScreen(
                         itemsIndexed(rows, key = { _, row -> row.first().hash }) { index, row ->
                             Column(Modifier.animateItem(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                                 PosterGridRow(row, perRow, onOpenDetail, onRemove = onRemove)
-                                // Misma cadencia que antes: un anuncio cada AD_EVERY_N_ITEMS carteles.
-                                if (((index + 1) * perRow) % AD_EVERY_N_ITEMS == 0) InlineAdSlot(AdPlacement.SAVED_INLINE)
+                                // Un anuncio cada AD_EVERY_N_ITEMS carteles, con cualquier número de columnas.
+                                if (adAfterRow(index, perRow)) InlineAdSlot(AdPlacement.SAVED_INLINE)
                             }
                         }
                     }
