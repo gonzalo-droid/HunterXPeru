@@ -1,9 +1,8 @@
 package pe.cazadores.data.repository
 
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.builtins.ListSerializer
@@ -26,8 +25,10 @@ fun interface BundledCatalogSource {
 }
 
 /**
- * Orden: memoria → caché local de menos de 7 días → API → respaldo empaquetado.
- * Si la API falla, se usa la caché aunque esté vencida antes que el respaldo.
+ * Departamentos y provincias salen solo del archivo empaquetado: no cambian, así que no se piden a la API
+ * ni se guardan en Room (D32).
+ * Delitos salen al instante de la caché de Room (o del archivo empaquetado si no hay). Si la caché falta o
+ * tiene más de 7 días, se pide la API en segundo plano: nunca se espera a la red.
  */
 class CatalogRepositoryImpl(
     private val api: RecompensasApi,
@@ -35,6 +36,7 @@ class CatalogRepositoryImpl(
     private val bundled: BundledCatalogSource,
     private val time: TimeProvider,
     private val json: Json,
+    private val scope: CoroutineScope,
 ) : CatalogRepository {
     private val ubigeoList = ListSerializer(UbigeoDto.serializer())
     private val delitoList = ListSerializer(DelitoDto.serializer())
@@ -46,43 +48,34 @@ class CatalogRepositoryImpl(
     }
 
     private suspend fun load(): Catalogs {
-        val delitos = cached(DELITOS, delitoList) { api.delitos() }
-        val departamentos = cached(DEPARTAMENTOS, ubigeoList) { api.departamentos() }
-        val provincias = cached(PROVINCIAS, ubigeoList) {
-            coroutineScope {
-                departamentos.map { dep -> async { api.provincias(dep.departamento) } }.awaitAll().flatten()
-            }
-        }
+        val stored = cache.catalog(DELITOS)
+        val delitos = stored?.let { decode(it.json, delitoList) } ?: bundled(DELITOS, delitoList)
+        if (stored == null || time.nowMillis() - stored.cachedAt > TTL_MILLIS) scope.launch { refreshDelitos() }
         return Catalogs(
-            delitos = delitos.map { it.toDomain() }.filter { it.name.isNotBlank() }.distinctBy { it.name.uppercase() }.sortedBy { it.name },
-            departamentos = departamentos.map { it.toDepartamento() }.sortedBy { it.name },
-            provincias = provincias.map { it.toProvincia() }.sortedBy { it.name },
+            delitos = delitos.toDomain(),
+            departamentos = bundled(DEPARTAMENTOS, ubigeoList).map { it.toDepartamento() }.sortedBy { it.name },
+            provincias = bundled(PROVINCIAS, ubigeoList).map { it.toProvincia() }.sortedBy { it.name },
         )
     }
 
-    private suspend fun <T> cached(
-        key: String,
-        serializer: kotlinx.serialization.KSerializer<List<T>>,
-        fetch: suspend () -> List<T>,
-    ): List<T> {
-        val stored = cache.catalog(key)
-        if (stored != null && time.nowMillis() - stored.cachedAt <= TTL_MILLIS) {
-            decode(stored.json, serializer)?.let { return it }
-        }
+    /** Sin red o con error no hace nada: queda lo que había y se reintenta en la próxima carga. */
+    private suspend fun refreshDelitos() {
         val remote = try {
-            fetch().takeIf { it.isNotEmpty() }
+            api.delitos().takeIf { it.isNotEmpty() }
         } catch (e: CancellationException) {
             throw e
         } catch (_: Throwable) {
             null
-        }
-        if (remote != null) {
-            cache.upsertCatalog(CatalogCacheEntity(key, json.encodeToString(serializer, remote), time.nowMillis()))
-            return remote
-        }
-        stored?.let { decode(it.json, serializer) }?.let { return it }
-        return decode(bundled.read(key), serializer).orEmpty()
+        } ?: return
+        cache.upsertCatalog(CatalogCacheEntity(DELITOS, json.encodeToString(delitoList, remote), time.nowMillis()))
+        mutex.withLock { memory = memory?.copy(delitos = remote.toDomain()) }
     }
+
+    private fun List<DelitoDto>.toDomain() =
+        map { it.toDomain() }.filter { it.name.isNotBlank() }.distinctBy { it.name.uppercase() }.sortedBy { it.name }
+
+    private suspend fun <T> bundled(key: String, serializer: kotlinx.serialization.KSerializer<List<T>>): List<T> =
+        decode(bundled.read(key), serializer).orEmpty()
 
     private fun <T> decode(text: String, serializer: kotlinx.serialization.KSerializer<List<T>>): List<T>? =
         runCatching { json.decodeFromString(serializer, text) }.getOrNull()

@@ -1,5 +1,10 @@
 package pe.cazadores.ui.components
 
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -11,6 +16,7 @@ import androidx.compose.runtime.produceState
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.ImageBitmap
@@ -20,6 +26,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.transformWhile
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.decodeToImageBitmap
 import pe.cazadores.core.PhotoDecoder
@@ -92,10 +101,19 @@ internal suspend fun ensureBestPhoto(criminal: Criminal, photos: PhotoRepository
         ?: ensureKeyDecoded(criminal.photoKey, photos)
         ?: ensureKeyDecoded(criminal.thumbKey, photos)
 
+/** Lo que muestra [CriminalPhoto]: pulso mientras la foto puede llegar, la foto, o la silueta si no hay. */
+internal sealed interface PhotoState {
+    data object Loading : PhotoState
+    data object Missing : PhotoState
+    data class Loaded(val bitmap: ImageBitmap) : PhotoState
+}
+
 /**
- * Foto de la persona o silueta si no hay foto o no se puede leer.
+ * Foto de la persona, pulso de carga o silueta.
  * [cacheKey] suele ser el hash de la persona. Sin [base64], usa las imágenes del padrón: primero la miniatura
- * ([thumbKey], ya guardada en el teléfono) y, si se pide [photoKey], la cambia por la foto grande cuando llega.
+ * ([thumbKey]) y, si se pide [photoKey], la cambia por la foto grande cuando llega. Si la miniatura todavía no
+ * está, espera a que se guarde (el zip baja en segundo plano o se reintenta al volver la red): mientras pueda
+ * llegar muestra el pulso; la silueta queda solo para "no hay foto".
  */
 @Composable
 fun CriminalPhoto(
@@ -108,26 +126,61 @@ fun CriminalPhoto(
     photoKey: String? = null,
 ) {
     val photos = LocalPhotoRepository.current
-    val bitmap by produceState(cachedPhoto(cacheKey, photoKey, thumbKey), cacheKey, base64, thumbKey, photoKey) {
+    val initial = cachedPhoto(cacheKey, photoKey, thumbKey)?.let { PhotoState.Loaded(it) }
+        ?: if (base64 == null && thumbKey == null && photoKey == null) PhotoState.Missing else PhotoState.Loading
+    val state by produceState(initial, cacheKey, base64, thumbKey, photoKey) {
         // La caché solo se toca desde el hilo principal (produceState corre ahí).
         if (base64 != null) {
-            if (value == null) value = ensurePhotoDecoded(cacheKey, base64)
+            if (value !is PhotoState.Loaded) value = ensurePhotoDecoded(cacheKey, base64)?.let { PhotoState.Loaded(it) } ?: PhotoState.Missing
             return@produceState
         }
         if (photoKey != null && PhotoCache.get(photoKey) != null) return@produceState
-        if (value == null) value = ensureKeyDecoded(thumbKey, photos)
-        ensureKeyDecoded(photoKey, photos)?.let { value = it }
+        var full = false
+        var photoPending = photoKey != null && photos != null
+        fun settleMissing() {
+            if (value !is PhotoState.Loaded && !photoPending && photos?.imagesSyncing?.value != true) value = PhotoState.Missing
+        }
+        if (photoKey != null && photos != null) {
+            launch {
+                ensureKeyDecoded(photoKey, photos)?.let { full = true; value = PhotoState.Loaded(it) }
+                photoPending = false
+                settleMissing()
+            }
+        }
+        if (value is PhotoState.Loaded) return@produceState
+        if (thumbKey == null || photos == null) {
+            settleMissing()
+            return@produceState
+        }
+        ensureKeyDecoded(thumbKey, photos)?.let { if (!full) value = PhotoState.Loaded(it); return@produceState }
+        // Falta la miniatura: esperar a que se guarde mientras la tarjeta esté en pantalla.
+        combine(photos.observeImage(thumbKey), photos.imagesSyncing, ::Pair)
+            .transformWhile { pair -> emit(pair); pair.first == null && value !is PhotoState.Loaded }
+            .collect { (bytes, syncing) ->
+                val decoded = bytes?.let { ensureKeyDecoded(thumbKey, photos) }
+                when {
+                    decoded != null -> if (!full) value = PhotoState.Loaded(decoded)
+                    value is PhotoState.Loaded -> Unit
+                    syncing || photoPending -> value = PhotoState.Loading
+                    else -> value = PhotoState.Missing
+                }
+            }
     }
     val described = if (contentDescription != null) Modifier.semantics { this.contentDescription = contentDescription } else Modifier
     Box(
         modifier.clip(shape).background(Cz.colors.photoPlaceholder).then(described),
         contentAlignment = Alignment.BottomCenter,
     ) {
-        val image = bitmap
-        if (image != null) {
-            Image(image, contentDescription = null, contentScale = ContentScale.Crop, alignment = Alignment.TopCenter, modifier = Modifier.fillMaxSize())
-        } else {
-            Silhouette(Modifier.fillMaxSize())
+        when (val current = state) {
+            is PhotoState.Loaded -> Image(
+                current.bitmap,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                alignment = Alignment.TopCenter,
+                modifier = Modifier.fillMaxSize(),
+            )
+            PhotoState.Loading -> PhotoPulse(Modifier.fillMaxSize())
+            PhotoState.Missing -> Silhouette(Modifier.fillMaxSize())
         }
     }
 }
@@ -149,6 +202,14 @@ fun CriminalPhoto(
     thumbKey = criminal.thumbKey,
     photoKey = criminal.photoKey.takeIf { full },
 )
+
+/** Mismo pulso que [SkeletonBlock], sobre el fondo de la foto. */
+@Composable
+private fun PhotoPulse(modifier: Modifier) {
+    val transition = rememberInfiniteTransition()
+    val alpha by transition.animateFloat(0.55f, 1f, infiniteRepeatable(tween(900), RepeatMode.Reverse))
+    Box(modifier.alpha(alpha).background(Cz.colors.line))
+}
 
 @Composable
 private fun Silhouette(modifier: Modifier) {

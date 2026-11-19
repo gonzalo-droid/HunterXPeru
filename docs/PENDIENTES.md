@@ -2,33 +2,6 @@
 
 Mejoras detectadas que quedaron para después. Las decisiones tomadas van en `DECISIONES.md`.
 
-## Las fotos del padrón no se reintentan solas
-
-- **Detectado:** 2026-11-17, probando en el emulador de Android recién encendido.
-- **Síntoma:** en la primera apertura, las tarjetas de Inicio se quedaron con la silueta.
-  Las fotos solo aparecieron al cambiar de pestaña y volver. Para entonces las 644 miniaturas
-  ya estaban guardadas en `padron_image`.
-- **Causa probable:** cada tarjeta pide su foto una sola vez, al dibujarse. Si en ese momento
-  no hay red, o el zip de miniaturas sigue bajando, `PhotoRepository.image()` devuelve `null`
-  y la tarjeta no vuelve a pedirla.
-  - Esa única petición está en el `produceState` de `CriminalPhoto`
-    (`composeApp/src/commonMain/kotlin/pe/cazadores/ui/components/CriminalPhoto.kt`).
-  - Las miniaturas las baja y guarda `PadronStore.syncThumbs`
-    (`composeApp/src/commonMain/kotlin/pe/cazadores/data/padron/PadronStore.kt`).
-- **Quién lo vería:** un usuario que abre la app por primera vez con mala señal.
-  Con la app instalada desde cero y la red lista, las fotos cargan bien.
-- **Arreglo propuesto:**
-  1. `PadronStore` expone un contador de imágenes (`StateFlow<Int>`) que sube al terminar
-     `syncThumbs`, y también cuando vuelve la red.
-  2. `CriminalPhoto` agrega ese contador a las claves de su `produceState`. Así, una tarjeta
-     sin foto vuelve a intentar cuando cambia el contador. Las que ya tienen foto no cambian:
-     la sacan de `PhotoCache`.
-  3. Test en `PadronStoreTest`: el contador sube después de guardar las miniaturas.
-- **Cómo reproducirlo:** el caso es que el manifest llega (300 KB) y el zip de miniaturas (3,8 MB)
-  todavía no. Borrar los datos de la app (`adb shell pm clear com.nekodojo.peruxhunter`), bajar la
-  velocidad de red del emulador (en la consola del emulador, `network speed gsm`), abrir la app y mirar
-  Inicio cuando terminen de bajar las miniaturas.
-
 ## Compilar iOS con Xcode 27 antes de abril de 2027
 
 - **Detectado:** 2026-11-18, al subir el primer build (2.0.0 (2)) a TestFlight.
@@ -36,3 +9,38 @@ Mejoras detectadas que quedaron para después. Las decisiones tomadas van en `DE
   acepta builds hechos con el SDK de iOS 27 o posterior (Xcode 27). Hoy no bloquea nada.
 - **Qué hacer:** instalar Xcode 27 cuando salga, compilar y probar en el simulador, y subir los builds
   siguientes con esa versión. No requiere cambios de código previstos.
+
+## Versión premium con comunidad (idea)
+
+- **Detectado:** 2026-11-18, al hablar de ocultar anuncios.
+- **Idea:** una opción de pago que quite los anuncios y abra una sección de comunidad, donde los usuarios
+  agreguen información sobre cada persona del padrón.
+- **Antes de diseñarla, decidir:**
+  - Moderación y riesgo legal: es información sobre personas reales buscadas. Hace falta revisar qué se
+    publica, cómo se reporta y quién responde por ello.
+  - Backend para los aportes (cuentas, almacenamiento y moderación); hoy la app solo lee.
+  - Cobro: compras dentro de la app en Google Play y App Store, y cómo se valida la compra.
+- El interruptor oculto de D30 no es esto: solo sirve para pruebas y capturas en un equipo.
+
+## Sincronización semanal: huecos al cambiar datos o fotos
+
+- **Detectado:** 2026-11-18, revisando cómo llega una versión nueva del padrón.
+- **Lo que ya funciona:**
+  - `sync/sync_requisitoriados.py` sube la versión solo si cambió algo (`dataHash`) y publica
+    `data/thumbs-v<N>.zip`.
+  - Las fotos se nombran por contenido (`thumbs/<hash>-<sha>.jpg`). Si cambia la foto, cambia el nombre:
+    nunca se muestra una foto vieja con un nombre que ya existía.
+  - La app revisa el manifest cada 6 h al usarse (`PadronStore.refresh`), reemplaza todos los datos si la
+    versión es mayor, borra las miniaturas que ya no están y baja las que faltan.
+  - Si el zip falla, se reintenta al volver la red (D31).
+- **Huecos:**
+  1. **Se baja el zip entero aunque cambien pocas fotos.** Si en la semana cambian 5 miniaturas, se bajan
+     igual los 3,8 MB. Arreglo: si faltan pocas (por ejemplo menos de 30), bajarlas una a una con
+     `download(key)`; si faltan muchas, el zip.
+  2. **Los guardados son una copia.** `FavoritesRepositoryImpl` guarda la persona como estaba (monto,
+     foto en Base64). Por confirmar: si el padrón cambia el monto o la foto, o la persona sale del padrón,
+     Guardados sigue mostrando lo viejo. Arreglo posible: al llegar una versión nueva, actualizar cada
+     guardado por su `hash`. Si la persona ya no está, marcarla "ya no figura en el padrón" en vez de borrarla.
+  3. **Sin aviso de datos nuevos.** Solo se revisa con la app abierta. Basta con eso (la fecha de los
+     datos ya se ve en Inicio). Una tarea en segundo plano (WorkManager / BGTaskScheduler) solo hace falta
+     si más adelante se quieren notificaciones.

@@ -21,3 +21,6 @@ iosApp/build/
 # Salidas de builds firmados (AAB de Android Studio, derived data de archives)
 androidApp/release/
 iosApp/build-release/
+
+# Capturas de pantalla (solo locales)
+docs/capturas/

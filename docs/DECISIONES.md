@@ -5,6 +5,27 @@ Registro de lo que se verificó contra la API real y de las decisiones que cambi
 
 ## 2026-11-18 · Ajustes tras pruebas internas
 
+### D32. Departamentos y provincias solo locales
+- Salen únicamente de `composeResources/files/catalogs/{departamentos,provincias}.json`: no se piden a la
+  API ni se guardan en Room. Son fijos, y pedirlos costaba 26 llamadas (1 + una por departamento) que
+  bloqueaban Buscar: sin red y sin caché, unos 30 s de skeleton en la primera apertura.
+- Se quitan `departamentos()` y `provincias()` de `RecompensasApi`. Si algún día cambian, se actualiza
+  el JSON empaquetado.
+- Delitos salen al instante de la caché de Room, o del JSON empaquetado si no hay caché. Si la caché falta
+  o tiene más de 7 días, se pide `delitos` a la API en segundo plano (refresco semanal) y se actualizan
+  caché y memoria. Buscar nunca espera a la red por los catálogos.
+
+### D31. Fotos del padrón: esperar la miniatura y pulso de carga
+- Antes, cada tarjeta pedía su foto una sola vez. Si el zip de miniaturas no había llegado y la descarga
+  suelta fallaba, quedaba la silueta hasta cambiar de pestaña.
+- `PhotoRepository` suma `observeImage(key)` (Flow de Room sobre `padron_image`) e `imagesSyncing`
+  (`true` mientras se bajan las miniaturas). Sin cambio de esquema: es solo una consulta.
+- `CriminalPhoto` tiene tres estados: **pulso** mientras la foto puede llegar (mismo pulso que
+  `SkeletonBlock`), **foto**, y **silueta** solo cuando no hay nada que esperar. Una tarjeta sin foto sigue
+  escuchando mientras está en pantalla y se completa sola cuando se guarda.
+- `PadronStore` vuelve a lanzar `syncThumbs` cuando `NetworkMonitor` pasa a en línea y no hay descarga en
+  curso. Probado en el emulador: sin red → silueta; vuelve la red → pulso → foto, sin salir de Buscar.
+
 ### D29. Pestañas y barra de estado de las hojas
 - Las pestañas hacen `popUpTo<Route.Home>` y no al destino inicial del grafo: tras el onboarding ese destino
   era `Onboarding`, ya fuera de la pila, y el `popUpTo` no hacía nada; al recrear la actividad "Inicio" abría Buscar.

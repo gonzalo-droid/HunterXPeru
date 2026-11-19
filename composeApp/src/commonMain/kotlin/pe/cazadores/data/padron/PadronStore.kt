@@ -9,8 +9,17 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.encodeURLParameter
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -41,6 +50,8 @@ fun interface PadronSource {
  * - Después: responde al instante con lo guardado en Room y, cada [checkIntervalMs], consulta en segundo
  *   plano si hay versión nueva.
  * - Las miniaturas llegan en un zip aparte, en segundo plano: mientras falten, [image] las baja una a una.
+ *   [imagesSyncing] avisa que siguen llegando y [observeImage] entrega cada una al guardarse. Si el zip falla,
+ *   se vuelve a intentar cuando vuelve la red.
  */
 class PadronStore(
     private val client: HttpClient,
@@ -62,6 +73,18 @@ class PadronStore(
     private var failedAt = Long.MIN_VALUE / 2
     private var backgroundRefresh: Job? = null
     private var thumbsJob: Job? = null
+    private val syncing = MutableStateFlow(false)
+    override val imagesSyncing: StateFlow<Boolean> = syncing.asStateFlow()
+
+    init {
+        // Vuelve la red (no el primer valor): reintenta las miniaturas que no llegaron.
+        scope.launch {
+            network.isOnline.distinctUntilChanged().drop(1).filter { it }.collect {
+                val padron = memoryLock.withLock { memory } ?: return@collect
+                if (thumbsJob?.isActive != true) startThumbs(padron, zipKey = null)
+            }
+        }
+    }
 
     override suspend fun current(): Padron? {
         val local = loadLocal()
@@ -92,6 +115,25 @@ class PadronStore(
         return bytes
     }
 
+    override fun observeImage(key: String): Flow<ByteArray?> = dao.observeImage(key).map { it?.bytes }
+
+    /** Marca [imagesSyncing] antes de lanzar, para que ninguna tarjeta muestre la silueta en el intervalo. */
+    private fun startThumbs(padron: Padron, zipKey: String?) {
+        thumbsJob?.cancel()
+        syncing.value = true
+        // LAZY: el job queda asignado antes de correr, así el `finally` sabe si sigue siendo el vigente.
+        val job = scope.launch(start = CoroutineStart.LAZY) {
+            try {
+                syncThumbs(padron, zipKey)
+            } finally {
+                // Un job cancelado lo reemplaza otro que ya marcó `true`.
+                if (thumbsJob == coroutineContext[Job]) syncing.value = false
+            }
+        }
+        thumbsJob = job
+        job.start()
+    }
+
     private suspend fun loadLocal(): Padron? = memoryLock.withLock {
         if (!memoryLoaded) {
             memoryLoaded = true
@@ -99,7 +141,7 @@ class PadronStore(
                 checkedAt = meta.checkedAt
                 memory = parse(meta.json)
                 // La app pudo cerrarse antes de terminar de guardar las miniaturas.
-                memory?.let { scope.launch { syncThumbs(it, zipKey = null) } }
+                memory?.let { startThumbs(it, zipKey = null) }
             }
         }
         memory
@@ -126,8 +168,7 @@ class PadronStore(
         dao.upsertMeta(PadronMetaEntity(version = fresh.version, json = raw, generatedAt = fresh.generatedAtMillis, checkedAt = now))
         memoryLock.withLock { memory = fresh }
         checkedAt = now
-        thumbsJob?.cancel()
-        thumbsJob = scope.launch { syncThumbs(fresh, manifest.thumbsZip) }
+        startThumbs(fresh, manifest.thumbsZip)
         fresh
     }
 
