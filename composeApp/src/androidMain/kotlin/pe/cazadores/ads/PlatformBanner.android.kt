@@ -14,7 +14,7 @@ import com.google.android.gms.ads.AdView
 import org.koin.compose.koinInject
 
 /** IDs de bloque de anuncios. Los provee androidApp (resValue por build type). */
-data class AndroidAdUnits(val banner: String)
+data class AndroidAdUnits(val banner: String, val rewarded: String)
 
 @Composable
 internal actual fun PlatformBanner(placement: AdPlacement, modifier: Modifier) {

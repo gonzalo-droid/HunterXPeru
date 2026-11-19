@@ -17,4 +17,13 @@ interface AdsController {
     fun start()
 
     fun showPrivacyOptions()
+
+    /** Anuncio bonificado de Compartir (D33). */
+    val rewarded: StateFlow<RewardedState>
+
+    /** Carga uno si no hay ninguno listo ni cargando. No hace nada mientras [canRequestAds] sea `false`. */
+    fun preloadRewarded()
+
+    /** Muestra el precargado (o [RewardedOutcome.FAILED] si no hay) y lo consume. Usar [showRewardedForShare]. */
+    fun showRewarded(onResult: (RewardedOutcome) -> Unit)
 }

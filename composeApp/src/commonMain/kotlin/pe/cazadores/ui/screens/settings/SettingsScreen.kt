@@ -40,7 +40,6 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import pe.cazadores.ads.AdsController
-import pe.cazadores.core.config.AppConfig
 import pe.cazadores.core.config.AppInfo
 import pe.cazadores.domain.model.ThemeMode
 import pe.cazadores.platform.ExternalActions
@@ -90,7 +89,6 @@ fun SettingsRoute(
         showAdsPreferences = privacyOptionsRequired,
         onThemeChange = viewModel::onThemeChange,
         onAdsPreferences = ads::showPrivacyOptions,
-        onOpenUrl = actions::openUrl,
         onRateApp = actions::openStoreReview,
         onOpenRegime = onOpenRegime,
         onOpenRanks = { showLegend = true },
@@ -107,7 +105,6 @@ fun SettingsScreen(
     showAdsPreferences: Boolean,
     onThemeChange: (ThemeMode) -> Unit,
     onAdsPreferences: () -> Unit,
-    onOpenUrl: (String) -> Unit,
     onRateApp: () -> Unit,
     onOpenRegime: () -> Unit,
     onOpenRanks: () -> Unit,
@@ -194,7 +191,7 @@ fun SettingsScreen(
         Group(stringResource(Res.string.settings_info_section)) {
             LinkRow(stringResource(Res.string.settings_project), CzIcons.ChevronRight, onOpenAbout)
             Divider()
-            LinkRow(stringResource(Res.string.settings_source), CzIcons.External) { onOpenUrl(AppConfig.SOURCE_URL) }
+            LinkRow(stringResource(Res.string.settings_source), CzIcons.ChevronRight) { onOpenLegal(LegalPage.SOURCE) }
             Divider()
             LinkRow(stringResource(Res.string.settings_rate), CzIcons.Star, onRateApp)
         }

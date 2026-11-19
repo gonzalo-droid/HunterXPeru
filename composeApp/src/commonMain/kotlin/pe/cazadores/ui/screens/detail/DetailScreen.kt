@@ -8,6 +8,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import pe.cazadores.platform.encodePng
+import pe.cazadores.ads.AdsController
+import pe.cazadores.ads.allowsShare
+import pe.cazadores.ads.showRewardedForShare
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
@@ -59,6 +62,8 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+import pe.cazadores.ads.AdBanner
+import pe.cazadores.ads.AdPlacement
 import pe.cazadores.core.DateFormatter
 import pe.cazadores.core.RewardClassCalculator
 import pe.cazadores.core.RewardFormatter
@@ -77,7 +82,6 @@ import pe.cazadores.resources.detail_crimes
 import pe.cazadores.resources.detail_regime_body
 import pe.cazadores.resources.detail_regime_cta
 import pe.cazadores.resources.detail_department
-import pe.cazadores.resources.detail_id
 import pe.cazadores.resources.detail_if_you_see
 import pe.cazadores.resources.detail_if_you_see_body
 import pe.cazadores.resources.detail_not_found_title
@@ -155,11 +159,23 @@ fun DetailRoute(
     // Si la ficha deja de estar cargada (p. ej. Reintentar), el seguro de "compartiendo" no debe quedar activo.
     LaunchedEffect(loaded == null) { if (loaded == null) sharing = false }
 
+    // D33: anuncio bonificado antes de compartir. Sin consentimiento o sin anuncio se comparte directo.
+    val ads = koinInject<AdsController>()
+    val adsReady by ads.canRequestAds.collectAsStateWithLifecycle()
+    LaunchedEffect(adsReady) { if (adsReady) ads.preloadRewarded() }
+    var askAd by remember { mutableStateOf(false) }
+    var waitingAd by remember { mutableStateOf(false) }
+    val onShare = {
+        if (shareText != null && !waitingAd) {
+            if (adsReady) askAd = true else sharing = true
+        }
+    }
+
     DetailScreen(
         state = state,
         snackbar = snackbar,
         onBack = onBack,
-        onShare = { if (shareText != null) sharing = true },
+        onShare = onShare,
         onToggleFavorite = viewModel::onToggleFavorite,
         onCall = { actions.dial(AppConfig.REPORT_PHONE_URI) },
         onReport = viewModel::onOpenReport,
@@ -169,6 +185,23 @@ fun DetailRoute(
     )
 
     if (showLegend) RankLegendSheet(onDismiss = { showLegend = false })
+
+    if (askAd) {
+        ShareAdDialog(
+            onConfirm = {
+                askAd = false
+                waitingAd = true
+                scope.launch {
+                    try {
+                        if (ads.showRewardedForShare().allowsShare()) sharing = true
+                    } finally {
+                        waitingAd = false
+                    }
+                }
+            },
+            onDismiss = { askAd = false },
+        )
+    }
 
     if (sharing && loaded != null && shareText != null) {
         // Fuera de pantalla: mide 0 × 0 y no se ve; cae al texto solo si la imagen no se pudo generar.
@@ -343,8 +376,6 @@ private fun DetailBody(content: DetailContent.Loaded, onOpenLegend: () -> Unit, 
 
         DataRows(c)
 
-        Text(stringResource(Res.string.detail_id, c.id.toString()), style = Cz.type.mono, color = Cz.colors.inkMuted)
-
         Column(
             Modifier.fillMaxWidth().background(Cz.colors.header, CazadoresShapes.card).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -364,6 +395,7 @@ private fun DetailBody(content: DetailContent.Loaded, onOpenLegend: () -> Unit, 
             color = Cz.colors.inkMuted,
         )
         Text(stringResource(Res.string.source_note), style = Cz.type.caption, color = Cz.colors.inkMuted)
+        AdBanner(AdPlacement.DETAIL_BANNER, Modifier.fillMaxWidth())
     }
 }
 

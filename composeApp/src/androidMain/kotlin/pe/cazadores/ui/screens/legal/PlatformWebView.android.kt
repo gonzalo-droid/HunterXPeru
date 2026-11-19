@@ -25,6 +25,7 @@ import pe.cazadores.ui.theme.Cz
 @Composable
 internal actual fun PlatformWebView(
     url: String,
+    javaScript: Boolean,
     isDark: Boolean,
     onLoadingChange: (Boolean) -> Unit,
     onError: (WebLoadError) -> Unit,
@@ -49,11 +50,11 @@ internal actual fun PlatformWebView(
             WebView(context).apply {
                 setBackgroundColor(background)
                 settings.apply {
-                    // Las páginas legales se sirven ya renderizadas: no necesitan JavaScript.
-                    javaScriptEnabled = false
+                    // Las legales se sirven ya renderizadas; recompensas.pe sí lo necesita (sin puente con la app).
+                    javaScriptEnabled = javaScript
                     allowFileAccess = false
                     allowContentAccess = false
-                    domStorageEnabled = false
+                    domStorageEnabled = javaScript
                     setGeolocationEnabled(false)
                     mixedContentMode = android.webkit.WebSettings.MIXED_CONTENT_NEVER_ALLOW
                     this.textZoom = textZoom

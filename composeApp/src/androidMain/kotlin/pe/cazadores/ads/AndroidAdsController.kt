@@ -1,7 +1,13 @@
 package pe.cazadores.ads
 
 import android.app.Activity
+import com.google.android.gms.ads.AdError
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.FullScreenContentCallback
+import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.rewarded.RewardedAd
+import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 import com.google.android.ump.ConsentDebugSettings
 import com.google.android.ump.ConsentInformation
 import com.google.android.ump.ConsentRequestParameters
@@ -22,7 +28,45 @@ import java.util.concurrent.atomic.AtomicBoolean
 class AndroidAdsController(
     private val isDebug: Boolean,
     private val scope: CoroutineScope,
+    private val rewardedUnitId: String,
 ) : AdsController {
+    private val _rewarded = MutableStateFlow(RewardedState.IDLE)
+    override val rewarded: StateFlow<RewardedState> = _rewarded.asStateFlow()
+    private var rewardedAd: RewardedAd? = null
+
+    // load, show y sus callbacks corren en el hilo principal.
+    override fun preloadRewarded() {
+        val activity = activityRef.get() ?: return
+        if (!_canRequestAds.value || _rewarded.value != RewardedState.IDLE) return
+        _rewarded.value = RewardedState.LOADING
+        RewardedAd.load(activity, rewardedUnitId, AdRequest.Builder().build(), object : RewardedAdLoadCallback() {
+            override fun onAdLoaded(ad: RewardedAd) {
+                rewardedAd = ad
+                _rewarded.value = RewardedState.READY
+            }
+
+            override fun onAdFailedToLoad(error: LoadAdError) {
+                _rewarded.value = RewardedState.IDLE
+            }
+        })
+    }
+
+    override fun showRewarded(onResult: (RewardedOutcome) -> Unit) {
+        val ad = rewardedAd
+        val activity = activityRef.get()
+        if (ad == null || activity == null) return onResult(RewardedOutcome.FAILED)
+        rewardedAd = null
+        _rewarded.value = RewardedState.IDLE
+        var earned = false
+        ad.fullScreenContentCallback = object : FullScreenContentCallback() {
+            override fun onAdDismissedFullScreenContent() =
+                onResult(if (earned) RewardedOutcome.EARNED else RewardedOutcome.DISMISSED)
+
+            override fun onAdFailedToShowFullScreenContent(error: AdError) = onResult(RewardedOutcome.FAILED)
+        }
+        ad.show(activity) { earned = true }
+    }
+
     private val _canRequestAds = MutableStateFlow(false)
     override val canRequestAds: StateFlow<Boolean> = _canRequestAds.asStateFlow()
 

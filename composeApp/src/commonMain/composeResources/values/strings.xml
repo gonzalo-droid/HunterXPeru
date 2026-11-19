@@ -73,12 +73,15 @@
 
     <!-- Ficha -->
     <string name="detail_share">Compartir</string>
+    <string name="share_ad_title">Antes de compartir</string>
+    <string name="share_ad_body">Verás un anuncio corto. La publicidad ayuda a mantener este proyecto público y gratuito.</string>
+    <string name="share_ad_confirm">Ver anuncio y compartir</string>
+    <string name="share_ad_cancel">Cancelar</string>
     <string name="detail_save">Guardar</string>
     <string name="detail_saved">Guardado</string>
     <string name="detail_saved_msg">Guardado en tu lista</string>
     <string name="detail_removed_msg">Quitado de tu lista</string>
     <string name="detail_photo_cd">Foto de %1$s</string>
-    <string name="detail_id">ID %1$s</string>
     <string name="detail_crimes">Delitos imputados</string>
     <string name="detail_department">Departamento</string>
     <string name="detail_province">Provincia</string>
@@ -148,6 +151,7 @@
     <string name="settings_privacy_policy">Política de privacidad</string>
     <string name="settings_terms">Términos de uso</string>
     <string name="settings_info_section">Información</string>
+    <string name="settings_source_title">Recompensas.pe</string>
     <string name="settings_source">Fuente de datos: recompensas.pe</string>
     <string name="settings_rate">Califica la app en la tienda</string>
     <string name="settings_about">App no oficial</string>

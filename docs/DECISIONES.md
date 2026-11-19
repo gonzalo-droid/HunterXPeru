@@ -3,7 +3,32 @@
 Registro de lo que se verificó contra la API real y de las decisiones que cambian o precisan
 `docs/kmp-migration/`. La más reciente va arriba.
 
+## 2026-11-19 · Ajustes de Ficha y Ajustes
+
+### D34. Ficha sin ID, banner al final y fuente dentro de la app
+- La Ficha ya no muestra "ID 1013": no le sirve al usuario. Se mantiene en la hoja de Reportar, donde
+  identifica a la persona en el correo.
+- Banner (`AdPlacement.DETAIL_BANNER`) al final de la Ficha, después de la fuente, lejos de "Llamar" y
+  "Reportar". Usa la misma unidad de banner que el resto. Actualiza 02-DISENO-UX §5, que lo prohibía.
+- "Fuente de datos: recompensas.pe" en Ajustes abre el webview interno (`LegalPage.SOURCE`): los enlaces
+  del mismo host quedan dentro; los de otros dominios se abren fuera. recompensas.pe es una app Angular:
+  solo esta página activa JavaScript (y DOM storage en Android), sin ningún puente con la app. Las legales
+  siguen sin JavaScript.
+- Hojas: `SheetStatusBarAppearance` deja fijo "cubre la barra de estado" mientras la hoja está abierta,
+  para que no entre y salga de la pila al rozar el borde (posible parpadeo en iOS; no reproducido en Android).
+
 ## 2026-11-18 · Ajustes tras pruebas internas
+
+### D33. Anuncio bonificado antes de compartir el cartel
+- Al tocar Compartir en la Ficha, si `canRequestAds` es `true`, un diálogo avisa que se verá un anuncio
+  ("La publicidad ayuda a mantener este proyecto público y gratuito") con "Ver anuncio y compartir" y "Cancelar".
+- Compartir nunca depende del anuncio (`showRewardedForShare`): sin consentimiento se comparte directo y sin
+  diálogo; si el anuncio falla al cargar, no llega en 4 s o falla al mostrarse, se comparte igual. Solo si el
+  usuario cierra el anuncio sin ganar la recompensa no se comparte (puede volver a tocar).
+- Uno por compartir: se precarga al abrir la Ficha (o cuando `canRequestAds` pasa a `true`, respetando D7)
+  y otro al terminar. Es la única excepción a "sin anuncios en la Ficha", y solo tras aceptar el diálogo.
+- IDs: `ADMOB_REWARDED_ANDROID` (local.properties) y `ADMOB_REWARDED_IOS` (Secrets.xcconfig); sin ellos,
+  los de prueba de Google. iOS lo implementa `AdsBridge.swift` (sin paquetes SPM nuevos).
 
 ### D32. Departamentos y provincias solo locales
 - Salen únicamente de `composeResources/files/catalogs/{departamentos,provincias}.json`: no se piden a la
