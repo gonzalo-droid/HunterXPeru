@@ -55,7 +55,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
@@ -106,6 +108,7 @@ import pe.cazadores.resources.detail_unknown
 import pe.cazadores.resources.error_not_found
 import pe.cazadores.resources.reward_none
 import pe.cazadores.resources.share_text
+import pe.cazadores.ui.components.AdaptiveWidth
 import pe.cazadores.ui.components.CallButton
 import pe.cazadores.ui.components.CriminalPhoto
 import pe.cazadores.ui.components.WantedPoster
@@ -115,7 +118,6 @@ import pe.cazadores.ui.components.OfflineBanner
 import pe.cazadores.ui.components.SecondaryButton
 import pe.cazadores.ui.components.SectionLabel
 import pe.cazadores.ui.components.SkeletonBlock
-import pe.cazadores.ui.theme.CazadoresDimens
 import pe.cazadores.ui.theme.CazadoresShapes
 import pe.cazadores.ui.theme.Cz
 import pe.cazadores.ui.screens.legend.RankLegendSheet
@@ -242,6 +244,7 @@ fun DetailScreen(
     onRetry: () -> Unit,
 ) {
     val loaded = state.content as? DetailContent.Loaded
+    AdaptiveWidth(Modifier.fillMaxSize()) { gutter, _ ->
     Scaffold(
         containerColor = Cz.colors.bg,
         snackbarHost = { SnackbarHost(snackbar) },
@@ -249,16 +252,17 @@ fun DetailScreen(
             TopActions(
                 showActions = loaded != null,
                 isFavorite = state.isFavorite,
+                gutter = gutter,
                 onBack = onBack,
                 onShare = onShare,
                 onToggleFavorite = onToggleFavorite,
             )
         },
-        bottomBar = { if (loaded != null) BottomActions(onCall, onReport) },
+        bottomBar = { if (loaded != null) BottomActions(gutter, onCall, onReport) },
     ) { padding ->
         Box(Modifier.fillMaxSize().padding(padding)) {
             when (val content = state.content) {
-                DetailContent.Loading -> DetailSkeleton()
+                DetailContent.Loading -> DetailSkeleton(gutter)
                 is DetailContent.Error ->
                     if (content.error == DataError.NotFound) {
                         MessageState(
@@ -266,13 +270,15 @@ fun DetailScreen(
                             title = stringResource(Res.string.detail_not_found_title),
                             body = stringResource(Res.string.error_not_found),
                             action = { SecondaryButton(stringResource(Res.string.back), onBack) },
+                            modifier = Modifier.padding(horizontal = gutter),
                         )
                     } else {
-                        ErrorState(content.error, onRetry, onCall)
+                        ErrorState(content.error, onRetry, onCall, Modifier.padding(horizontal = gutter))
                     }
-                is DetailContent.Loaded -> DetailBody(content, onOpenLegend, onOpenRegime)
+                is DetailContent.Loaded -> DetailBody(content, gutter, onOpenLegend, onOpenRegime)
             }
         }
+    }
     }
 }
 
@@ -280,12 +286,15 @@ fun DetailScreen(
 private fun TopActions(
     showActions: Boolean,
     isFavorite: Boolean,
+    gutter: Dp,
     onBack: () -> Unit,
     onShare: () -> Unit,
     onToggleFavorite: () -> Unit,
 ) {
     Row(
-        Modifier.fillMaxWidth().statusBarsPadding().padding(horizontal = 4.dp, vertical = 4.dp),
+        Modifier.fillMaxWidth().statusBarsPadding()
+            // Los IconButton (48 dp) dejan el icono a 12 dp de su borde: así quedan alineados al contenido.
+            .padding(horizontal = max(4.dp, gutter - 16.dp), vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         IconButton(onClick = onBack) { Icon(CzIcons.Back, stringResource(Res.string.back), tint = Cz.colors.ink) }
@@ -304,12 +313,12 @@ private fun TopActions(
 }
 
 @Composable
-private fun BottomActions(onCall: () -> Unit, onReport: () -> Unit) {
+private fun BottomActions(gutter: Dp, onCall: () -> Unit, onReport: () -> Unit) {
     Column(Modifier.fillMaxWidth().background(Cz.colors.bg)) {
         HorizontalDivider(color = Cz.colors.line)
         Row(
             Modifier.fillMaxWidth().navigationBarsPadding()
-                .padding(horizontal = CazadoresDimens.screenPadding, vertical = 12.dp),
+                .padding(horizontal = gutter, vertical = 12.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -330,11 +339,11 @@ private fun BottomActions(onCall: () -> Unit, onReport: () -> Unit) {
 }
 
 @Composable
-private fun DetailBody(content: DetailContent.Loaded, onOpenLegend: () -> Unit, onOpenRegime: () -> Unit) {
+private fun DetailBody(content: DetailContent.Loaded, gutter: Dp, onOpenLegend: () -> Unit, onOpenRegime: () -> Unit) {
     val c = content.criminal
     Column(
         Modifier.fillMaxSize().verticalScroll(rememberScrollState())
-            .padding(horizontal = CazadoresDimens.screenPadding).padding(bottom = 24.dp),
+            .padding(horizontal = gutter).padding(bottom = 24.dp),
         verticalArrangement = Arrangement.spacedBy(18.dp),
     ) {
         if (content.fromCache) OfflineBanner(content.dataAtMillis)
@@ -489,9 +498,9 @@ private fun DataRows(c: Criminal) {
 }
 
 @Composable
-private fun DetailSkeleton() {
+private fun DetailSkeleton(gutter: Dp) {
     Column(
-        Modifier.fillMaxWidth().padding(horizontal = CazadoresDimens.screenPadding),
+        Modifier.fillMaxWidth().padding(horizontal = gutter),
         verticalArrangement = Arrangement.spacedBy(18.dp),
     ) {
         SkeletonBlock(Modifier.fillMaxWidth().height(420.dp))
