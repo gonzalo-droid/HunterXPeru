@@ -34,6 +34,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import pe.cazadores.platform.ExternalActions
@@ -45,10 +46,12 @@ import pe.cazadores.resources.loading_cd
 import pe.cazadores.resources.retry
 import pe.cazadores.resources.settings_legal_error
 import pe.cazadores.resources.settings_legal_open_browser
+import pe.cazadores.ui.components.AdaptiveWidth
 import pe.cazadores.ui.components.MessageState
 import pe.cazadores.ui.components.PrimaryButton
 import pe.cazadores.ui.components.SecondaryButton
 import pe.cazadores.ui.components.StatusBarAppearance
+import pe.cazadores.ui.theme.CazadoresDimens
 import pe.cazadores.ui.theme.Cz
 import pe.cazadores.ui.theme.CzIcons
 
@@ -92,9 +95,11 @@ fun LegalScreen(title: String, url: String, onBack: () -> Unit, onOpenExternal: 
     var shown by remember(attempt) { mutableStateOf(false) }
     var error by remember(attempt) { mutableStateOf<WebLoadError?>(null) }
 
-    Column(Modifier.fillMaxSize().background(Cz.colors.bg)) {
+    AdaptiveWidth(Modifier.fillMaxSize().background(Cz.colors.bg)) { gutter, _ ->
+    Column(Modifier.fillMaxSize()) {
         Row(
-            Modifier.fillMaxWidth().background(Cz.colors.header).statusBarsPadding().padding(horizontal = 4.dp),
+            Modifier.fillMaxWidth().background(Cz.colors.header).statusBarsPadding()
+                .padding(horizontal = max(4.dp, gutter - 16.dp)),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             IconButton(onClick = onBack) {
@@ -109,7 +114,8 @@ fun LegalScreen(title: String, url: String, onBack: () -> Unit, onOpenExternal: 
             )
         }
 
-        Box(Modifier.weight(1f).fillMaxWidth().navigationBarsPadding()) {
+        // La página trae sus propios márgenes: solo se recorta el sobrante en pantallas anchas.
+        Box(Modifier.weight(1f).fillMaxWidth().navigationBarsPadding().padding(horizontal = gutter - CazadoresDimens.screenPadding)) {
             val currentError = error
             if (currentError != null) {
                 LegalError(
@@ -152,6 +158,7 @@ fun LegalScreen(title: String, url: String, onBack: () -> Unit, onOpenExternal: 
                 }
             }
         }
+    }
     }
 }
 

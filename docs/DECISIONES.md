@@ -3,6 +3,22 @@
 Registro de lo que se verificó contra la API real y de las decisiones que cambian o precisan
 `docs/kmp-migration/`. La más reciente va arriba.
 
+## 2026-11-19 · iPad en la 2.1.0
+
+### D35. iPad soportado con contenido centrado, sin dos paneles
+- La 2.0.0 salió solo para iPhone (`TARGETED_DEVICE_FAMILY = 1`). Desde la 2.1.0 (build 6) se declara iPad otra
+  vez (`"1,2"`).
+- Todas las pantallas centran su contenido con un ancho máximo de 720 dp (`AdaptiveWidth`, margen mínimo de
+  20 dp). Carteles en 3 columnas cuando el contenido mide ≥ 560 dp (2 si no; 1 con letra > 1,3×). Anuncios en
+  listas cada 8 ítems sin importar las columnas.
+- Sin vista de dos paneles ni `NavigationRail`: es la versión más rápida que se ve bien en iPad y se puede
+  ampliar después.
+- La regla depende del ancho medido, no del dispositivo: en iPadOS 26 las ventanas son redimensionables y
+  `UIRequiresFullScreen` está en desuso.
+- Compartir en iPad: el popover se ancla al centro inferior de la vista, sin flecha (antes salía en la esquina
+  superior izquierda).
+- Una vez publicada una versión con iPad, App Store no deja retirarlo: por eso no se lanzó en la 2.0.0.
+
 ## 2026-11-19 · Ajustes de Ficha y Ajustes
 
 ### D34. Ficha sin ID, banner al final y fuente dentro de la app

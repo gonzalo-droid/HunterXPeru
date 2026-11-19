@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -45,10 +46,10 @@ import pe.cazadores.resources.regime_intro
 import pe.cazadores.resources.regime_open_official
 import pe.cazadores.resources.regime_title
 import pe.cazadores.resources.regime_unofficial
+import pe.cazadores.ui.components.AdaptiveWidth
 import pe.cazadores.ui.components.CallButton
 import pe.cazadores.ui.components.StatusBarAppearance
 import pe.cazadores.ui.components.TextAction
-import pe.cazadores.ui.theme.CazadoresDimens
 import pe.cazadores.ui.theme.CazadoresShapes
 import pe.cazadores.ui.theme.Cz
 import pe.cazadores.ui.theme.CzIcons
@@ -82,9 +83,11 @@ fun SpecialRegimeRoute(onBack: () -> Unit, actions: ExternalActions = koinInject
 @Composable
 fun SpecialRegimeScreen(onBack: () -> Unit, onCall: () -> Unit, onOpenOfficial: () -> Unit) {
     StatusBarAppearance(lightIcons = true)
-    Column(Modifier.fillMaxSize().background(Cz.colors.bg)) {
+    AdaptiveWidth(Modifier.fillMaxSize().background(Cz.colors.bg)) { gutter, _ ->
+    Column(Modifier.fillMaxSize()) {
         // Solo el botón Volver queda fijo; el título y el decreto se desplazan con el contenido.
-        Row(Modifier.fillMaxWidth().background(Cz.colors.header).statusBarsPadding().padding(horizontal = 4.dp)) {
+        Row(Modifier.fillMaxWidth().background(Cz.colors.header).statusBarsPadding()
+            .padding(horizontal = max(4.dp, gutter - 16.dp))) {
             IconButton(onClick = onBack) {
                 Icon(CzIcons.Back, stringResource(Res.string.back), tint = Cz.colors.onHeader)
             }
@@ -93,7 +96,7 @@ fun SpecialRegimeScreen(onBack: () -> Unit, onCall: () -> Unit, onOpenOfficial: 
         Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState())) {
             Column(
                 Modifier.fillMaxWidth().background(Cz.colors.header)
-                    .padding(start = CazadoresDimens.screenPadding, end = CazadoresDimens.screenPadding, bottom = 18.dp),
+                    .padding(start = gutter, end = gutter, bottom = 18.dp),
                 verticalArrangement = Arrangement.spacedBy(6.dp),
             ) {
                 Text(
@@ -105,7 +108,7 @@ fun SpecialRegimeScreen(onBack: () -> Unit, onCall: () -> Unit, onOpenOfficial: 
                 Text(stringResource(Res.string.regime_decree), style = Cz.type.mono, color = Cz.colors.onHeaderMuted)
             }
             Column(
-                Modifier.fillMaxWidth().padding(horizontal = CazadoresDimens.screenPadding, vertical = 18.dp),
+                Modifier.fillMaxWidth().padding(horizontal = gutter, vertical = 18.dp),
                 verticalArrangement = Arrangement.spacedBy(14.dp),
             ) {
                 Text(stringResource(Res.string.regime_intro), style = Cz.type.body, color = Cz.colors.ink)
@@ -143,8 +146,9 @@ fun SpecialRegimeScreen(onBack: () -> Unit, onCall: () -> Unit, onOpenOfficial: 
                 onClick = onCall,
                 icon = CzIcons.Phone,
                 modifier = Modifier.fillMaxWidth().navigationBarsPadding()
-                    .padding(horizontal = CazadoresDimens.screenPadding, vertical = 12.dp),
+                    .padding(horizontal = gutter, vertical = 12.dp),
             )
         }
+    }
     }
 }
