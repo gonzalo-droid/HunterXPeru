@@ -3,7 +3,7 @@ TEAM_ID=2436FLG37H
 BUNDLE_ID=com.nekodojo.peruxhunter
 APP_NAME=CazadoresPeru
 MARKETING_VERSION=2.0.0
-CURRENT_PROJECT_VERSION=4
+CURRENT_PROJECT_VERSION=5
 
 // GoogleMobileAds exige -ObjC.
 OTHER_LDFLAGS=$(inherited) -ObjC
