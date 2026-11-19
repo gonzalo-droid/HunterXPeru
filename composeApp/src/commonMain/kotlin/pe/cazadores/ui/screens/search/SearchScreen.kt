@@ -180,9 +180,10 @@ fun SearchScreen(
             ) {
                 when {
                     state.isLoading -> ListSkeleton(modifier = Modifier.padding(horizontal = gutter))
-                    state.error != null -> ErrorState(state.error, onRetry, onCall)
+                    state.error != null -> ErrorState(state.error, onRetry, onCall, Modifier.padding(horizontal = gutter))
                     state.isEmpty -> MessageState(
                         icon = CzIcons.Search,
+                        modifier = Modifier.padding(horizontal = gutter),
                         title = stringResource(Res.string.empty_search_title),
                         body = if (state.filters.query.isNotBlank()) {
                             stringResource(Res.string.empty_search_body, state.filters.query)

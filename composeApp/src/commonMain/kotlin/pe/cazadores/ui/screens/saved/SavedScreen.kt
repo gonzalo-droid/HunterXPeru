@@ -100,6 +100,7 @@ fun SavedScreen(
                     state.isLoading -> ListSkeleton(3, Modifier.padding(horizontal = gutter))
                     state.items.isEmpty() -> MessageState(
                         icon = CzIcons.Bookmark,
+                        modifier = Modifier.padding(horizontal = gutter),
                         title = stringResource(Res.string.saved_empty_title),
                         body = stringResource(Res.string.saved_empty_body),
                         action = { PrimaryButton(stringResource(Res.string.saved_go_search), onGoSearch, icon = CzIcons.Search) },
