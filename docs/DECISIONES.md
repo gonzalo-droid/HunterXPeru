@@ -3,6 +3,20 @@
 Registro de lo que se verificó contra la API real y de las decisiones que cambian o precisan
 `docs/kmp-migration/`. La más reciente va arriba.
 
+## 2026-11-23 · Hojas que temblaban en iOS
+
+### D37. Las hojas inferiores no pasan bajo la barra de estado
+- Síntoma: en iOS la hoja "Reportar avistamiento" subía y bajaba sin parar al abrirse.
+- Causa (Material3 1.9): `ModalBottomSheet` rellena arriba el trozo de barra de estado que cubre. Ese relleno
+  alarga la hoja, la hoja sube, cubre más barra y suma más relleno. Si el contenido mide casi lo que la pantalla
+  (nombre largo, letra grande) no hay posición estable y la hoja oscila.
+- Arreglo: todas las hojas usan `sheetModifier` (relleno fijo de la barra de estado) y `sheetContentInsets`
+  (solo el borde inferior, que incluye el teclado). La hoja se detiene bajo la barra y nunca la cubre.
+- Con eso sobra `SheetStatusBarAppearance` (D29/D33): se borró. `sheetWindowProperties` en Android solo
+  conserva los íconos de la pantalla de abajo.
+- iOS: `OnFocusBehavior.DoNothing`. El desplazamiento automático de la vista al enfocar un campo se sumaba al
+  inset del teclado que ya maneja la hoja y la descuadraba. Los campos que el teclado puede tapar viven en hojas.
+
 ## 2026-11-23 · Rechazo de Play por fuentes gubernamentales
 
 ### D36. Enlaces a las fuentes oficiales en la ficha y en Ajustes

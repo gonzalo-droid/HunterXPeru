@@ -33,7 +33,8 @@ import pe.cazadores.resources.legend_title
 import pe.cazadores.resources.rank_label
 import pe.cazadores.ui.components.RankBadge
 import pe.cazadores.ui.components.SecondaryButton
-import pe.cazadores.ui.components.SheetStatusBarAppearance
+import pe.cazadores.ui.components.sheetContentInsets
+import pe.cazadores.ui.components.sheetModifier
 import pe.cazadores.ui.components.sheetWindowProperties
 import pe.cazadores.ui.theme.CazadoresDimens
 import pe.cazadores.ui.theme.CazadoresShapes
@@ -52,13 +53,12 @@ private val ROWS: List<Pair<RewardClass, StringResource>> = listOf(
 @Composable
 fun RankLegendSheet(onDismiss: () -> Unit) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    // El papel es claro en ambos temas: con letra grande la hoja llega a la barra de estado y, en tema
-    // oscuro, los íconos blancos se perdían sobre él.
-    SheetStatusBarAppearance(sheetState, lightIcons = false)
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
-        properties = sheetWindowProperties(sheetState, sheetLightIcons = false),
+        modifier = sheetModifier,
+        contentWindowInsets = { sheetContentInsets },
+        properties = sheetWindowProperties(sheetLightIcons = false),
         containerColor = Cz.colors.paper,
         contentColor = Cz.colors.onPaper,
         shape = CazadoresShapes.sheet,

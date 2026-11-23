@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.ContextWrapper
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheetProperties
-import androidx.compose.material3.SheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalView
@@ -30,16 +29,13 @@ private tailrec fun Context.findActivity(): Activity? = when (this) {
     else -> null
 }
 
-internal actual val sheetSharesAppWindow: Boolean = false
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal actual fun sheetWindowProperties(sheetState: SheetState, sheetLightIcons: Boolean): ModalBottomSheetProperties {
+internal actual fun sheetWindowProperties(sheetLightIcons: Boolean): ModalBottomSheetProperties {
     // Íconos de la pantalla visible al abrir la hoja (la pila no cambia mientras está abierta).
     val screenLightIcons = remember { StatusBarStack.top() } ?: Cz.colors.isDark
-    val lightIcons = if (rememberSheetCoversStatusBar(sheetState)) sheetLightIcons else screenLightIcons
     return ModalBottomSheetProperties(
-        isAppearanceLightStatusBars = !lightIcons,
+        isAppearanceLightStatusBars = !screenLightIcons,
         // La barra de navegación queda siempre sobre la superficie de la hoja.
         isAppearanceLightNavigationBars = !sheetLightIcons,
     )
