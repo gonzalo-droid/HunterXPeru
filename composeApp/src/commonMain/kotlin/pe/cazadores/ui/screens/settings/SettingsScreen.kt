@@ -40,6 +40,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import pe.cazadores.ads.AdsController
+import pe.cazadores.core.config.AppConfig
 import pe.cazadores.core.config.AppInfo
 import pe.cazadores.domain.model.ThemeMode
 import pe.cazadores.platform.ExternalActions
@@ -57,6 +58,10 @@ import pe.cazadores.resources.settings_rate
 import pe.cazadores.resources.settings_regime
 import pe.cazadores.resources.settings_rewards_section
 import pe.cazadores.resources.settings_source
+import pe.cazadores.resources.settings_source_mininter
+import pe.cazadores.resources.settings_source_mininter_url
+import pe.cazadores.resources.settings_source_url
+import pe.cazadores.resources.settings_sources_section
 import pe.cazadores.resources.settings_terms
 import pe.cazadores.resources.settings_theme_dark
 import pe.cazadores.resources.settings_theme_light
@@ -94,6 +99,7 @@ fun SettingsRoute(
         onOpenRanks = { showLegend = true },
         onOpenAbout = onOpenAbout,
         onOpenLegal = onOpenLegal,
+        onOpenMininter = { actions.openUrl(AppConfig.MININTER_URL) },
     )
     if (showLegend) RankLegendSheet(onDismiss = { showLegend = false })
 }
@@ -110,6 +116,7 @@ fun SettingsScreen(
     onOpenRanks: () -> Unit,
     onOpenAbout: () -> Unit,
     onOpenLegal: (LegalPage) -> Unit,
+    onOpenMininter: () -> Unit,
 ) {
     Column(
         Modifier.fillMaxSize().background(Cz.colors.bg).statusBarsPadding().verticalScroll(rememberScrollState())
@@ -173,14 +180,14 @@ fun SettingsScreen(
         }
 
         Group(stringResource(Res.string.settings_rewards_section)) {
-            LinkRow(stringResource(Res.string.settings_regime), CzIcons.ChevronRight, onOpenRegime)
+            LinkRow(stringResource(Res.string.settings_regime), CzIcons.ChevronRight, onClick = onOpenRegime)
             Divider()
-            LinkRow(stringResource(Res.string.legend_title), CzIcons.ChevronRight, onOpenRanks)
+            LinkRow(stringResource(Res.string.legend_title), CzIcons.ChevronRight, onClick = onOpenRanks)
         }
 
         Group(stringResource(Res.string.settings_privacy_section)) {
             if (showAdsPreferences) {
-                LinkRow(stringResource(Res.string.settings_ads_prefs), CzIcons.Shield, onAdsPreferences)
+                LinkRow(stringResource(Res.string.settings_ads_prefs), CzIcons.Shield, onClick = onAdsPreferences)
                 Divider()
             }
             LinkRow(stringResource(Res.string.settings_privacy_policy), CzIcons.ChevronRight) { onOpenLegal(LegalPage.PRIVACY) }
@@ -188,12 +195,27 @@ fun SettingsScreen(
             LinkRow(stringResource(Res.string.settings_terms), CzIcons.ChevronRight) { onOpenLegal(LegalPage.TERMS) }
         }
 
+        // Play exige enlaces visibles a las fuentes gubernamentales (política de afirmaciones engañosas).
+        Group(stringResource(Res.string.settings_sources_section)) {
+            LinkRow(
+                stringResource(Res.string.settings_source),
+                CzIcons.ChevronRight,
+                onClick = { onOpenLegal(LegalPage.SOURCE) },
+                subtitle = stringResource(Res.string.settings_source_url),
+            )
+            Divider()
+            LinkRow(
+                stringResource(Res.string.settings_source_mininter),
+                CzIcons.External,
+                onClick = onOpenMininter,
+                subtitle = stringResource(Res.string.settings_source_mininter_url),
+            )
+        }
+
         Group(stringResource(Res.string.settings_info_section)) {
-            LinkRow(stringResource(Res.string.settings_project), CzIcons.ChevronRight, onOpenAbout)
+            LinkRow(stringResource(Res.string.settings_project), CzIcons.ChevronRight, onClick = onOpenAbout)
             Divider()
-            LinkRow(stringResource(Res.string.settings_source), CzIcons.ChevronRight) { onOpenLegal(LegalPage.SOURCE) }
-            Divider()
-            LinkRow(stringResource(Res.string.settings_rate), CzIcons.Star, onRateApp)
+            LinkRow(stringResource(Res.string.settings_rate), CzIcons.Star, onClick = onRateApp)
         }
 
         Column(
@@ -220,14 +242,17 @@ private fun Group(title: String, content: @Composable () -> Unit) {
 private fun Divider() = HorizontalDivider(color = Cz.colors.line, modifier = Modifier.padding(horizontal = 16.dp))
 
 @Composable
-private fun LinkRow(label: String, icon: ImageVector, onClick: () -> Unit) {
+private fun LinkRow(label: String, icon: ImageVector, subtitle: String? = null, onClick: () -> Unit) {
     Row(
         Modifier.fillMaxWidth().heightIn(min = 56.dp).clickable(role = Role.Button, onClick = onClick)
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Text(label, style = Cz.type.body, color = Cz.colors.ink, modifier = Modifier.weight(1f))
+        Column(Modifier.weight(1f)) {
+            Text(label, style = Cz.type.body, color = Cz.colors.ink)
+            if (subtitle != null) Text(subtitle, style = Cz.type.caption, color = Cz.colors.inkMuted)
+        }
         Icon(icon, contentDescription = null, tint = Cz.colors.inkMuted, modifier = Modifier.size(20.dp))
     }
 }

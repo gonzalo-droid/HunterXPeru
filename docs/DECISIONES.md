@@ -3,6 +3,18 @@
 Registro de lo que se verificó contra la API real y de las decisiones que cambian o precisan
 `docs/kmp-migration/`. La más reciente va arriba.
 
+## 2026-11-23 · Rechazo de Play por fuentes gubernamentales
+
+### D36. Enlaces a las fuentes oficiales en la ficha y en Ajustes
+- Play rechazó la 2.0.0 (4) por la política de afirmaciones engañosas: la app muestra información del
+  Gobierno sin enlaces claros a las fuentes originales.
+- La descripción de Play lleva una sección "FUENTES OFICIALES" con https://recompensas.pe/ y
+  https://www.gob.pe/mininter, y el aviso dice que la app no representa a ninguna entidad pública.
+- Ajustes suma el grupo "Fuentes oficiales" con las dos URLs a la vista: recompensas.pe sigue en el
+  webview interno (D34) y gob.pe/mininter se abre en el navegador. El aviso "App no oficial" de Ajustes
+  usa la misma frase que la ficha.
+- Al cambiar la descripción de App Store, usar el mismo bloque.
+
 ## 2026-11-19 · Capturas de tienda sin anuncios
 
 ### D35. `ADS_ENABLED` en local.properties

@@ -28,6 +28,7 @@ object AppConfig {
     const val APP_STORE_URL = "https://apps.apple.com/app/id$IOS_APP_STORE_ID"
 
     const val SOURCE_URL = "https://recompensas.pe"
+    const val MININTER_URL = "https://www.gob.pe/mininter"
     const val DEEP_LINK_BASE = "cazadores://criminal/"
 
     const val PAGE_SIZE = 20
