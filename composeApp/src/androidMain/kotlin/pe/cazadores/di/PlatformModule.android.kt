@@ -13,6 +13,8 @@ import pe.cazadores.data.local.SETTINGS_FILE_NAME
 import pe.cazadores.data.local.buildCazadoresDatabase
 import pe.cazadores.data.local.createDataStore
 import pe.cazadores.ads.AdsController
+import pe.cazadores.ads.NoAdsController
+import pe.cazadores.core.config.AppInfo
 import pe.cazadores.ads.AndroidAdUnits
 import pe.cazadores.ads.AndroidAdsController
 import pe.cazadores.domain.repository.NetworkMonitor
@@ -42,5 +44,5 @@ actual val platformModule: Module = module {
             rewardedUnitId = get<AndroidAdUnits>().rewarded,
         )
     }
-    single<AdsController> { get<AndroidAdsController>() }
+    single<AdsController> { if (AppInfo.ADS_ENABLED) get<AndroidAdsController>() else NoAdsController }
 }

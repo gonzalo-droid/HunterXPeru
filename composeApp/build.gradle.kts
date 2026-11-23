@@ -13,10 +13,19 @@ plugins {
 // Versión única de la app, compartida por Android, iOS (Config.xcconfig la repite) y el código común.
 val appVersionName: String = libs.versions.app.versionName.get()
 
+// ADS_ENABLED=false en local.properties apaga AdMob (sin UMP, ATT, banners ni bonificado) para tomar capturas de tienda.
+// Lo lee también el build de Xcode, porque compila el framework con este mismo Gradle.
+val adsEnabled: Boolean = rootProject.file("local.properties").takeIf { it.exists() }
+    ?.readLines()?.firstOrNull { it.trim().startsWith("ADS_ENABLED=") }
+    ?.substringAfter("=")?.trim()?.toBooleanStrictOrNull() ?: true
+if (!adsEnabled) logger.warn("ADS_ENABLED=false: compilando SIN anuncios (solo para capturas, no publicar).")
+
 val generateAppInfo by tasks.registering {
     val outputDir = layout.buildDirectory.dir("generated/appinfo/kotlin")
     val version = appVersionName
+    val ads = adsEnabled
     inputs.property("version", version)
+    inputs.property("adsEnabled", ads)
     outputs.dir(outputDir)
     doLast {
         val file = outputDir.get().file("pe/cazadores/core/config/AppInfo.kt").asFile
@@ -28,6 +37,7 @@ val generateAppInfo by tasks.registering {
             |/** Generado por Gradle (composeApp/build.gradle.kts). No editar. */
             |object AppInfo {
             |    const val VERSION_NAME: String = "$version"
+            |    const val ADS_ENABLED: Boolean = $ads
             |}
             |""".trimMargin(),
         )

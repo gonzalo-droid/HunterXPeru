@@ -3,6 +3,14 @@
 Registro de lo que se verificó contra la API real y de las decisiones que cambian o precisan
 `docs/kmp-migration/`. La más reciente va arriba.
 
+## 2026-11-19 · Capturas de tienda sin anuncios
+
+### D35. `ADS_ENABLED` en local.properties
+- `ADS_ENABLED=false` genera `AppInfo.ADS_ENABLED = false` y Koin entrega `NoAdsController`: no se pide
+  UMP ni ATT, no se inicia el SDK, los banners no ocupan espacio y Compartir sigue sin bonificado.
+- Sirve a Android e iOS, porque Xcode compila el framework con el mismo Gradle. Sin la clave vale `true`.
+- Solo para capturas de tienda: Gradle avisa al compilar con `false`. Volver a `true` antes de publicar.
+
 ## 2026-11-19 · Ajustes de Ficha y Ajustes
 
 ### D34. Ficha sin ID, banner al final y fuente dentro de la app
