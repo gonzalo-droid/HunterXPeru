@@ -40,7 +40,6 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import pe.cazadores.ads.AdsController
-import pe.cazadores.core.config.AppConfig
 import pe.cazadores.core.config.AppInfo
 import pe.cazadores.domain.model.ThemeMode
 import pe.cazadores.platform.ExternalActions
@@ -99,7 +98,6 @@ fun SettingsRoute(
         onOpenRanks = { showLegend = true },
         onOpenAbout = onOpenAbout,
         onOpenLegal = onOpenLegal,
-        onOpenMininter = { actions.openUrl(AppConfig.MININTER_URL) },
     )
     if (showLegend) RankLegendSheet(onDismiss = { showLegend = false })
 }
@@ -116,7 +114,6 @@ fun SettingsScreen(
     onOpenRanks: () -> Unit,
     onOpenAbout: () -> Unit,
     onOpenLegal: (LegalPage) -> Unit,
-    onOpenMininter: () -> Unit,
 ) {
     Column(
         Modifier.fillMaxSize().background(Cz.colors.bg).statusBarsPadding().verticalScroll(rememberScrollState())
@@ -206,8 +203,8 @@ fun SettingsScreen(
             Divider()
             LinkRow(
                 stringResource(Res.string.settings_source_mininter),
-                CzIcons.External,
-                onClick = onOpenMininter,
+                CzIcons.ChevronRight,
+                onClick = { onOpenLegal(LegalPage.MININTER) },
                 subtitle = stringResource(Res.string.settings_source_mininter_url),
             )
         }

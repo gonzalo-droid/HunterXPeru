@@ -6,6 +6,7 @@ import org.jetbrains.compose.resources.StringResource
 import pe.cazadores.core.config.AppConfig
 import pe.cazadores.resources.Res
 import pe.cazadores.resources.settings_privacy_policy
+import pe.cazadores.resources.settings_source_mininter
 import pe.cazadores.resources.settings_source_title
 import pe.cazadores.resources.settings_terms
 
@@ -18,6 +19,7 @@ enum class LegalPage {
     PRIVACY,
     TERMS,
     SOURCE,
+    MININTER,
     ;
 
     val url: String
@@ -25,16 +27,18 @@ enum class LegalPage {
             PRIVACY -> AppConfig.PRIVACY_POLICY_URL
             TERMS -> AppConfig.TERMS_URL
             SOURCE -> AppConfig.SOURCE_URL
+            MININTER -> AppConfig.MININTER_URL
         }
 
-    /** recompensas.pe es una app Angular: sin JavaScript queda en blanco. Las legales no lo necesitan. */
-    val needsJavaScript: Boolean get() = this == SOURCE
+    /** Las fuentes oficiales son sitios del Estado (recompensas.pe es Angular: sin JavaScript queda en blanco). Las legales no lo necesitan. */
+    val needsJavaScript: Boolean get() = this == SOURCE || this == MININTER
 
     val title: StringResource
         get() = when (this) {
             PRIVACY -> Res.string.settings_privacy_policy
             TERMS -> Res.string.settings_terms
             SOURCE -> Res.string.settings_source_title
+            MININTER -> Res.string.settings_source_mininter
         }
 }
 
