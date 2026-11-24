@@ -1,6 +1,8 @@
 package pe.cazadores.app
 
 import android.app.Application
+import android.os.Handler
+import android.os.Looper
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 import pe.cazadores.ads.AndroidAdUnits
@@ -22,6 +24,10 @@ class CazadoresApplication : Application() {
                     }
                 },
             )
+        }
+        // D38: solo existe en un release compilado con -PcrashlyticsTestCrash=true (ver docs/CRASHLYTICS.md).
+        if (resources.getBoolean(R.bool.crashlytics_test_crash)) {
+            Handler(Looper.getMainLooper()).postDelayed({ throw RuntimeException("Crash de prueba de Crashlytics") }, 5_000)
         }
     }
 }

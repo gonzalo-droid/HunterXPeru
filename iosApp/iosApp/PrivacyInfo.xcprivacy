@@ -3,7 +3,7 @@
 <!--
   Manifiesto de privacidad de la app (no de los SDK: Google Mobile Ads trae el suyo).
   Declara las APIs "con motivo requerido" que usan el runtime de Kotlin/Native, Room (SQLite) y DataStore.
-  La app no rastrea ni recopila datos propios; lo de AdMob lo declara su SDK y el formulario de App Store Connect.
+  La app no rastrea ni recopila datos propios; lo de AdMob y Crashlytics lo declaran sus SDK y el formulario de App Store Connect.
 -->
 <plist version="1.0">
 <dict>

@@ -3,6 +3,40 @@
 Registro de lo que se verificó contra la API real y de las decisiones que cambian o precisan
 `docs/kmp-migration/`. La más reciente va arriba.
 
+## 2026-11-24 · Crashlytics
+
+### D38. Crashlytics en Android e iOS, solo crashes fatales y solo en release
+- Android: firebase-bom 35.2.0 + `firebase-crashlytics` en `androidApp`; plugins `com.google.gms.google-services`
+  4.6.0 y `com.google.firebase.crashlytics` 3.0.8 (probados con AGP 9.5). El mapping de R8 se sube al terminar
+  el release. `proguard-rules.pro` suma `-keepattributes SourceFile,LineNumberTable`.
+- iOS: `firebase-ios-sdk` 13.2.0 por SPM (producto `FirebaseCrashlytics`, IDs `C7A1…A3/B3/C3`), fases
+  "Copy GoogleService-Info.plist" y "Upload dSYM to Crashlytics" (`F1`/`F2`, la segunda solo en Release).
+- El repo no tenía configuración de Firebase: el padrón usa URLs públicas sin SDK (D21). `google-services.json`
+  y `GoogleService-Info.plist` se descargan de la consola y no se versionan (como los IDs de AdMob). Sin
+  ellos Gradle no aplica los plugins, Xcode no copia el plist y la app no arranca Firebase. Gradle y Xcode lo avisan.
+- Debug no recolecta: Android usa la meta-data `firebase_crashlytics_collection_enabled` (false en debug) e
+  iOS no llama a `FirebaseApp.configure()` con `DEBUG`.
+- Sin errores no fatales: los fallos del padrón y de la API son casi siempre de red (sin conexión, timeouts) y
+  la app ya cae a la caché o a la API. Reportarlos llenaría Crashlytics de ruido. Si un día hace falta,
+  conviene un `CrashReporter` en `platformModule` (Swift lo implementaría como `IosAdsBridge`).
+- Crash de prueba: solo se compila con `-PcrashlyticsTestCrash=true` (Gradle) o `-DCRASHLYTICS_TEST_CRASH`
+  (Swift). Ningún build normal lo incluye. Pasos en `docs/CRASHLYTICS.md`.
+- Límite en iOS: el framework de Kotlin es estático y release. Un crash en Kotlin llega como `SIGABRT` con
+  la pila nativa, y los frames de Kotlin pueden salir sin nombre.
+- A mano, antes de subir el próximo build (versionCode ≥ 8):
+  - Consola de Firebase: registrar las dos apps, descargar los archivos y habilitar Crashlytics.
+  - Política de privacidad (nekodojo.app/apps/peruxhunter/privacy): quitar "No usamos herramientas de
+    analítica ni de reportes de errores". Explicar que, si la app se cierra por un error, envía a Firebase
+    Crashlytics (Google) un informe técnico: traza, modelo, versión de sistema y de app, e ID de instalación
+    de Firebase. No envía datos personales ni lo que buscas. Sumarlo a las conexiones a internet, a las
+    transferencias internacionales (EE. UU.) y a la conservación (90 días en Crashlytics).
+  - Play, Seguridad de los datos: "Fallos" (registros de fallos) y "Diagnóstico", más "ID de dispositivo u
+    otros" (ID de instalación de Firebase). Marcar: recopilado, no compartido, efímero no, obligatorio,
+    finalidad "Estadísticas de la app", cifrado en tránsito.
+  - App Store, Privacidad de la app: "Diagnóstico → Datos de fallos" (y "Otros datos de diagnóstico" si se
+    declara la info de rendimiento), sin vincular a la identidad, sin rastreo, finalidad "Funcionalidad de la
+    app". El manifiesto del SDK de Crashlytics ya declara lo suyo; el de la app sigue vacío.
+
 ## 2026-11-23 · Hojas que temblaban en iOS
 
 ### D37. Las hojas inferiores no pasan bajo la barra de estado
