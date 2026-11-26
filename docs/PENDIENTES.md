@@ -32,15 +32,15 @@ Mejoras detectadas que quedaron para después. Las decisiones tomadas van en `DE
     emulador Android con `ADS_ENABLED=false`.
 - **Sigue pendiente:**
   - **Sin CI de build ni tests.** El único workflow es `test-api.yml`, que es manual, y los PRs a la release
-    no tienen checks. Ver base §1.9 y §1.15: empezar con un hook `pre-push` local y, si se suma CI, que
+    no tienen checks. Ver base CI-01 y CI-02: empezar con un hook `pre-push` local y, si se suma CI, que
     corra solo en PRs a `release/**`.
   - Maestro en iOS y la marca "Ya no figura" en pantalla: ver "Antes de publicar la 2.0.3".
 
 ## Contraste con la base de conocimiento (2026-11-25)
 
-- **Detectado:** al sumar a la base Ajustes estándar, enlaces y anuncios (§1.16, §1.17, §2.1). Contrastar el
-  resto de la base con la app más adelante.
-- **Apagar anuncios sin recompilar.** Hoy solo existe `ADS_ENABLED` (D35), que exige recompilar y volver a
+- **Detectado:** al sumar a la base Ajustes estándar, enlaces y anuncios (AJU-*, LNK-*, ADS-06). Falta la
+  auditoría completa con la Parte 7 de la base.
+- **Apagar anuncios sin recompilar (ADS-06).** Hoy solo existe `ADS_ENABLED` (D35), que exige recompilar y volver a
   `true` antes de publicar. Sumar, solo en debug, un argumento de arranque `disableAds=true` (para Maestro y
   capturas) y un interruptor oculto en Ajustes. En release se ignoran. Con esto el flujo de Maestro podría
   correr sobre el build normal, sin tener que manejar el formulario de UMP.
@@ -48,12 +48,12 @@ Mejoras detectadas que quedaron para después. Las decisiones tomadas van en `DE
   (`PLAY_STORE_URL` y `APP_STORE_URL`), y la landing dice que Android "llega pronto": el enlace de Play
   puede no llevar a nada. Crear en `neko-dojo` la ruta `/apps/[slug]/descargar` (redirige según el
   `User-Agent` usando `stores` de `src/content/apps.ts`, y a la landing si falta la tienda) y cambiar los
-  dos textos a `https://nekodojo.app/apps/peruxhunter/descargar` (base §1.16). Al 2026-11-25 la web
+  dos textos a `https://nekodojo.app/apps/peruxhunter/descargar` (base AJU-04, NEK-02). Al 2026-11-25 la web
   publicada ya muestra el enlace del App Store, pero el `apps.ts` de la copia local tiene las dos tiendas en
   `null`: actualizar la copia (hay una rama `feat/peruxhunter-app-store`) antes de crear la ruta.
 - **Navegador in-app para sitios ajenos.** Hoy las fuentes oficiales (recompensas.pe y gob.pe/mininter) se
   abren en el WebView interno **con JavaScript** (D34, D36), y los enlaces a otros dominios salen al
-  navegador del sistema, fuera de la app. Según la base (§1.17), el contenido ajeno va mejor en Custom Tabs
+  navegador del sistema, fuera de la app. Según la base (LNK-01), el contenido ajeno va mejor en Custom Tabs
   (Android) y `SFSafariViewController` (iOS): no sale de la app, muestra la URL real y quita el WebView con
   JavaScript cargando páginas de terceros. Privacidad y términos siguen en el WebView (D28). Revisar que
   Play acepte igual la fuente "dentro de la app" (D36) con el navegador in-app.
