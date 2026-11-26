@@ -253,6 +253,20 @@ Medir y anotar en cada release (en el `DECISIONES.md` de la app):
 - WebView, mapas, cámara y share sheet siempre necesitan `expect/actual` o `UIKitView`/`AndroidView`.
 - Apple exige un SDK nuevo cada año (desde abril de 2027, el de iOS 27). Planificarlo.
 
+## 1.15 Ramas y versiones
+
+- `main` = solo versiones publicadas, con tag `vX.Y.Z` en cada merge. Sin PRs directos.
+- `release/X.Y.Z` = candidata a tienda, creada desde `main`. El primer commit sube la versión; todos los
+  PRs apuntan aquí; de aquí salen TestFlight y la prueba interna de Play. Una sola release abierta a la vez.
+  Al cerrarla: merge normal (sin squash) a `main`, tag y subida a las tiendas.
+- `feature/…`, `fix/…`, `chore/…` = ramas de trabajo desde la release abierta, con PR a ella.
+- `hotfix/…` = desde `main` hacia una `release/X.Y.(Z+1)` nueva. Si había otra release abierta, merge de
+  `main` en ella al cerrar el hotfix.
+- Misma versión en Android e iOS (§1.6). Arreglo de una sola plataforma: se sube la versión igual, se
+  publica solo donde hace falta y la otra plataforma se salta ese número.
+- En repos privados, este flujo combina con el CI barato (§1.9): los workflows corren solo en PRs a
+  `release/**` y en el push a `main`.
+
 ---
 
 # Parte 2 · Si aplica
@@ -339,6 +353,7 @@ para no copiar a mano en cada app.
 2. Crear `CLAUDE.md` (comandos, estructura que engaña, zonas peligrosas), `docs/DECISIONES.md` y
    `docs/PENDIENTES.md`.
 3. Activar el hook `pre-push` (1.9) y la tarea `checkIosVersion` (1.6).
+   Crear `release/0.1.0` desde `main` y trabajar con el flujo de ramas (1.15).
 4. Si hay API ajena, verificarla primero (2.4) y anotarla.
 5. Tema con tokens + `ContrastTest`; strings en recursos desde la primera pantalla.
 6. `AppResult`/`DataError`, `NetworkMonitor`, `CrashReporter` vacío.
