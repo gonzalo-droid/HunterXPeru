@@ -140,11 +140,14 @@ tasks.named("check") { dependsOn(checkIosVersion) }
 Otra opción: que Gradle **genere** un `Version.xcconfig` que `Config.xcconfig` incluya. Así no hay copia.
 `AppInfo.kt` (versión para el código común) también se genera desde el catálogo.
 
-## 1.7 Secretos
+## 1.7 Secretos y archivos fuera de git
 
 `local.properties` (Android) y `Secrets.xcconfig` (iOS) fuera de git, con sus `.example` versionados. Sin
 secretos, el build **sigue funcionando** con valores de prueba y **avisa** con un warning de Gradle/Xcode.
 La keystore de subida va fuera del repo (p. ej. `~/.config/<app>-signing/`) y se activa Play App Signing.
+- Material de marketing (reels, videos, capturas de tienda generadas) fuera de git desde el día 1: pesa
+  decenas de MB y se regenera. En `.gitignore`: `docs/capturas/`, `docs/reels/` y las carpetas de salida
+  de las capturas de tienda. Los guiones o el contexto que las generan (`.md`, `.json`) sí pueden versionarse.
 
 ## 1.8 Testing
 
@@ -266,6 +269,13 @@ Medir y anotar en cada release (en el `DECISIONES.md` de la app):
   publica solo donde hace falta y la otra plataforma se salta ese número.
 - En repos privados, este flujo combina con el CI barato (§1.9): los workflows corren solo en PRs a
   `release/**` y en el push a `main`.
+- **Sacar algo que ya entró en la release** (p. ej. una función que no llega a probarse): `git revert -m 1
+  <merge>` en una rama `chore/…` con PR a la release. Para retomarlo después, volver a unir la rama no trae
+  nada (git ya la considera unida): hay que revertir el commit de reversión. Anotarlo en `PENDIENTES.md`.
+- **Una función que no tiene vuelta atrás** (p. ej. declarar iPad: App Store no deja retirarlo) va en su
+  propia release, con su prueba manual y sus capturas, no mezclada con arreglos.
+- Borrar las ramas de trabajo al unirlas; conservar solo `main`, la release abierta y las que guardan
+  trabajo revertido o sin terminar.
 
 ## 1.16 Ajustes estándar
 
