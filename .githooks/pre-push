@@ -1,0 +1,3 @@
+#!/bin/sh
+# Corre los tests y verificaciones antes de cada push (base CI-01). Saltar en emergencias: git push --no-verify
+exec ./gradlew check --quiet

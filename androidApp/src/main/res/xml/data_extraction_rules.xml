@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 12+: qué entra en la copia en la nube y en la transferencia a un teléfono nuevo (D41).
+     Solo la base (guardados + caché del padrón) y los ajustes; nada de la caché (imagen de compartir). -->
+<data-extraction-rules>
+    <cloud-backup>
+        <include domain="database" path="." />
+        <include domain="file" path="cazadores.preferences_pb" />
+    </cloud-backup>
+    <device-transfer>
+        <include domain="database" path="." />
+        <include domain="file" path="cazadores.preferences_pb" />
+    </device-transfer>
+</data-extraction-rules>

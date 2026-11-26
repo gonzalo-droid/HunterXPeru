@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 11 o menos: mismas reglas que data_extraction_rules.xml (D41). -->
+<full-backup-content>
+    <include domain="database" path="." />
+    <include domain="file" path="cazadores.preferences_pb" />
+</full-backup-content>

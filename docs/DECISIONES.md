@@ -3,6 +3,20 @@
 Registro de lo que se verificó contra la API real y de las decisiones que cambian o precisan
 `docs/kmp-migration/`. La más reciente va arriba.
 
+## 2026-11-26 · Respaldo de Android
+
+### D41. Se respaldan los guardados y los ajustes, nada más
+- Antes: `allowBackup="true"` sin reglas, así que Android respaldaba todo sin que se hubiera decidido (auditoría
+  PRIV-01).
+- Ahora `data_extraction_rules.xml` (Android 12+) y `backup_rules.xml` (11 o menos) incluyen solo la base
+  `cazadores.db` (guardados + caché del padrón) y `cazadores.preferences_pb` (onboarding y tema), en la copia en la
+  nube y en la transferencia a un teléfono nuevo. La caché (imagen temporal de compartir) queda fuera.
+- Por qué los guardados sí: son carteles públicos que el usuario eligió; perderlos al cambiar de teléfono sería
+  peor. La caché del padrón viaja con la base; al abrir, `PadronStore` compara la versión y la actualiza.
+- La política de privacidad debe mencionar que los guardados entran en la copia de Google si el usuario la tiene
+  activa.
+- D40 queda reservado para el iPad (revertido de la 2.0.3, ver PENDIENTES).
+
 ## 2026-11-25 · Ramas y versiones
 
 ### D39. `main` solo tiene versiones publicadas; cada versión se arma en `release/X.Y.Z`
