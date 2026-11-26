@@ -75,6 +75,9 @@ import pe.cazadores.ui.theme.CazadoresDimens
 import pe.cazadores.ui.theme.CazadoresShapes
 import pe.cazadores.ui.theme.Cz
 import pe.cazadores.ui.theme.CzIcons
+import pe.cazadores.resources.settings_debug_ads_on
+import pe.cazadores.resources.settings_debug_ads_off
+import pe.cazadores.ads.DebugAdsSwitch
 import pe.cazadores.core.config.AppConfig
 import pe.cazadores.core.config.AppEnvironment
 import pe.cazadores.resources.settings_licenses
@@ -92,7 +95,11 @@ fun SettingsRoute(
     actions: ExternalActions = koinInject(),
     ads: AdsController = koinInject(),
     env: AppEnvironment = koinInject(),
+    debugAds: DebugAdsSwitch = koinInject(),
 ) {
+    // ADS-06: 7 toques en la versión apagan o encienden los anuncios, solo en debug (para capturas).
+    var versionTaps by rememberSaveable { mutableStateOf(0) }
+    var debugAdsOff by rememberSaveable { mutableStateOf<Boolean?>(null) }
     var showLegend by rememberSaveable { mutableStateOf(false) }
     val theme by viewModel.themeMode.collectAsStateWithLifecycle()
     val privacyOptionsRequired by ads.privacyOptionsRequired.collectAsStateWithLifecycle()
@@ -110,6 +117,15 @@ fun SettingsRoute(
         onOpenLegal = onOpenLegal,
         onContact = { actions.email(AppConfig.SUPPORT_EMAIL, contactSubject, contactBody) },
         onOpenLicenses = onOpenLicenses,
+        onVersionTap = {
+            if (env.isDebug && ++versionTaps % 7 == 0) {
+                debugAds.adsDisabled = !debugAds.adsDisabled
+                debugAdsOff = debugAds.adsDisabled
+            }
+        },
+        debugMessage = debugAdsOff?.let {
+            stringResource(if (it) Res.string.settings_debug_ads_off else Res.string.settings_debug_ads_on)
+        },
     )
     if (showLegend) RankLegendSheet(onDismiss = { showLegend = false })
 }
@@ -128,6 +144,8 @@ fun SettingsScreen(
     onOpenLegal: (LegalPage) -> Unit,
     onContact: () -> Unit,
     onOpenLicenses: () -> Unit,
+    onVersionTap: () -> Unit = {},
+    debugMessage: String? = null,
 ) {
     Column(
         Modifier.fillMaxSize().background(Cz.colors.bg).statusBarsPadding().verticalScroll(rememberScrollState())
@@ -241,7 +259,13 @@ fun SettingsScreen(
             Text(stringResource(Res.string.settings_about_body), style = Cz.type.bodySmall, color = Cz.colors.ink)
         }
 
-        Text(stringResource(Res.string.settings_version, AppInfo.VERSION_NAME), style = Cz.type.mono, color = Cz.colors.inkMuted)
+        Text(
+            stringResource(Res.string.settings_version, AppInfo.VERSION_NAME),
+            style = Cz.type.mono,
+            color = Cz.colors.inkMuted,
+            modifier = Modifier.clickable(interactionSource = null, indication = null, onClick = onVersionTap),
+        )
+        if (debugMessage != null) Text(debugMessage, style = Cz.type.caption, color = Cz.colors.ink)
     }
 }
 
