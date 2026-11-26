@@ -235,10 +235,6 @@ fun PosterMini(criminal: Criminal, onClick: () -> Unit, modifier: Modifier = Mod
     }
 }
 
-/** Carteles por fila: 2; con letra muy grande, 1 para que nombre y monto respiren. */
-@Composable
-fun posterColumns(): Int = if (LocalDensity.current.fontScale > 1.3f) 1 else 2
-
 /** Una fila de la cuadrícula de carteles (compartida por Inicio y Mis carteles). Si hay [onRemove], cada cartel lo muestra. */
 @Composable
 fun PosterGridRow(
@@ -262,8 +258,7 @@ fun PosterGridRow(
 
 /** Cuadrícula no perezosa para listas cortas (tablón de Inicio). Las largas usan [PosterGridRow] en un LazyColumn. */
 @Composable
-fun PosterGrid(items: List<Criminal>, onOpenDetail: (String) -> Unit, modifier: Modifier = Modifier) {
-    val perRow = posterColumns()
+fun PosterGrid(items: List<Criminal>, perRow: Int, onOpenDetail: (String) -> Unit, modifier: Modifier = Modifier) {
     Column(modifier, verticalArrangement = Arrangement.spacedBy(12.dp)) {
         items.chunked(perRow).forEach { row -> PosterGridRow(row, perRow, onOpenDetail) }
     }

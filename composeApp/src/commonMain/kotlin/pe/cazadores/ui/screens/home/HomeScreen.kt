@@ -33,6 +33,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.jetbrains.compose.resources.stringResource
@@ -57,9 +58,11 @@ import pe.cazadores.resources.home_title_neutral
 import pe.cazadores.resources.home_top
 import pe.cazadores.resources.home_updated
 import pe.cazadores.resources.source_note
+import pe.cazadores.ui.components.AdaptiveWidth
 import pe.cazadores.ui.components.ErrorState
 import pe.cazadores.ui.components.OfflineBanner
 import pe.cazadores.ui.components.PosterGrid
+import pe.cazadores.ui.components.posterColumns
 import pe.cazadores.ui.components.SkeletonBlock
 import pe.cazadores.ui.components.StatusBarAppearance
 import pe.cazadores.ui.components.TextAction
@@ -100,35 +103,35 @@ fun HomeScreen(
     onCall: () -> Unit,
     onRetry: () -> Unit,
 ) {
-    Box(Modifier.fillMaxSize().background(Cz.colors.bg)) {
-    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
-        Header(state.stats?.total, state.updatedAtMillis, onOpenSearch)
-        Column(
-            Modifier.padding(CazadoresDimens.screenPadding),
-            verticalArrangement = Arrangement.spacedBy(22.dp),
-        ) {
-            state.cachedAtMillis?.let { OfflineBanner(it) }
-            CallCard(onCall)
-            RegimeBanner(onOpenRegime)
-            when {
-                state.isLoading && state.top.isEmpty() -> HomeSkeleton()
-                state.error != null -> ErrorState(state.error, onRetry, onCall)
-                else -> TopBoard(state.top, onSeeAll, onOpenDetail)
+    AdaptiveWidth(Modifier.fillMaxSize().background(Cz.colors.bg)) { gutter, contentWidth ->
+        Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
+            Header(state.stats?.total, state.updatedAtMillis, onOpenSearch, gutter)
+            Column(
+                Modifier.padding(horizontal = gutter, vertical = CazadoresDimens.screenPadding),
+                verticalArrangement = Arrangement.spacedBy(22.dp),
+            ) {
+                state.cachedAtMillis?.let { OfflineBanner(it) }
+                CallCard(onCall)
+                RegimeBanner(onOpenRegime)
+                when {
+                    state.isLoading && state.top.isEmpty() -> HomeSkeleton()
+                    state.error != null -> ErrorState(state.error, onRetry, onCall)
+                    else -> TopBoard(state.top, posterColumns(contentWidth), onSeeAll, onOpenDetail)
+                }
+                AdBanner(AdPlacement.HOME_BANNER, Modifier.fillMaxWidth())
+                Text(stringResource(Res.string.source_note), style = Cz.type.caption, color = Cz.colors.inkMuted)
             }
-            AdBanner(AdPlacement.HOME_BANNER, Modifier.fillMaxWidth())
-            Text(stringResource(Res.string.source_note), style = Cz.type.caption, color = Cz.colors.inkMuted)
         }
-    }
-    // Franja fija bajo la barra de estado: los iconos claros siempre quedan sobre oscuro al desplazar.
-    Spacer(Modifier.align(Alignment.TopCenter).fillMaxWidth().windowInsetsTopHeight(WindowInsets.statusBars).background(Cz.colors.header))
+        // Franja fija bajo la barra de estado: los iconos claros siempre quedan sobre oscuro al desplazar.
+        Spacer(Modifier.align(Alignment.TopCenter).fillMaxWidth().windowInsetsTopHeight(WindowInsets.statusBars).background(Cz.colors.header))
     }
 }
 
 @Composable
-private fun Header(total: Int?, updatedAtMillis: Long?, onOpenSearch: () -> Unit) {
+private fun Header(total: Int?, updatedAtMillis: Long?, onOpenSearch: () -> Unit, gutter: Dp) {
     Column(
         Modifier.fillMaxWidth().background(Cz.colors.header).statusBarsPadding()
-            .padding(start = CazadoresDimens.screenPadding, end = CazadoresDimens.screenPadding, top = 20.dp, bottom = 24.dp),
+            .padding(start = gutter, end = gutter, top = 20.dp, bottom = 24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         FlowRow(
@@ -218,7 +221,7 @@ private fun SectionHeader(title: String, action: String?, onAction: () -> Unit) 
 
 /** Los más buscados por recompensa, sin filtrar por clase (ya vienen recortados a 6); el sello va en cada cartel. */
 @Composable
-private fun TopBoard(top: List<Criminal>, onSeeAll: () -> Unit, onOpenDetail: (String) -> Unit) {
+private fun TopBoard(top: List<Criminal>, perRow: Int, onSeeAll: () -> Unit, onOpenDetail: (String) -> Unit) {
     if (top.isEmpty()) return
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         SectionHeader(
@@ -226,7 +229,7 @@ private fun TopBoard(top: List<Criminal>, onSeeAll: () -> Unit, onOpenDetail: (S
             action = stringResource(Res.string.home_see_all),
             onAction = onSeeAll,
         )
-        PosterGrid(top, onOpenDetail)
+        PosterGrid(top, perRow, onOpenDetail)
     }
 }
 

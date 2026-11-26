@@ -2,7 +2,9 @@ package pe.cazadores.platform
 
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf
+import kotlinx.cinterop.useContents
 import kotlinx.cinterop.usePinned
+import platform.CoreGraphics.CGRectMake
 import pe.cazadores.core.config.AppConfig
 import platform.Foundation.NSData
 import platform.Foundation.create
@@ -39,11 +41,17 @@ class IosExternalActions : ExternalActions {
         present(listOf(image, text))
     }
 
+    @OptIn(ExperimentalForeignApi::class)
     private fun present(items: List<Any>) {
         val presenter = topViewController() ?: return
         val controller = UIActivityViewController(activityItems = items, applicationActivities = null)
-        // iPad: la hoja necesita un ancla.
-        controller.popoverPresentationController?.sourceView = presenter.view
+        // iPad: la hoja es un popover y necesita ancla; sin sourceRect sale en la esquina superior izquierda.
+        controller.popoverPresentationController?.let { popover ->
+            val view = presenter.view
+            popover.sourceView = view
+            popover.sourceRect = view.bounds.useContents { CGRectMake(size.width / 2, size.height - 1, 1.0, 1.0) }
+            popover.permittedArrowDirections = 0u
+        }
         presenter.presentViewController(controller, animated = true, completion = null)
     }
 
