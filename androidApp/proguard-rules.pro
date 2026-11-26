@@ -15,3 +15,6 @@
 -keepclassmembers class * extends androidx.datastore.preferences.protobuf.GeneratedMessageLite {
     <fields>;
 }
+
+# Crashlytics: conservar archivo y línea para que el mapping de R8 dé trazas legibles.
+-keepattributes SourceFile,LineNumberTable

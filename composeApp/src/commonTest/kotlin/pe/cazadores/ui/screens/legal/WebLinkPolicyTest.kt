@@ -52,6 +52,7 @@ class WebLinkPolicyTest {
         assertEquals(AppConfig.PRIVACY_POLICY_URL, LegalPage.PRIVACY.url)
         assertEquals(AppConfig.TERMS_URL, LegalPage.TERMS.url)
         assertEquals(AppConfig.SOURCE_URL, LegalPage.SOURCE.url)
+        assertEquals(AppConfig.MININTER_URL, LegalPage.MININTER.url)
         LegalPage.entries.forEach { assertEquals(LinkDecision.IN_APP, WebLinkPolicy.decide(it.url, it.url)) }
     }
 }

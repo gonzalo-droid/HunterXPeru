@@ -43,7 +43,10 @@ class PadronMigrationTest {
         createVersion1()
         val db = Room.databaseBuilder<AppDatabase>(name = path).buildCazadoresDatabase()
         try {
-            assertEquals("PEREZ, JUAN", assertNotNull(db.favoriteDao().get("A")).displayName)
+            val favorite = assertNotNull(db.favoriteDao().get("A"))
+            assertEquals("PEREZ, JUAN", favorite.displayName)
+            // v3: la columna nueva llega vacía (sigue figurando hasta que el padrón diga lo contrario).
+            assertNull(favorite.delistedAt)
             val padron = db.padronDao()
             assertNull(padron.meta())
             padron.upsertMeta(PadronMetaEntity(version = 3, json = "{}", generatedAt = 1, checkedAt = 2))

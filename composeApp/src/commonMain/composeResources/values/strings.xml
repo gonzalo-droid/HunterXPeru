@@ -136,6 +136,7 @@
     <string name="saved_removed">Cartel de %1$s quitado</string>
     <string name="undo">Deshacer</string>
     <string name="saved_remove_action">Quitar cartel</string>
+    <string name="saved_delisted">Ya no figura en el padrón</string>
     <string name="saved_remove_hint">Toca la X de un cartel para quitarlo.</string>
 
     <!-- Ajustes -->
@@ -152,10 +153,14 @@
     <string name="settings_terms">Términos de uso</string>
     <string name="settings_info_section">Información</string>
     <string name="settings_source_title">Recompensas.pe</string>
-    <string name="settings_source">Fuente de datos: recompensas.pe</string>
+    <string name="settings_sources_section">Fuentes oficiales</string>
+    <string name="settings_source">Programa de Recompensas (MININTER)</string>
+    <string name="settings_source_url">https://recompensas.pe</string>
+    <string name="settings_source_mininter">Ministerio del Interior</string>
+    <string name="settings_source_mininter_url">https://www.gob.pe/mininter</string>
     <string name="settings_rate">Califica la app en la tienda</string>
     <string name="settings_about">App no oficial</string>
-    <string name="settings_about_body">Cazadores Perú es una app independiente. No está afiliada al Ministerio del Interior ni a la Policía Nacional del Perú. Muestra datos públicos del Programa de Recompensas, que pueden cambiar sin aviso: verifica siempre en recompensas.pe. La recompensa la otorga el Estado tras validar la información.</string>
+    <string name="settings_about_body">Cazadores Perú es una app independiente y no representa a ninguna entidad pública: no está afiliada al Ministerio del Interior ni a la Policía Nacional del Perú. Muestra datos públicos del Programa de Recompensas, que pueden cambiar sin aviso: verifica siempre en recompensas.pe. La recompensa la otorga el Estado tras validar la información.</string>
     <string name="settings_version">Versión %1$s</string>
     <string name="settings_legal_open_browser">Abrir en el navegador</string>
     <string name="settings_legal_error">No pudimos abrir esta página. Intenta de nuevo o ábrela en el navegador.</string>

@@ -11,6 +11,8 @@ import pe.cazadores.data.local.SETTINGS_FILE_NAME
 import pe.cazadores.data.local.buildCazadoresDatabase
 import pe.cazadores.data.local.createDataStore
 import pe.cazadores.ads.AdsController
+import pe.cazadores.ads.NoAdsController
+import pe.cazadores.core.config.AppInfo
 import pe.cazadores.ads.IosAdsController
 import pe.cazadores.domain.repository.NetworkMonitor
 import pe.cazadores.platform.ExternalActions
@@ -28,5 +30,7 @@ actual val platformModule: Module = module {
     single { createDataStore(documentsPath(SETTINGS_FILE_NAME)) }
     single<NetworkMonitor> { IosNetworkMonitor() }
     single<ExternalActions> { IosExternalActions() }
-    single<AdsController> { IosAdsController(bridge = get(), isDebug = get<AppEnvironment>().isDebug) }
+    single<AdsController> {
+        if (AppInfo.ADS_ENABLED) IosAdsController(bridge = get(), isDebug = get<AppEnvironment>().isDebug) else NoAdsController
+    }
 }

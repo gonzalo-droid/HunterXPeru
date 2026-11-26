@@ -54,7 +54,8 @@ import pe.cazadores.resources.filters_province_needs_department
 import pe.cazadores.resources.filters_title
 import pe.cazadores.ui.components.PrimaryButton
 import pe.cazadores.ui.components.SectionLabel
-import pe.cazadores.ui.components.SheetStatusBarAppearance
+import pe.cazadores.ui.components.sheetContentInsets
+import pe.cazadores.ui.components.sheetModifier
 import pe.cazadores.ui.components.TextAction
 import pe.cazadores.ui.theme.CazadoresDimens
 import pe.cazadores.ui.theme.CazadoresShapes
@@ -77,10 +78,11 @@ fun FiltersSheet(
     onDismiss: () -> Unit,
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    SheetStatusBarAppearance(sheetState)
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
+        modifier = sheetModifier,
+        contentWindowInsets = { sheetContentInsets },
         containerColor = Cz.colors.surface,
         contentColor = Cz.colors.ink,
         shape = CazadoresShapes.sheet,

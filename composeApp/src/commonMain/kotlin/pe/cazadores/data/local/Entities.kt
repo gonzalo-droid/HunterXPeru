@@ -22,6 +22,8 @@ data class FavoriteEntity(
     val departamento: String?,
     val provincia: String?,
     val savedAt: Long,
+    /** Cuándo dejó de figurar en el padrón; `null` mientras siga (v3). */
+    val delistedAt: Long? = null,
 )
 
 /**

@@ -93,6 +93,23 @@ class PadronStoreTest {
         assertEquals(setOf("thumbs/b.jpg"), dao.images.keys, "Se borran las miniaturas de quien ya no está")
     }
 
+    @Test fun fewNewThumbsAreDownloadedLooseInsteadOfZip() = runTest {
+        publish(1, "a", "b")
+        val store = store()
+        store.current()
+        settle()
+        requests.clear()
+
+        publish(2, "a", "b", "c")
+        files["thumbs/c.jpg"] = byteArrayOf(9)
+        now += PadronStore.CHECK_INTERVAL_MS
+        store.current()
+        settle()
+        assertEquals(2, store.current()?.version)
+        assertEquals(listOf("data/manifest.json", "thumbs/c.jpg"), requests)
+        assertEquals(setOf("thumbs/a.jpg", "thumbs/b.jpg", "thumbs/c.jpg"), dao.images.keys)
+    }
+
     @Test fun sameVersionOnlyMarksChecked() = runTest {
         publish(1, "a")
         store().current()

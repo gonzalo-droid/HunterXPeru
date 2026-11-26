@@ -3,10 +3,10 @@
 Registro de lo que se verificó contra la API real y de las decisiones que cambian o precisan
 `docs/kmp-migration/`. La más reciente va arriba.
 
-## 2026-11-19 · iPad en la 2.1.0
+## 2026-11-25 · iPad (escrita el 2026-11-19, PR 9)
 
-### D35. iPad soportado con contenido centrado, sin dos paneles
-- La 2.0.0 salió solo para iPhone (`TARGETED_DEVICE_FAMILY = 1`). Desde la 2.1.0 (build 6) se declara iPad otra
+### D40. iPad soportado con contenido centrado, sin dos paneles
+- La 2.0.0 salió solo para iPhone (`TARGETED_DEVICE_FAMILY = 1`). Desde la 2.0.3 (build 9) se declara iPad otra
   vez (`"1,2"`).
 - Todas las pantallas centran su contenido con un ancho máximo de 720 dp (`AdaptiveWidth`, margen mínimo de
   20 dp). Carteles en 3 columnas cuando el contenido mide ≥ 560 dp (2 si no; 1 con letra > 1,3×). Anuncios en
@@ -18,6 +18,94 @@ Registro de lo que se verificó contra la API real y de las decisiones que cambi
 - Compartir en iPad: el popover se ancla al centro inferior de la vista, sin flecha (antes salía en la esquina
   superior izquierda).
 - Una vez publicada una versión con iPad, App Store no deja retirarlo: por eso no se lanzó en la 2.0.0.
+
+## 2026-11-25 · Ramas y versiones
+
+### D39. `main` solo tiene versiones publicadas; cada versión se arma en `release/X.Y.Z`
+- **`main`:** solo lo que está en las tiendas. Cada merge a `main` es una versión publicada y lleva el tag
+  `vX.Y.Z`. Nadie trabaja ni hace PRs directo a `main`.
+- **`release/X.Y.Z`:** la candidata. Se crea desde `main` y su primer commit sube la versión
+  (`chore: bump version to X.Y.Z (N)`: catálogo y `Config.xcconfig`; `checkIosVersion` lo verifica).
+  Todos los PRs de trabajo apuntan aquí. Los builds de TestFlight y de prueba interna salen de esta rama;
+  si hace falta otro build, solo sube el número de build. Se abre una sola release a la vez.
+- **Cierre:** con todo probado, PR `release/X.Y.Z` → `main` con merge normal (sin squash, para que `main`
+  y la release compartan historia), tag `vX.Y.Z` y subida a las tiendas. Después se borra la rama.
+- **Ramas de trabajo:** `feature/…`, `fix/…`, `chore/…` salen de la release abierta y vuelven a ella por PR
+  (squash permitido). Las ramas `feat/…` anteriores a esta decisión se dejan como están.
+- **`hotfix/…`:** para un error urgente en la versión publicada. Sale de `main`, se crea
+  `release/X.Y.(Z+1)` desde `main` y el hotfix va por PR a esa release, que se cierra como cualquier otra.
+  Si había otra release abierta, después se hace merge de `main` en ella para no perder el arreglo.
+- **Versión:** la misma en Android e iOS. Si un arreglo afecta a una sola plataforma, la versión sube igual
+  y se publica solo donde hace falta; la otra se salta ese número (anotarlo en el changelog).
+
+## 2026-11-24 · Crashlytics
+
+### D38. Crashlytics en Android e iOS, solo crashes fatales y solo en release
+- Android: firebase-bom 35.2.0 + `firebase-crashlytics` en `androidApp`; plugins `com.google.gms.google-services`
+  4.6.0 y `com.google.firebase.crashlytics` 3.0.8 (probados con AGP 9.5). El mapping de R8 se sube al terminar
+  el release. `proguard-rules.pro` suma `-keepattributes SourceFile,LineNumberTable`.
+- iOS: `firebase-ios-sdk` 13.2.0 por SPM (producto `FirebaseCrashlytics`, IDs `C7A1…A3/B3/C3`), fases
+  "Copy GoogleService-Info.plist" y "Upload dSYM to Crashlytics" (`F1`/`F2`, la segunda solo en Release).
+- El repo no tenía configuración de Firebase: el padrón usa URLs públicas sin SDK (D21). `google-services.json`
+  y `GoogleService-Info.plist` se descargan de la consola y no se versionan (como los IDs de AdMob). Sin
+  ellos Gradle no aplica los plugins, Xcode no copia el plist y la app no arranca Firebase. Gradle y Xcode lo avisan.
+- Debug no recolecta: Android usa la meta-data `firebase_crashlytics_collection_enabled` (false en debug) e
+  iOS no llama a `FirebaseApp.configure()` con `DEBUG`.
+- Sin errores no fatales: los fallos del padrón y de la API son casi siempre de red (sin conexión, timeouts) y
+  la app ya cae a la caché o a la API. Reportarlos llenaría Crashlytics de ruido. Si un día hace falta,
+  conviene un `CrashReporter` en `platformModule` (Swift lo implementaría como `IosAdsBridge`).
+- Crash de prueba: solo se compila con `-PcrashlyticsTestCrash=true` (Gradle) o `-DCRASHLYTICS_TEST_CRASH`
+  (Swift). Ningún build normal lo incluye. Pasos en `docs/CRASHLYTICS.md`.
+- Límite en iOS: el framework de Kotlin es estático y release. Un crash en Kotlin llega como `SIGABRT` con
+  la pila nativa, y los frames de Kotlin pueden salir sin nombre.
+- A mano, antes de subir el próximo build (versionCode ≥ 8):
+  - Consola de Firebase: registrar las dos apps, descargar los archivos y habilitar Crashlytics.
+  - Política de privacidad (nekodojo.app/apps/peruxhunter/privacy): quitar "No usamos herramientas de
+    analítica ni de reportes de errores". Explicar que, si la app se cierra por un error, envía a Firebase
+    Crashlytics (Google) un informe técnico: traza, modelo, versión de sistema y de app, e ID de instalación
+    de Firebase. No envía datos personales ni lo que buscas. Sumarlo a las conexiones a internet, a las
+    transferencias internacionales (EE. UU.) y a la conservación (90 días en Crashlytics).
+  - Play, Seguridad de los datos: "Fallos" (registros de fallos) y "Diagnóstico", más "ID de dispositivo u
+    otros" (ID de instalación de Firebase). Marcar: recopilado, no compartido, efímero no, obligatorio,
+    finalidad "Estadísticas de la app", cifrado en tránsito.
+  - App Store, Privacidad de la app: "Diagnóstico → Datos de fallos" (y "Otros datos de diagnóstico" si se
+    declara la info de rendimiento), sin vincular a la identidad, sin rastreo, finalidad "Funcionalidad de la
+    app". El manifiesto del SDK de Crashlytics ya declara lo suyo; el de la app sigue vacío.
+
+## 2026-11-23 · Hojas que temblaban en iOS
+
+### D37. Las hojas inferiores no pasan bajo la barra de estado
+- Síntoma: en iOS la hoja "Reportar avistamiento" subía y bajaba sin parar al abrirse.
+- Causa (Material3 1.9): `ModalBottomSheet` rellena arriba el trozo de barra de estado que cubre. Ese relleno
+  alarga la hoja, la hoja sube, cubre más barra y suma más relleno. Si el contenido mide casi lo que la pantalla
+  (nombre largo, letra grande) no hay posición estable y la hoja oscila.
+- Arreglo: todas las hojas usan `sheetModifier` (relleno fijo de la barra de estado) y `sheetContentInsets`
+  (solo el borde inferior, que incluye el teclado). La hoja se detiene bajo la barra y nunca la cubre.
+- Con eso sobra `SheetStatusBarAppearance` (D29/D33): se borró. `sheetWindowProperties` en Android solo
+  conserva los íconos de la pantalla de abajo.
+- iOS: `OnFocusBehavior.DoNothing`. El desplazamiento automático de la vista al enfocar un campo se sumaba al
+  inset del teclado que ya maneja la hoja y la descuadraba. Los campos que el teclado puede tapar viven en hojas.
+
+## 2026-11-23 · Rechazo de Play por fuentes gubernamentales
+
+### D36. Enlaces a las fuentes oficiales en la ficha y en Ajustes
+- Play rechazó la 2.0.0 (4) por la política de afirmaciones engañosas: la app muestra información del
+  Gobierno sin enlaces claros a las fuentes originales.
+- La descripción de Play lleva una sección "FUENTES OFICIALES" con https://recompensas.pe/ y
+  https://www.gob.pe/mininter, y el aviso dice que la app no representa a ninguna entidad pública.
+- Ajustes suma el grupo "Fuentes oficiales" con las dos URLs a la vista. Las dos se abren en el webview
+  interno (D34): `LegalPage.MININTER` con JavaScript, como `SOURCE`; los enlaces a otros dominios salen
+  al navegador. El aviso "App no oficial" de Ajustes
+  usa la misma frase que la ficha.
+- Al cambiar la descripción de App Store, usar el mismo bloque.
+
+## 2026-11-19 · Capturas de tienda sin anuncios
+
+### D35. `ADS_ENABLED` en local.properties
+- `ADS_ENABLED=false` genera `AppInfo.ADS_ENABLED = false` y Koin entrega `NoAdsController`: no se pide
+  UMP ni ATT, no se inicia el SDK, los banners no ocupan espacio y Compartir sigue sin bonificado.
+- Sirve a Android e iOS, porque Xcode compila el framework con el mismo Gradle. Sin la clave vale `true`.
+- Solo para capturas de tienda: Gradle avisa al compilar con `false`. Volver a `true` antes de publicar.
 
 ## 2026-11-19 · Ajustes de Ficha y Ajustes
 

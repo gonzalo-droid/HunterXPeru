@@ -20,6 +20,8 @@ data class Criminal(
     /** Rutas en Firebase Storage (solo si viene del padrón): miniatura de 240 px y foto de 720 px. */
     val thumbKey: String? = null,
     val photoKey: String? = null,
+    /** Solo en Guardados: la persona ya no figura en el padrón vigente. */
+    val delisted: Boolean = false,
 ) {
     /** Primer delito: el que muestran las tarjetas. */
     val mainCrime: String get() = crimes.firstOrNull().orEmpty()
