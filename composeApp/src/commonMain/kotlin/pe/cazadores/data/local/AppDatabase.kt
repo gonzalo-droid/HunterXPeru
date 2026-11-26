@@ -19,10 +19,10 @@ import kotlinx.coroutines.IO
         PadronMetaEntity::class,
         PadronImageEntity::class,
     ],
-    // v2: padrón de Firebase Storage (solo tablas nuevas: migración automática).
-    version = 2,
+    // v2: padrón de Firebase Storage (solo tablas nuevas). v3: `favorites.delistedAt` (columna nullable).
+    version = 3,
     exportSchema = true,
-    autoMigrations = [AutoMigration(from = 1, to = 2)],
+    autoMigrations = [AutoMigration(from = 1, to = 2), AutoMigration(from = 2, to = 3)],
 )
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {

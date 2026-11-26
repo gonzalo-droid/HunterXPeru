@@ -14,6 +14,9 @@ interface FavoriteDao {
     @Query("SELECT EXISTS(SELECT 1 FROM favorites WHERE hash = :hash)")
     fun observeIsFavorite(hash: String): Flow<Boolean>
 
+    @Query("SELECT * FROM favorites")
+    suspend fun all(): List<FavoriteEntity>
+
     @Query("SELECT * FROM favorites WHERE hash = :hash")
     suspend fun get(hash: String): FavoriteEntity?
 

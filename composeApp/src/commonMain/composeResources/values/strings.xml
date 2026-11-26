@@ -136,6 +136,7 @@
     <string name="saved_removed">Cartel de %1$s quitado</string>
     <string name="undo">Deshacer</string>
     <string name="saved_remove_action">Quitar cartel</string>
+    <string name="saved_delisted">Ya no figura en el padrón</string>
     <string name="saved_remove_hint">Toca la X de un cartel para quitarlo.</string>
 
     <!-- Ajustes -->

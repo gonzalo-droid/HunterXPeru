@@ -75,6 +75,10 @@ class PadronStore(
     private var thumbsJob: Job? = null
     private val syncing = MutableStateFlow(false)
     override val imagesSyncing: StateFlow<Boolean> = syncing.asStateFlow()
+    private val latest = MutableStateFlow<Padron?>(null)
+
+    /** Padrón vigente cada vez que se carga o llega una versión nueva (lo usa Guardados para ponerse al día). */
+    val updates: StateFlow<Padron?> = latest.asStateFlow()
 
     init {
         // Vuelve la red (no el primer valor): reintenta las miniaturas que no llegaron.
@@ -140,6 +144,7 @@ class PadronStore(
             dao.meta()?.let { meta ->
                 checkedAt = meta.checkedAt
                 memory = parse(meta.json)
+                latest.value = memory
                 // La app pudo cerrarse antes de terminar de guardar las miniaturas.
                 memory?.let { startThumbs(it, zipKey = null) }
             }
@@ -167,18 +172,28 @@ class PadronStore(
         }
         dao.upsertMeta(PadronMetaEntity(version = fresh.version, json = raw, generatedAt = fresh.generatedAtMillis, checkedAt = now))
         memoryLock.withLock { memory = fresh }
+        latest.value = fresh
         checkedAt = now
         startThumbs(fresh, manifest.thumbsZip)
         fresh
     }
 
-    /** Baja el zip de miniaturas si faltan y borra las de personas que ya no están. */
+    /** Baja las miniaturas que faltan (sueltas si son pocas, si no el zip) y borra las de quien ya no está. */
     private suspend fun syncThumbs(padron: Padron, zipKey: String?) {
         val wanted = padron.criminals.mapNotNull { it.thumbKey }.toSet()
         val stored = dao.imagePaths(THUMBS_PREFIX).toSet()
         (stored - wanted).takeIf { it.isNotEmpty() }?.let { gone -> gone.chunked(500).forEach { dao.deleteImages(it) } }
         val missing = wanted - stored
         if (missing.isEmpty()) return
+        // Semana con pocas fotos nuevas: sueltas cuesta unos KB en vez del zip entero (~3,8 MB).
+        // Las que fallen quedan faltando y se reintentan al volver la red, como el zip.
+        if (missing.size <= LOOSE_THUMBS_LIMIT && (stored intersect wanted).isNotEmpty()) {
+            if (!isOnline()) return
+            missing.forEach { key ->
+                download(key)?.let { dao.upsertImages(listOf(PadronImageEntity(key, it, time.nowMillis()))) }
+            }
+            return
+        }
         val key = zipKey ?: dao.meta()?.json?.let { runCatchingIo { json.decodeFromString(ManifestDto.serializer(), it).thumbsZip } } ?: return
         if (!isOnline()) return
         val zip = download(key) ?: return
@@ -224,6 +239,8 @@ class PadronStore(
         const val FIRST_LOAD_TIMEOUT_MS = 15_000L
         const val RETRY_AFTER_FAILURE_MS = 60_000L
         const val MAX_PHOTOS = 60
+        /** Hasta cuántas miniaturas faltantes conviene bajar sueltas en vez del zip. */
+        const val LOOSE_THUMBS_LIMIT = 30
         private const val NETWORK_CHECK_TIMEOUT_MS = 500L
         private const val THUMBS_PREFIX = "thumbs/"
         private const val PHOTOS_PREFIX = "photos/"
