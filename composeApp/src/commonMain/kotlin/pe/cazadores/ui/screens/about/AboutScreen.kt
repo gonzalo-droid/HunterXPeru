@@ -59,7 +59,7 @@ private val BLOCKS = listOf(
 
 @Composable
 fun AboutRoute(onBack: () -> Unit, actions: ExternalActions = koinInject()) {
-    val shareText = stringResource(Res.string.about_share_text, AppConfig.PLAY_STORE_URL, AppConfig.APP_STORE_URL)
+    val shareText = stringResource(Res.string.about_share_text, AppConfig.DOWNLOAD_URL)
     AboutScreen(
         onBack = onBack,
         onShareApp = { actions.share(shareText) },
