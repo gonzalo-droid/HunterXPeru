@@ -73,8 +73,7 @@ fun DetailRoute(
             it.criminal.displayName,
             RewardFormatter.format(it.criminal.reward) ?: stringResource(Res.string.reward_none),
             AppConfig.REPORT_PHONE,
-            AppConfig.PLAY_STORE_URL,
-            AppConfig.APP_STORE_URL,
+            AppConfig.DOWNLOAD_URL,
         )
     }
 

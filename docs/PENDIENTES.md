@@ -79,14 +79,9 @@ Mejoras detectadas que quedaron para después. Las decisiones tomadas van en `DE
 
 - **Detectado:** al sumar a la base Ajustes estándar, enlaces y anuncios (AJU-*, LNK-*, ADS-06). La auditoría
   completa se hizo el 2026-11-25 (ver "Auditoría contra la base").
-- **Un solo enlace al compartir la app.** Hoy `about_share_text` y `share_text` llevan dos enlaces
-  (`PLAY_STORE_URL` y `APP_STORE_URL`), y la landing dice que Android "llega pronto": el enlace de Play
-  puede no llevar a nada. Crear en `neko-dojo` la ruta `/apps/[slug]/descargar` (redirige según el
-  `User-Agent` usando `stores` de `src/content/apps.ts`, y a la landing si falta la tienda) y cambiar los
-  dos textos a `https://nekodojo.app/apps/peruxhunter/descargar` (base AJU-04, NEK-02). Al 2026-11-25 la web
-  publicada ya muestra el enlace del App Store, pero el `apps.ts` de la copia local tiene las dos tiendas en
-  `null`: actualizar la copia (hay una rama `feat/peruxhunter-app-store`) antes de crear la ruta.
-- Resueltos el 2026-11-26: anuncios sin recompilar (ADS-06) y navegador in-app (LNK-01, D42).
+- Resueltos el 2026-11-26: anuncios sin recompilar (ADS-06), navegador in-app (LNK-01, D42) y un solo enlace al
+  compartir (AJU-04, NEK-02): `AppConfig.DOWNLOAD_URL` = `nekodojo.app/apps/peruxhunter/download`, que redirige
+  según el dispositivo (neko-dojo #35). Al publicar en Play, poner su URL en `stores` de `src/content/apps.ts`.
 
 ## iPad (retirado de la 2.0.3)
 

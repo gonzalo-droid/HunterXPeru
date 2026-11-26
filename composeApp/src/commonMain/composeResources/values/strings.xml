@@ -94,7 +94,7 @@
     <string name="detail_source">Fuente: Programa de Recompensas (MININTER) · consultado %1$s</string>
     <string name="detail_report">Reportar por escrito</string>
     <string name="detail_not_found_title">Ficha no encontrada</string>
-    <string name="share_text">🚨 SE BUSCA: %1$s · 💰 %2$s\n📞 Si lo ves, llama gratis al %3$s. No te acerques.\n🔁 ¡Compártelo!\n\n📲 Cazadores Perú\n▶️ %4$s\n🍎 %5$s\n\nℹ️ App no oficial · Datos del Programa de Recompensas</string>
+    <string name="share_text">🚨 SE BUSCA: %1$s · 💰 %2$s\n📞 Si lo ves, llama gratis al %3$s. No te acerques.\n🔁 ¡Compártelo!\n\n📲 Descarga Cazadores Perú: %4$s\n\nℹ️ App no oficial · Datos del Programa de Recompensas</string>
     <string name="share_image_call">No te acerques · Llama gratis %1$s</string>
     <string name="share_image_disclaimer">Imagen no oficial · verifica en recompensas.pe</string>
 
@@ -229,7 +229,7 @@
     <string name="about_support_body">Los anuncios ayudan al mantenimiento y crecimiento del proyecto. Compartir la app y los carteles también suma. Agradecemos cualquier comentario u observación para seguir mejorando.</string>
     <string name="about_share_app">Compartir la app</string>
     <string name="about_rate">Calificar y comentar</string>
-    <string name="about_share_text">Cazadores Perú: consulta a las personas buscadas por el Programa de Recompensas y comparte sus carteles. Si todos estamos atentos, nadie se escapa.\n▶️ Android: %1$s\n🍎 iPhone: %2$s</string>
+    <string name="about_share_text">Cazadores Perú: consulta a las personas buscadas por el Programa de Recompensas y comparte sus carteles. Si todos estamos atentos, nadie se escapa.\n📲 Descárgala gratis: %1$s</string>
     <string name="settings_contact">Contacto y reportar un problema</string>
     <string name="settings_contact_subject">Cazadores Perú %1$s · consulta</string>
     <string name="settings_contact_body">Cuéntanos qué pasó o qué te gustaría mejorar:\n\n\n—\nVersión: %1$s\nDispositivo: %2$s\nSistema: %3$s %4$s</string>
