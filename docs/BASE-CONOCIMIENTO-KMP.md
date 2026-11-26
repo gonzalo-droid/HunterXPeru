@@ -279,9 +279,22 @@ Toda app trae estas filas en Ajustes, en este orden. Textos en `strings.xml`.
 
 **Compartir la app:**
 - Mensaje de invitación amable, corto y sin presión: qué hace la app y por qué le sirve a quien lo recibe.
-- Un solo enlace a una página propia (p. ej. `<dominio>/apps/<app>`) que detecta el sistema y redirige a
-  Play o al App Store; en una computadora muestra ambos botones. Así el mensaje lleva un enlace, no dos, y
-  si cambia la ficha de una tienda solo se actualiza la página. Sin página propia: los dos enlaces.
+- **Un solo enlace de descarga que redirige desde el servidor:** `nekodojo.app/apps/<slug>/descargar`.
+  El servidor mira el `User-Agent` y responde un 302, sin mostrar ninguna página:
+  - Android → Play (si la app todavía no está en Play, a la landing).
+  - iPhone → App Store (si todavía no está, a la landing).
+  - Computadora u otro → la landing `nekodojo.app/apps/<slug>`.
+  - Los iPad con iPadOS 13+ se presentan como Mac y caen en la landing, que ya tiene el botón del App Store.
+- **Por qué así:** el texto de compartir queda grabado en cada versión instalada y se sigue mandando por
+  años. Con el enlace del sitio, a dónde lleva se decide en el servidor: publicar en Play, cambiar una
+  ficha o sumar una tienda no exige una versión nueva de la app. Además, el mensaje lleva un enlace y no dos,
+  la vista previa de WhatsApp sale con la imagen de la landing y los clics se pueden contar.
+- **Landing ≠ descarga:** la landing (`/apps/<slug>`) es para leer qué es la app y no redirige; va en la web,
+  en redes y en las fichas. `/descargar` va solo en el mensaje de compartir. No poner la redirección dentro
+  de la landing: quien entra a leer desde el celular terminaría en la tienda sin pedirlo.
+- **Riesgo:** si el dominio vence o el sitio se cae, todos los enlaces compartidos fallan. Mantener el
+  dominio renovado. Sin sitio propio, compartir los dos enlaces directos de las tiendas (y nunca el de una
+  tienda donde la app aún no está).
 - Por la hoja de compartir del sistema (`ExternalActions.share`), nunca a una app concreta.
 
 **Valorar la app:**
@@ -292,6 +305,13 @@ Toda app trae estas filas en Ajustes, en este orden. Textos en `strings.xml`.
   un error ni en el arranque.
 - Prohibido por las tiendas: preguntar antes "¿te gusta?" y mandar solo a los contentos a la tienda, o dar
   premios por valorar.
+
+**Dónde viven las landings:** en el proyecto web de Nekodojo (`/Volumes/Neko/webs/neko-dojo`, Next.js).
+- Ficha de cada app en `src/content/apps.ts`: `slug`, `status` y `stores` (URL de cada tienda, o `null`
+  mientras no esté publicada; la landing muestra "Próximamente"). La ruta `/descargar` lee los mismos datos.
+- Páginas en `src/app/[locale]/(apps)/apps/<slug>/`: landing, `privacy`, `terms` y `support`. Esas URLs son
+  las que la app abre en Ajustes y las que se ponen en las fichas de las tiendas.
+- El español va sin prefijo y el inglés con `/en/` (`src/proxy.ts`).
 
 ## 1.17 Enlaces: dónde se abre cada uno
 
@@ -412,6 +432,8 @@ para no copiar a mano en cada app.
    no se puede cambiar una vez publicado.**
 2. Crear `CLAUDE.md` (comandos, estructura que engaña, zonas peligrosas), `docs/DECISIONES.md` y
    `docs/PENDIENTES.md`.
+   En `neko-dojo`, sumar la app a `src/content/apps.ts` con su landing, `privacy`, `terms` y `support`
+   (1.16); el texto de compartir usa `nekodojo.app/apps/<slug>/descargar`.
 3. Activar el hook `pre-push` (1.9) y la tarea `checkIosVersion` (1.6).
    Crear `release/0.1.0` desde `main` y trabajar con el flujo de ramas (1.15).
 4. Si hay API ajena, verificarla primero (2.4) y anotarla.

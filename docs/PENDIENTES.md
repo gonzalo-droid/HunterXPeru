@@ -32,6 +32,13 @@ Mejoras detectadas que quedaron para después. Las decisiones tomadas van en `DE
   `true` antes de publicar. Sumar, solo en debug, un argumento de arranque `disableAds=true` (para Maestro y
   capturas) y un interruptor oculto en Ajustes. En release se ignoran. Con esto el flujo de Maestro podría
   correr sobre el build normal.
+- **Un solo enlace al compartir la app.** Hoy `about_share_text` y `share_text` llevan dos enlaces
+  (`PLAY_STORE_URL` y `APP_STORE_URL`), y la landing dice que Android "llega pronto": el enlace de Play
+  puede no llevar a nada. Crear en `neko-dojo` la ruta `/apps/[slug]/descargar` (redirige según el
+  `User-Agent` usando `stores` de `src/content/apps.ts`, y a la landing si falta la tienda) y cambiar los
+  dos textos a `https://nekodojo.app/apps/peruxhunter/descargar` (base §1.16). Al 2026-11-25 la web
+  publicada ya muestra el enlace del App Store, pero el `apps.ts` de la copia local tiene las dos tiendas en
+  `null`: actualizar la copia (hay una rama `feat/peruxhunter-app-store`) antes de crear la ruta.
 - **Navegador in-app para sitios ajenos.** Hoy las fuentes oficiales (recompensas.pe y gob.pe/mininter) se
   abren en el WebView interno **con JavaScript** (D34, D36), y los enlaces a otros dominios salen al
   navegador del sistema, fuera de la app. Según la base (§1.17), el contenido ajeno va mejor en Custom Tabs
