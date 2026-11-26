@@ -27,16 +27,22 @@ Mejoras detectadas que quedaron para después. Las decisiones tomadas van en `DE
 - **Probar en Android lo del 2026-11-26** (el emulador se cayó y solo se vio en iOS): filas Contacto y Licencias, el
   correo de contacto con sus datos, Custom Tabs para las fuentes oficiales, `adb shell am start --ez disableAds true`
   y 7 toques en la versión, y el respaldo con `adb shell bmgr backupnow com.nekodojo.peruxhunter`.
+- **Compartir con el enlace único:** en los dos sistemas, compartir un cartel y "Compartir la app", y abrir
+  `nekodojo.app/apps/peruxhunter/download` desde el mensaje: en iPhone debe abrir el App Store; en Android, la
+  landing hasta que la app esté en Play. Solo se probó con `curl`.
 - Build de tienda con `ADS_ENABLED=true` en `local.properties`.
+- **Al publicar en Google Play:** poner la URL de la ficha en `stores` (`src/content/apps.ts` de `neko-dojo`)
+  para que `/apps/peruxhunter/download` mande Android a Play y la landing deje de decir "llega pronto". La app no
+  se toca.
 - Al unir: merge normal (sin squash), tag `v2.0.3` y, si la 2.0.2 está publicada, tag `v2.0.2` en `5a9fbc7`.
-- Checkout principal: borrar o descartar las copias viejas sin commit de `docs/BASE-CONOCIMIENTO-KMP.md` y
-  `docs/PENDIENTES.md` antes de hacer pull de `main`, o el pull se detiene.
+- Checkout principal: `docs/BASE-CONOCIMIENTO-KMP.md` tiene sin commit el puntero a la skill `base-kmp-audit`
+  (se decidió no versionarlo). Guardarlo o descartarlo antes de cambiar a `main`, o el checkout se detiene.
 
 ## Auditoría contra la base (2026-11-25)
 
 - **Detectado:** primera auditoría con la Parte 7 de la base (`docs/auditorias/2026-11-25-base-kmp.md`). Lo
   urgente quedó en "Antes de publicar la 2.0.3".
-- **Resuelto el 2026-11-26** (PRs 17 a 22, en `release/2.0.3`):
+- **Resuelto el 2026-11-26** (PRs 17 a 22 y 24, en `release/2.0.3`):
   - CI-01 hook `pre-push`; DOC-01 `CLAUDE.md` en git; DOC-02 `CHANGELOG.md`; PRIV-01 reglas de respaldo (D41).
   - COD-05 secciones de `DetailScreen` y `SearchScreen` en archivos propios; A11Y-02 revisado (los 20 `null` son
     decorativos o su contenedor ya describe la acción).
@@ -44,6 +50,8 @@ Mejoras detectadas que quedaron para después. Las decisiones tomadas van en `DE
   - ADS-06 anuncios apagables en debug sin recompilar; Maestro usa `disableAds`.
   - LNK-01/LNK-02 fuentes oficiales en el navegador in-app; el WebView ya no usa JavaScript (D42).
   - UPD-01/02/04 `minAppVersionCode` en el manifest y pantalla "Actualiza la app" (D43).
+  - AJU-04/NEK-02 un solo enlace al compartir: `AppConfig.DOWNLOAD_URL` = `nekodojo.app/apps/peruxhunter/download`,
+    que redirige según el dispositivo (neko-dojo #35, en producción).
 - **Sigue pendiente:**
   - **Tablets Android (TIE-04):** con `targetSdk 36`, Android 16 ignora `screenOrientation="portrait"` en
     pantallas de 600 dp o más. Probar en un emulador de tablet en horizontal; si se ve mal, retomar el diseño por
@@ -53,7 +61,6 @@ Mejoras detectadas que quedaron para después. Las decisiones tomadas van en `DE
     AdMob; referenciarlo en `CLAUDE.md`.
   - **Confirmar Play App Signing (SEC-03)** en Play Console.
   - **Zonas táctiles (A11Y-03):** revisar los íconos sueltos con Accessibility Scanner / Accessibility Inspector.
-  - **Un solo enlace al compartir (AJU-04, NEK-02):** ver "Contraste con la base".
   - **Tag `v2.0.2` (GIT-01):** ver "Antes de publicar la 2.0.3".
 
 ## Revisión de arquitectura (2026-11-25)
@@ -74,14 +81,6 @@ Mejoras detectadas que quedaron para después. Las decisiones tomadas van en `DE
   - **Sin CI en la nube.** Hay hook `pre-push` local (CI-01). Si se suma CI, que corra solo en PRs a
     `release/**` (CI-02).
   - Maestro en iOS y la marca "Ya no figura" en pantalla: ver "Antes de publicar la 2.0.3".
-
-## Contraste con la base de conocimiento (2026-11-25)
-
-- **Detectado:** al sumar a la base Ajustes estándar, enlaces y anuncios (AJU-*, LNK-*, ADS-06). La auditoría
-  completa se hizo el 2026-11-25 (ver "Auditoría contra la base").
-- Resueltos el 2026-11-26: anuncios sin recompilar (ADS-06), navegador in-app (LNK-01, D42) y un solo enlace al
-  compartir (AJU-04, NEK-02): `AppConfig.DOWNLOAD_URL` = `nekodojo.app/apps/peruxhunter/download`, que redirige
-  según el dispositivo (neko-dojo #35). Al publicar en Play, poner su URL en `stores` de `src/content/apps.ts`.
 
 ## iPad (retirado de la 2.0.3)
 
