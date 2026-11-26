@@ -25,7 +25,12 @@ import pe.cazadores.platform.AndroidNetworkMonitor
 actual val platformModule: Module = module {
     single {
         val flags = androidContext().applicationInfo.flags
-        AppEnvironment(platformName = "Android", isDebug = flags and ApplicationInfo.FLAG_DEBUGGABLE != 0)
+        AppEnvironment(
+            platformName = "Android",
+            isDebug = flags and ApplicationInfo.FLAG_DEBUGGABLE != 0,
+            deviceModel = "${android.os.Build.MANUFACTURER} ${android.os.Build.MODEL}",
+            osVersion = android.os.Build.VERSION.RELEASE,
+        )
     }
     // La confianza TLS para la API la define res/xml/network_security_config.xml (androidApp).
     single<HttpClientEngine> { OkHttp.create() }
