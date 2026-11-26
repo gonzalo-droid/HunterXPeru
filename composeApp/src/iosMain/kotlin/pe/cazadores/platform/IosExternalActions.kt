@@ -60,6 +60,8 @@ class IosExternalActions : ExternalActions {
         presenter.presentViewController(SFSafariViewController(uRL = nsUrl), animated = true, completion = null)
     }
 
+    override fun openStorePage() = open("itms-apps://apps.apple.com/app/id${AppConfig.IOS_APP_STORE_ID}")
+
     override fun openStoreReview() {
         if (AppConfig.IOS_APP_STORE_ID.isNotEmpty()) {
             open("itms-apps://apps.apple.com/app/id${AppConfig.IOS_APP_STORE_ID}?action=write-review")

@@ -15,6 +15,8 @@ data class ManifestDto(
     val generatedAt: String,
     val count: Int = 0,
     val thumbsZip: String? = null,
+    /** Build mínimo que puede leer este padrón (UPD-01). 0 = cualquiera. Lo fija `sync/sync_requisitoriados.py`. */
+    val minAppVersionCode: Int = 0,
     val criminals: List<ManifestRecordDto> = emptyList(),
 )
 

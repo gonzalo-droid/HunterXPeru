@@ -14,6 +14,9 @@ interface ExternalActions {
     /** Abre un sitio ajeno sin salir de la app: Custom Tabs (Android) o SFSafariViewController (iOS). Base LNK-01. */
     fun openInAppBrowser(url: String)
 
+    /** Abre la ficha de la app en su tienda para actualizarla (sin pedir reseña). */
+    fun openStorePage()
+
     /** Abre la ficha de la app en su tienda (Play / App Store) para dejar reseña. */
     fun openStoreReview()
 }

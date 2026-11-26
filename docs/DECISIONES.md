@@ -3,7 +3,20 @@
 Registro de lo que se verificó contra la API real y de las decisiones que cambian o precisan
 `docs/kmp-migration/`. La más reciente va arriba.
 
-## 2026-11-26 · Fuentes oficiales en el navegador in-app
+## 2026-11-26 · Versión mínima del padrón
+
+### D43. El manifest puede pedir un build mínimo y la app avisa "Actualiza la app"
+- El manifest ya llevaba `schema`: un build que no entiende el esquema nuevo se queda con el padrón anterior. Pero
+  callado, con datos cada vez más viejos (auditoría UPD-01, UPD-02).
+- Ahora el manifest lleva `minAppVersionCode` (`MIN_APP_VERSION_CODE` en `sync/sync_requisitoriados.py`, hoy 0).
+  `PadronStore.updateRequired` se enciende si es mayor que `AppInfo.VERSION_CODE` (generado desde el catálogo), y
+  `App()` muestra `UpdateRequiredScreen` con "Ir a la tienda" (`ExternalActions.openStorePage`).
+- Se lee antes de validar el esquema, porque un esquema nuevo es justo el caso a avisar. Sin red no se sabe y la
+  app sigue normal. El aviso no se guarda: tras reabrir vuelve en la siguiente consulta (cada 6 h).
+- Al cambiar el formato de forma incompatible: subir `SCHEMA` y `MIN_APP_VERSION_CODE` juntos, después de publicar
+  el build que entiende el esquema nuevo.
+
+
 
 ### D42. recompensas.pe y gob.pe/mininter se abren en Custom Tabs / SFSafariViewController
 - Antes (D34, D36) se abrían en el WebView interno con JavaScript y DOM storage, porque recompensas.pe es Angular.

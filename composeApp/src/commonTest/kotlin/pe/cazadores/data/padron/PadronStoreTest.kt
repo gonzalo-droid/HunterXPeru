@@ -19,6 +19,7 @@ import pe.cazadores.domain.repository.TimeProvider
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -126,6 +127,28 @@ class PadronStoreTest {
         online.value = false
         assertNull(store().current())
         assertTrue(requests.isEmpty())
+    }
+
+    @Test fun newerSchemaAskingForNewerBuildKeepsDataAndFlagsUpdate() = runTest {
+        publish(1, "a")
+        store().current()
+        settle()
+        files["data/manifest.json"] = manifestJson(2, record("b"))
+            .replace("\"schema\":1", "\"schema\":2,\"minAppVersionCode\":${Int.MAX_VALUE}").encodeToByteArray()
+        now += PadronStore.CHECK_INTERVAL_MS
+        val reopened = store()
+        reopened.current()
+        settle()
+        assertEquals(1, reopened.current()?.version)
+        assertTrue(reopened.updateRequired.value)
+    }
+
+    @Test fun currentBuildIsNotAskedToUpdate() = runTest {
+        publish(1, "a")
+        val s = store()
+        s.current()
+        settle()
+        assertFalse(s.updateRequired.value)
     }
 
     @Test fun brokenManifestKeepsPrevious() = runTest {
