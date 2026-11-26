@@ -4,9 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import pe.cazadores.platform.encodePng
 import pe.cazadores.ads.AdsController
 import pe.cazadores.ads.allowsShare
@@ -208,8 +206,7 @@ fun DetailRoute(
         SharePosterCapture(loaded.criminal, loaded.danger, RewardClassCalculator.of(loaded.criminal.reward)) { bitmap ->
             scope.launch {
                 try {
-                    val png = bitmap?.let { withContext(Dispatchers.Default) { runCatching { it.encodePng() }.getOrNull() } }
-                    if (png != null) actions.shareImage(png, shareText) else actions.share(shareText)
+                    sharePoster(bitmap, shareText, actions, encode = { it.encodePng() })
                 } finally {
                     sharing = false
                 }
