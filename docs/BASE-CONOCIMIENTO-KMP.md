@@ -267,6 +267,44 @@ Medir y anotar en cada release (en el `DECISIONES.md` de la app):
 - En repos privados, este flujo combina con el CI barato (§1.9): los workflows corren solo en PRs a
   `release/**` y en el push a `main`.
 
+## 1.16 Ajustes estándar
+
+Toda app trae estas filas en Ajustes, en este orden. Textos en `strings.xml`.
+- **Privacidad:** "Preferencias de anuncios" (formulario de UMP, solo si hay anuncios y UMP lo exige),
+  "Política de privacidad" y "Términos y condiciones".
+- **Comunidad:** "Compartir la app" y "Valorar la app".
+- **Ayuda:** "Contacto / reportar un problema" (correo con versión, modelo y sistema ya escritos) y
+  "Licencias de código abierto".
+- **Pie:** la versión visible (`AppInfo.VERSION_NAME`), útil para soporte y para cruzar con Crashlytics.
+
+**Compartir la app:**
+- Mensaje de invitación amable, corto y sin presión: qué hace la app y por qué le sirve a quien lo recibe.
+- Un solo enlace a una página propia (p. ej. `<dominio>/apps/<app>`) que detecta el sistema y redirige a
+  Play o al App Store; en una computadora muestra ambos botones. Así el mensaje lleva un enlace, no dos, y
+  si cambia la ficha de una tienda solo se actualiza la página. Sin página propia: los dos enlaces.
+- Por la hoja de compartir del sistema (`ExternalActions.share`), nunca a una app concreta.
+
+**Valorar la app:**
+- El botón abre la ficha para escribir la reseña: Android `market://details?id=<pkg>` (si falla, la web de
+  Play); iOS `itms-apps://apps.apple.com/app/id<ID>?action=write-review`.
+- El aviso nativo (Play In-App Review, `SKStoreReviewController`) es otra cosa: el sistema decide si lo
+  muestra y limita cuántas veces. Pedirlo solo tras un momento bueno (p. ej. el tercer guardado), nunca tras
+  un error ni en el arranque.
+- Prohibido por las tiendas: preguntar antes "¿te gusta?" y mandar solo a los contentos a la tienda, o dar
+  premios por valorar.
+
+## 1.17 Enlaces: dónde se abre cada uno
+
+| Enlace | Dónde | Por qué |
+|---|---|---|
+| Páginas propias (privacidad, términos, ayuda) | WebView dentro de la app | Mantiene el foco; el contenido es tuyo y se controla |
+| Sitios ajenos (fuentes, noticias, redes) | Navegador in-app: Custom Tabs (Android), `SFSafariViewController` (iOS) | No sale de la app, muestra la URL real, usa las sesiones y el autocompletado del navegador y no expone la app a contenido ajeno. Google y Apple lo recomiendan en vez de WebView para terceros |
+| Tiendas, `mailto:`, `tel:`, mapas | App del sistema | Es lo que el usuario espera |
+
+Reglas del WebView: sin JavaScript si las páginas son HTML estático; la URL sale de la configuración (un
+deep link no puede cargar otra); solo el host propio se queda dentro y el resto sale por `ExternalActions`;
+HTTP ≥ 400 cuenta como fallo, con "Reintentar" y "Abrir en el navegador".
+
 ---
 
 # Parte 2 · Si aplica
@@ -279,7 +317,13 @@ Medir y anotar en cada release (en el `DECISIONES.md` de la app):
 - Debug: IDs de prueba de Google y geografía EEE forzada. Release: IDs reales desde los secretos.
 - Ninguna acción depende de un anuncio: si un bonificado falla o tarda más de ~4 s, se hace la acción igual.
 - Ajustes muestra "Preferencias de anuncios" solo si UMP lo exige.
-- Flag `ADS_ENABLED=false` + `NoAdsController` para capturas de tienda.
+- **Apagar los anuncios para capturas y pruebas**, en dos niveles:
+  - Compilación: `ADS_ENABLED=false` en `local.properties` → Koin entrega `NoAdsController`. Gradle avisa
+    al compilar así.
+  - En ejecución, **solo en debug**: un argumento de arranque (`disableAds=true`, que Maestro, `adb` y
+    Xcode pueden pasar) o un interruptor oculto en Ajustes (p. ej. 7 toques en la versión). Así no hay que
+    recompilar para tomar capturas ni correr flujos. En release ambos se ignoran: nunca se publica sin
+    anuncios por error.
 - Skills: `add-admob` y `admob-compliance`.
 
 ## 2.2 Crashlytics
@@ -314,6 +358,22 @@ Medir y anotar en cada release (en el `DECISIONES.md` de la app):
   usar `network_security_config` con sistema + intermedia en `res/raw`, solo para ese dominio.
 - Sin red, no reintentar: ir directo a la caché. Mostrar la fecha de los datos ("Sin conexión · datos del…").
 - Catálogos fijos, empaquetados en `composeResources/files`, con refresco en segundo plano.
+
+## 2.5 Pagos
+
+- **Contenido digital** (premium, quitar anuncios, suscripciones, monedas): siempre compra dentro de la app
+  de Google Play y App Store. Usar **RevenueCat** encima (tiene SDK de Kotlin Multiplatform): valida las
+  compras en su servidor, unifica ambas tiendas y da paywalls y métricas. Revisar el precio vigente antes de
+  elegirlo (es gratis hasta cierto nivel de facturación y luego cobra un porcentaje).
+- **Bienes físicos o servicios fuera de la app** (envíos, reservas): pasarela propia (Stripe, Culqi,
+  Mercado Pago…), sin RevenueCat ni compras de la tienda.
+- El código pregunta por **derechos** (`premium`), no por productos (`pro_monthly`). El derecho cambia la
+  app en ejecución: con `premium`, Koin o el `AdsController` pasan a `NoAdsController` (no el flag de
+  compilación de 2.1).
+- Obligatorio: botón "Restaurar compras" (Apple lo exige), probar con los testers de sandbox de cada tienda
+  y actualizar la política de privacidad, Data safety y la privacidad de App Store (RevenueCat procesa
+  datos de compra).
+- Si solo hay una compra única sin suscripción, StoreKit 2 + Play Billing directos pueden bastar.
 
 ---
 
@@ -367,6 +427,7 @@ para no copiar a mano en cada app.
 - Release Android (R8) y Release iOS probados: claro, oscuro, letra grande, modo avión.
 - Versiones iguales en el catálogo y en el xcconfig; `versionCode` / build number mayores que el último subido.
 - Flags de prueba apagados (`ADS_ENABLED=true`, sin crash de prueba).
+- Ajustes estándar completos (1.16) y las URLs de privacidad y términos respondiendo 200.
 - Medidas de rendimiento anotadas (1.12).
 
 **Play Console:**
