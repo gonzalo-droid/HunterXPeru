@@ -1,0 +1,33 @@
+# Smoke: Inicio → Buscar → Ficha → Guardar → Carteles. Corre igual en Android e iOS.
+# maestro test .maestro/   (ver docs/BASE-CONOCIMIENTO-KMP.md §1.8)
+# Correrlo sobre un build con ADS_ENABLED=false en local.properties: en debug el formulario de UMP
+# (geografía EEE forzada, D7) taparía Inicio y el flujo no lo maneja.
+appId: com.nekodojo.peruxhunter
+name: Guardar un cartel desde Buscar
+---
+- launchApp:
+    clearState: true
+# Emulador lento: Android a veces muestra "System UI isn't responding" encima de la app.
+- runFlow:
+    when:
+      visible: ".*isn't responding"
+    commands:
+      - tapOn: "Wait"
+# Primera apertura tras clearState: el onboarding tarda en un emulador lento.
+- extendedWaitUntil:
+    visible: "Omitir"
+    timeout: 120000
+- tapOn: "Omitir"
+- tapOn: "Buscar"
+# Primer resultado: cualquier tarjeta con monto (el formato usa espacio de no separación: "S/.*"). El padrón o la API pueden tardar en la primera apertura.
+- extendedWaitUntil:
+    visible: "S/.*"
+    timeout: 120000
+- tapOn:
+    text: "S/.*"
+    index: 0
+- tapOn: "Guardar"
+- assertVisible: "Guardado en tu lista"
+- back
+- tapOn: "Carteles"
+- assertNotVisible: "Aún no tienes carteles"
