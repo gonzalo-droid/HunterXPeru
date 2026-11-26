@@ -26,6 +26,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.serialization.json.Json
 import pe.cazadores.core.config.AppConfig
+import pe.cazadores.core.config.AppInfo
 import pe.cazadores.data.local.PadronDao
 import pe.cazadores.data.local.PadronImageEntity
 import pe.cazadores.data.local.PadronMetaEntity
@@ -63,6 +64,7 @@ class PadronStore(
     private val baseUrl: String = AppConfig.STORAGE_BASE_URL,
     private val checkIntervalMs: Long = CHECK_INTERVAL_MS,
     private val firstLoadTimeoutMs: Long = FIRST_LOAD_TIMEOUT_MS,
+    private val appVersionCode: Int = AppInfo.VERSION_CODE,
 ) : PadronSource, PhotoRepository {
 
     private val memoryLock = Mutex()
@@ -79,6 +81,15 @@ class PadronStore(
 
     /** Padrón vigente cada vez que se carga o llega una versión nueva (lo usa Guardados para ponerse al día). */
     val updates: StateFlow<Padron?> = latest.asStateFlow()
+
+    private val _updateRequired = MutableStateFlow(false)
+
+    /**
+     * El padrón publicado pide un build más nuevo (UPD-02). Solo se sabe tras leer el manifest: sin red, la app sigue.
+     * shortcut: no se guarda; tras reabrir se vuelve a avisar en la próxima consulta (cada 6 h). Guardarlo si hace falta
+     * avisar sin red.
+     */
+    val updateRequired: StateFlow<Boolean> = _updateRequired.asStateFlow()
 
     init {
         // Vuelve la red (no el primer valor): reintenta las miniaturas que no llegaron.
@@ -161,6 +172,8 @@ class PadronStore(
         val raw = runCatchingIo { client.get(urlOf(AppConfig.MANIFEST_PATH)) { header(HttpHeaders.Accept, "*/*") }.bodyAsText() }
             ?: return@withLock previous
         val manifest = runCatchingIo { json.decodeFromString(ManifestDto.serializer(), raw) }
+        // Antes de validar el esquema: un esquema nuevo es justo el caso en que este build ya no sirve.
+        if (manifest != null) _updateRequired.value = manifest.minAppVersionCode > appVersionCode
         val now = time.nowMillis()
         val fresh = manifest?.let { parse(it) }
         if (manifest == null || fresh == null) return@withLock previous

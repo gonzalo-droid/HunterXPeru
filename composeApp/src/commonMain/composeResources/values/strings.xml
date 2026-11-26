@@ -241,4 +241,7 @@
     <string name="licenses_open_source">Código abierto</string>
     <string name="licenses_third_party">SDK de terceros</string>
     <string name="licenses_row_meta">%1$s · %2$s</string>
+    <string name="update_required_title">Actualiza la app</string>
+    <string name="update_required_body">El padrón de esta semana necesita una versión más nueva de Cazadores Perú. Actualízala para seguir viendo los datos al día.</string>
+    <string name="update_required_action">Ir a la tienda</string>
 </resources>

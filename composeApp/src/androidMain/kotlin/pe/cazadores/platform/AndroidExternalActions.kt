@@ -75,6 +75,9 @@ class AndroidExternalActions(private val context: Context) : ExternalActions {
         if (!launch(intent)) openUrl(url)
     }
 
+    // En Play la ficha y la reseña son la misma página.
+    override fun openStorePage() = openStoreReview()
+
     override fun openStoreReview() {
         val pkg = context.packageName
         val market = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$pkg"))

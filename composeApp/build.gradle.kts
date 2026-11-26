@@ -23,8 +23,10 @@ if (!adsEnabled) logger.warn("ADS_ENABLED=false: compilando SIN anuncios (solo p
 val generateAppInfo by tasks.registering {
     val outputDir = layout.buildDirectory.dir("generated/appinfo/kotlin")
     val version = appVersionName
+    val code = libs.versions.app.versionCode.get()
     val ads = adsEnabled
     inputs.property("version", version)
+    inputs.property("code", code)
     inputs.property("adsEnabled", ads)
     outputs.dir(outputDir)
     doLast {
@@ -37,6 +39,7 @@ val generateAppInfo by tasks.registering {
             |/** Generado por Gradle (composeApp/build.gradle.kts). No editar. */
             |object AppInfo {
             |    const val VERSION_NAME: String = "$version"
+            |    const val VERSION_CODE: Int = $code
             |    const val ADS_ENABLED: Boolean = $ads
             |}
             |""".trimMargin(),

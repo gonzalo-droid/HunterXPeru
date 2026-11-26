@@ -17,6 +17,8 @@ su alias del version catalog (`room-version de 2.8.4 a 2.8.5`).
 - Ajustes: "Contacto y reportar un problema" abre un correo con la versión, el dispositivo y el sistema ya escritos
 - Ajustes: pantalla "Licencias de código abierto" con las bibliotecas, fuentes y SDK que usa la app
 
+- Si el padrón publicado necesita una versión más nueva de la app, se muestra "Actualiza la app" con un botón a la tienda
+
 ### Changed
 - Si faltan 30 miniaturas o menos, se descargan sueltas en vez del zip completo del padrón
 - Base de datos Room v3 (columna `delistedAt` en guardados, migración automática desde la v2)

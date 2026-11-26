@@ -50,6 +50,9 @@ MAX_REMOVED_RATIO = 0.30    # más bajas que esto en una semana huele a falla de
 THUMB_SIZE = 240
 PHOTO_MAX = 720
 SCHEMA = 1
+# versionCode mínimo que puede leer el padrón (app: PadronStore.updateRequired). Subirlo junto con SCHEMA cuando el
+# formato cambie de forma incompatible: los builds anteriores muestran "Actualiza la app" en vez de quedarse con datos viejos.
+MIN_APP_VERSION_CODE = 0
 
 DEFAULT_STATE = Path.home() / "Library/Application Support/CazadoresSync"
 DEFAULT_CREDENTIALS = Path.home() / ".config/cazadores-sync/service-account.json"
@@ -327,6 +330,7 @@ def manifest_for(state: dict, version: int, zip_key: str) -> tuple[dict, str]:
         "source": "https://recompensas.pe",
         "count": len(records),
         "thumbsZip": zip_key,
+        "minAppVersionCode": MIN_APP_VERSION_CODE,
         "criminals": records,
     }
     return manifest, data_hash
