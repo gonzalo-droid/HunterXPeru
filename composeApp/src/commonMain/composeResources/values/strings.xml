@@ -152,7 +152,6 @@
     <string name="settings_privacy_policy">Política de privacidad</string>
     <string name="settings_terms">Términos de uso</string>
     <string name="settings_info_section">Información</string>
-    <string name="settings_source_title">Recompensas.pe</string>
     <string name="settings_sources_section">Fuentes oficiales</string>
     <string name="settings_source">Programa de Recompensas (MININTER)</string>
     <string name="settings_source_url">https://recompensas.pe</string>

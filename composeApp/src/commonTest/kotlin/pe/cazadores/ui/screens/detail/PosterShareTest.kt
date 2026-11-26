@@ -14,6 +14,7 @@ class PosterShareTest {
         override fun share(text: String) { shared += "text:$text" }
         override fun shareImage(png: ByteArray, text: String) { shared += "image(${png.size}):$text" }
         override fun openUrl(url: String) = Unit
+        override fun openInAppBrowser(url: String) = Unit
         override fun openStoreReview() = Unit
     }
 
