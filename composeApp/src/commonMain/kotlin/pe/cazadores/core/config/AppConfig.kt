@@ -16,6 +16,9 @@ object AppConfig {
     /** Correo de denuncias, confirmado como vigente. */
     const val REPORT_EMAIL = "denuncias@mininter.gob.pe"
 
+    /** Correo de soporte de la app (el mismo que publica nekodojo.app/apps/peruxhunter/support). */
+    const val SUPPORT_EMAIL = "contacto@gondroid.dev"
+
     /** ID numérico de App Store Connect (Información de la app → ID de Apple). */
     const val IOS_APP_STORE_ID = "6836196201"
 

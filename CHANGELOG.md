@@ -14,6 +14,8 @@ su alias del version catalog (`room-version de 2.8.4 a 2.8.5`).
 ### Added
 - Los carteles guardados se actualizan con cada padrón nuevo (monto, datos y foto) y muestran "Ya no figura en el padrón" cuando la persona sale de la lista, sin borrarlos
 - Flujo de UI con Maestro: Inicio → Buscar → Ficha → Guardar → Carteles (`.maestro/smoke-guardar.yaml`)
+- Ajustes: "Contacto y reportar un problema" abre un correo con la versión, el dispositivo y el sistema ya escritos
+- Ajustes: pantalla "Licencias de código abierto" con las bibliotecas, fuentes y SDK que usa la app
 
 ### Changed
 - Si faltan 30 miniaturas o menos, se descargan sueltas en vez del zip completo del padrón

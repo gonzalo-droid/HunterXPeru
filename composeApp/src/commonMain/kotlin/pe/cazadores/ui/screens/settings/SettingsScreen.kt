@@ -75,6 +75,12 @@ import pe.cazadores.ui.theme.CazadoresDimens
 import pe.cazadores.ui.theme.CazadoresShapes
 import pe.cazadores.ui.theme.Cz
 import pe.cazadores.ui.theme.CzIcons
+import pe.cazadores.core.config.AppConfig
+import pe.cazadores.core.config.AppEnvironment
+import pe.cazadores.resources.settings_licenses
+import pe.cazadores.resources.settings_contact_subject
+import pe.cazadores.resources.settings_contact_body
+import pe.cazadores.resources.settings_contact
 
 @Composable
 fun SettingsRoute(
@@ -82,12 +88,16 @@ fun SettingsRoute(
     onOpenRegime: () -> Unit,
     onOpenAbout: () -> Unit,
     onOpenLegal: (LegalPage) -> Unit,
+    onOpenLicenses: () -> Unit,
     actions: ExternalActions = koinInject(),
     ads: AdsController = koinInject(),
+    env: AppEnvironment = koinInject(),
 ) {
     var showLegend by rememberSaveable { mutableStateOf(false) }
     val theme by viewModel.themeMode.collectAsStateWithLifecycle()
     val privacyOptionsRequired by ads.privacyOptionsRequired.collectAsStateWithLifecycle()
+    val contactSubject = stringResource(Res.string.settings_contact_subject, AppInfo.VERSION_NAME)
+    val contactBody = stringResource(Res.string.settings_contact_body, AppInfo.VERSION_NAME, env.deviceModel, env.platformName, env.osVersion)
     SettingsScreen(
         theme = theme,
         showAdsPreferences = privacyOptionsRequired,
@@ -98,6 +108,8 @@ fun SettingsRoute(
         onOpenRanks = { showLegend = true },
         onOpenAbout = onOpenAbout,
         onOpenLegal = onOpenLegal,
+        onContact = { actions.email(AppConfig.SUPPORT_EMAIL, contactSubject, contactBody) },
+        onOpenLicenses = onOpenLicenses,
     )
     if (showLegend) RankLegendSheet(onDismiss = { showLegend = false })
 }
@@ -114,6 +126,8 @@ fun SettingsScreen(
     onOpenRanks: () -> Unit,
     onOpenAbout: () -> Unit,
     onOpenLegal: (LegalPage) -> Unit,
+    onContact: () -> Unit,
+    onOpenLicenses: () -> Unit,
 ) {
     Column(
         Modifier.fillMaxSize().background(Cz.colors.bg).statusBarsPadding().verticalScroll(rememberScrollState())
@@ -213,6 +227,10 @@ fun SettingsScreen(
             LinkRow(stringResource(Res.string.settings_project), CzIcons.ChevronRight, onClick = onOpenAbout)
             Divider()
             LinkRow(stringResource(Res.string.settings_rate), CzIcons.Star, onClick = onRateApp)
+            Divider()
+            LinkRow(stringResource(Res.string.settings_contact), CzIcons.Mail, onClick = onContact)
+            Divider()
+            LinkRow(stringResource(Res.string.settings_licenses), CzIcons.ChevronRight, onClick = onOpenLicenses)
         }
 
         Column(

@@ -23,7 +23,15 @@ import kotlin.experimental.ExperimentalNativeApi
 
 @OptIn(ExperimentalNativeApi::class)
 actual val platformModule: Module = module {
-    single { AppEnvironment(platformName = "iOS", isDebug = Platform.isDebugBinary) }
+    single {
+        val device = platform.UIKit.UIDevice.currentDevice
+        AppEnvironment(
+            platformName = "iOS",
+            isDebug = Platform.isDebugBinary,
+            deviceModel = device.model,
+            osVersion = device.systemVersion,
+        )
+    }
     // iOS valida la cadena TLS de la API sin ayuda (verificado): no hace falta handleChallenge.
     single<HttpClientEngine> { Darwin.create() }
     single { Room.databaseBuilder<AppDatabase>(name = documentsPath(AppDatabase.FILE_NAME)).buildCazadoresDatabase() }
