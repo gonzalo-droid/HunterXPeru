@@ -22,8 +22,11 @@ iosApp/build/
 androidApp/release/
 iosApp/build-release/
 
-# Capturas de pantalla (solo locales)
+# Capturas, capturas de tienda y reels (solo locales; pesan y se regeneran)
 docs/capturas/
+docs/reels/
+docs/tienda-capturas/capturas/
+docs/tienda-capturas/salida/
 
 # Firebase (D38): se descargan de la consola
 androidApp/google-services.json
