@@ -3,6 +3,25 @@
 Registro de lo que se verificó contra la API real y de las decisiones que cambian o precisan
 `docs/kmp-migration/`. La más reciente va arriba.
 
+## 2026-11-25 · Ramas y versiones
+
+### D39. `main` solo tiene versiones publicadas; cada versión se arma en `release/X.Y.Z`
+- **`main`:** solo lo que está en las tiendas. Cada merge a `main` es una versión publicada y lleva el tag
+  `vX.Y.Z`. Nadie trabaja ni hace PRs directo a `main`.
+- **`release/X.Y.Z`:** la candidata. Se crea desde `main` y su primer commit sube la versión
+  (`chore: bump version to X.Y.Z (N)`: catálogo y `Config.xcconfig`; `checkIosVersion` lo verifica).
+  Todos los PRs de trabajo apuntan aquí. Los builds de TestFlight y de prueba interna salen de esta rama;
+  si hace falta otro build, solo sube el número de build. Se abre una sola release a la vez.
+- **Cierre:** con todo probado, PR `release/X.Y.Z` → `main` con merge normal (sin squash, para que `main`
+  y la release compartan historia), tag `vX.Y.Z` y subida a las tiendas. Después se borra la rama.
+- **Ramas de trabajo:** `feature/…`, `fix/…`, `chore/…` salen de la release abierta y vuelven a ella por PR
+  (squash permitido). Las ramas `feat/…` anteriores a esta decisión se dejan como están.
+- **`hotfix/…`:** para un error urgente en la versión publicada. Sale de `main`, se crea
+  `release/X.Y.(Z+1)` desde `main` y el hotfix va por PR a esa release, que se cierra como cualquier otra.
+  Si había otra release abierta, después se hace merge de `main` en ella para no perder el arreglo.
+- **Versión:** la misma en Android e iOS. Si un arreglo afecta a una sola plataforma, la versión sube igual
+  y se publica solo donde hace falta; la otra se salta ese número (anotarlo en el changelog).
+
 ## 2026-11-24 · Crashlytics
 
 ### D38. Crashlytics en Android e iOS, solo crashes fatales y solo en release

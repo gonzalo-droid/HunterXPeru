@@ -128,6 +128,24 @@ room {
     schemaDirectory("$projectDir/schemas")
 }
 
+// Config.xcconfig repite la versión del catálogo para Xcode y ya se desincronizó (4fbc62c): `check` lo detecta.
+val checkIosVersion by tasks.registering {
+    val xcconfig = rootProject.file("iosApp/Configuration/Config.xcconfig")
+    val name = appVersionName
+    val code = libs.versions.app.versionCode.get()
+    inputs.file(xcconfig)
+    doLast {
+        val values = xcconfig.readLines().mapNotNull { line ->
+            line.substringBefore("//").split("=", limit = 2).takeIf { it.size == 2 }?.let { it[0].trim() to it[1].trim() }
+        }.toMap()
+        check(values["MARKETING_VERSION"] == name && values["CURRENT_PROJECT_VERSION"] == code) {
+            "Config.xcconfig (${values["MARKETING_VERSION"]} / ${values["CURRENT_PROJECT_VERSION"]}) no coincide con " +
+                "libs.versions.toml ($name / $code)."
+        }
+    }
+}
+tasks.named("check") { dependsOn(checkIosVersion) }
+
 dependencies {
     listOf("kspAndroid", "kspIosArm64", "kspIosSimulatorArm64").forEach {
         add(it, libs.androidx.room.compiler)

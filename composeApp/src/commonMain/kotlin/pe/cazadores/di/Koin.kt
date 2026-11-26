@@ -76,7 +76,9 @@ val dataModule = module {
     single<CriminalRepository> {
         CriminalRepositoryImpl(api = get(), cache = get(), time = get(), json = get(), network = get(), padron = get(), catalogs = get())
     }
-    single<FavoritesRepository> { FavoritesRepositoryImpl(get(), get(), get(), get()) }
+    single<FavoritesRepository> {
+        FavoritesRepositoryImpl(get(), get(), get(), get(), padronUpdates = get<PadronStore>().updates, scope = get(APP_SCOPE))
+    }
     single<CatalogRepository> { CatalogRepositoryImpl(get(), get(), get(), get(), get(), get(APP_SCOPE)) }
     single<SettingsRepository> { SettingsRepositoryImpl(get()) }
 }

@@ -2,6 +2,28 @@
 
 Mejoras detectadas que quedaron para después. Las decisiones tomadas van en `DECISIONES.md`.
 
+## Revisión de arquitectura (2026-11-25)
+
+- **Detectado:** al armar `docs/BASE-CONOCIMIENTO-KMP.md`. Lo general pasó a ese documento; aquí quedan
+  solo los puntos propios de esta app.
+- **Resuelto el 2026-11-25** (rama `worktree-pendientes-arquitectura`):
+  - Guardados desactualizados: `FavoritesRepositoryImpl.reconcile` los actualiza con cada padrón nuevo y
+    marca "Ya no figura en el padrón" a quien salió (Room v3, columna `delistedAt`).
+  - Fotos: si faltan ≤ 30 miniaturas se bajan sueltas; si no, el zip (`PadronStore.syncThumbs`).
+  - Lógica en Composables: compartir el cartel pasó a `PosterShare.kt`, con tests. `DetailScreen` y
+    `SearchScreen` ya estaban en secciones privadas; no se dividieron más.
+  - Versión de iOS: `./gradlew check` falla si `Config.xcconfig` no coincide con el catálogo
+    (`checkIosVersion`). El desfase anotado antes era falsa alarma: ambos estaban en 2.0.2 (8).
+  - Tests de UI: `.maestro/smoke-guardar.yaml` (Inicio → Buscar → Ficha → Guardar → Carteles) pasa en el
+    emulador Android con `ADS_ENABLED=false`.
+- **Sigue pendiente:**
+  - **Sin CI de build ni tests.** El único workflow es `test-api.yml`, que es manual. Ver "CI con poco
+    consumo" en la base de conocimiento: empezar con un hook `pre-push` local.
+  - Correr el flujo de Maestro en el simulador de iOS.
+  - Ver en pantalla la marca "Ya no figura en el padrón" con un padrón que excluya a un guardado (hoy solo
+    la cubren los tests).
+  - Que el flujo de Maestro maneje el formulario de UMP para poder correrlo con anuncios activos.
+
 ## Compilar iOS con Xcode 27 antes de abril de 2027
 
 - **Detectado:** 2026-11-18, al subir el primer build (2.0.0 (2)) a TestFlight.
@@ -34,10 +56,10 @@ Mejoras detectadas que quedaron para después. Las decisiones tomadas van en `DE
     versión es mayor, borra las miniaturas que ya no están y baja las que faltan.
   - Si el zip falla, se reintenta al volver la red (D31).
 - **Huecos:**
-  1. **Se baja el zip entero aunque cambien pocas fotos.** Si en la semana cambian 5 miniaturas, se bajan
+  1. **(Resuelto 2026-11-25)** **Se baja el zip entero aunque cambien pocas fotos.** Si en la semana cambian 5 miniaturas, se bajan
      igual los 3,8 MB. Arreglo: si faltan pocas (por ejemplo menos de 30), bajarlas una a una con
      `download(key)`; si faltan muchas, el zip.
-  2. **Los guardados son una copia.** `FavoritesRepositoryImpl` guarda la persona como estaba (monto,
+  2. **(Resuelto 2026-11-25)** **Los guardados son una copia.** `FavoritesRepositoryImpl` guarda la persona como estaba (monto,
      foto en Base64). Por confirmar: si el padrón cambia el monto o la foto, o la persona sale del padrón,
      Guardados sigue mostrando lo viejo. Arreglo posible: al llegar una versión nueva, actualizar cada
      guardado por su `hash`. Si la persona ya no está, marcarla "ya no figura en el padrón" en vez de borrarla.
