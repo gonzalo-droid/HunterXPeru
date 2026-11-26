@@ -4,8 +4,22 @@ Mejoras detectadas que quedaron para después. Las decisiones tomadas van en `DE
 
 ## Antes de publicar la 2.0.3 (PR 12, `release/2.0.3` → `main`)
 
-- **Detectado:** 2026-11-25, al abrir el PR de la release.
-- Probar a mano el release de Android (R8) y de iOS: claro, oscuro, letra grande y modo avión.
+- **Detectado:** 2026-11-25, al abrir el PR de la release y en la auditoría contra la base
+  (`docs/auditorias/2026-11-25-base-kmp.md`). Los IDs son los de la base.
+- Probar a mano el release de Android (R8) y de iOS: claro, oscuro, letra grande y modo avión, más una pasada
+  con TalkBack y VoiceOver por el flujo principal (PUB-02, A11Y-04). Probar también negar el permiso de fotos
+  y ATT (PERM-02).
+- **Política de privacidad y Crashlytics (PRIV-03, CRA-06):** D38 dejó como tarea quitar "No usamos
+  herramientas de analítica ni de reportes de errores" y explicar el informe de crash. Confirmar que la página
+  publicada ya lo dice, y que Data safety y la privacidad de App Store declaran Crashlytics. Si no, actualizarlas
+  antes de subir.
+- **Respaldo de Android (PRIV-01):** `android:allowBackup="true"` sin `dataExtractionRules`, así que Android
+  respalda la base de datos. Decidir si los guardados se respaldan (parece razonable: son carteles públicos) y
+  declararlo con `dataExtractionRules` y `fullBackupContent`, o apagarlo. Anotar la decisión.
+- **`CHANGELOG.md` (DOC-02):** no existe. Crearlo con la 2.0.3 (skill `changelog-update`); de ahí salen las notas
+  de las tiendas.
+- **Medidas (PERF-01):** anotar en `DECISIONES.md` el tamaño del AAB y del IPA, el arranque en frío y los datos
+  de la primera apertura de la 2.0.3.
 - **Migración de Room v2 → v3:** instalar la 2.0.3 encima de la 2.0.2 de la tienda con carteles guardados y
   comprobar que siguen ahí. Es la primera versión que cambia la base de los guardados.
 - Ver en pantalla la marca "Ya no figura en el padrón" con un padrón que excluya a un guardado (hoy solo
@@ -15,6 +29,34 @@ Mejoras detectadas que quedaron para después. Las decisiones tomadas van en `DE
 - Al unir: merge normal (sin squash), tag `v2.0.3` y, si la 2.0.2 está publicada, tag `v2.0.2` en `5a9fbc7`.
 - Checkout principal: borrar o descartar las copias viejas sin commit de `docs/BASE-CONOCIMIENTO-KMP.md` y
   `docs/PENDIENTES.md` antes de hacer pull de `main`, o el pull se detiene.
+
+## Auditoría contra la base (2026-11-25)
+
+- **Detectado:** primera auditoría con la Parte 7 de la base (`docs/auditorias/2026-11-25-base-kmp.md`). Lo
+  urgente quedó en "Antes de publicar la 2.0.3"; esto es lo demás, por prioridad.
+- **Media:**
+  - **Tablets Android (TIE-04):** con `targetSdk 36`, Android 16 ignora `screenOrientation="portrait"` en
+    pantallas de 600 dp o más. Probar en un emulador de tablet en horizontal; si se ve mal, retomar el diseño por
+    ancho (TAB-01) de `feat/ipad-adaptativo` sin declarar iPad.
+  - **Ajustes (AJU-01, AJU-02):** sumar "Contacto / reportar un problema" (correo con versión, modelo y sistema) y
+    "Licencias de código abierto".
+  - **Hook `pre-push` (CI-01):** `.githooks/pre-push` con `./gradlew check` y `git config core.hooksPath .githooks`,
+    anotado en el README.
+  - **Respaldo de llaves (SEC-04):** anotar en un lugar privado dónde están la keystore de subida y su
+    contraseña, la `.p8` de App Store Connect, `google-services.json`, `GoogleService-Info.plist` y los IDs de
+    AdMob; referenciarlo en `CLAUDE.md`.
+  - **`CLAUDE.md` en git (DOC-01):** existe pero no está versionado. No tiene secretos.
+  - **Confirmar Play App Signing (SEC-03)** en Play Console.
+- **Baja:**
+  - **Versión mínima (UPD-01, UPD-02, UPD-04):** un campo `minAppVersion` en el manifest del padrón y una pantalla
+    que lleve a la tienda si la versión instalada es menor. Hoy el formato no cambia; hace falta antes del primer
+    cambio de formato del padrón.
+  - **Secciones de pantallas (COD-05):** pasar las secciones privadas de `DetailScreen.kt` (499 líneas) y
+    `SearchScreen.kt` (442) a archivos propios del paquete.
+  - **Accesibilidad (A11Y-02, A11Y-03):** revisar los 20 `contentDescription = null` (¿son decorativos?) y las zonas
+    táctiles de los íconos sueltos.
+- Ya estaban anotados: un solo enlace al compartir (AJU-04, NEK-02), navegador in-app (LNK-01, LNK-02), anuncios
+  sin recompilar (ADS-06), tag `v2.0.2` (GIT-01).
 
 ## Revisión de arquitectura (2026-11-25)
 

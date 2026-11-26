@@ -4,6 +4,9 @@ Guía para empezar, mantener y **auditar** apps **Kotlin Multiplatform + Compose
 iOS, UI 100 % compartida). Nació de construir y publicar **Cazadores Perú** (nov. 2026). Las referencias
 "(Cazadores Dnn)" apuntan a `docs/DECISIONES.md` de ese repo, donde está la evidencia.
 
+**Versión de la base: 2026-11-25** (166 reglas). Cambiar la fecha en cada cambio de reglas; los informes
+de auditoría la citan para saber contra qué versión se compararon.
+
 ## Cómo usar este documento
 
 - **Parte 1, siempre aplica.** Cualquier app KMP.
@@ -122,9 +125,12 @@ BD, decodificación de imágenes (`decodeToImageBitmap()`) y dibujo fuera de pan
   Probar Android 2× e iOS Accesibilidad XL.
 - **COD-04** Sin lógica en Composables. Codificar imágenes, armar archivos, formatear o decidir qué mostrar va
   en el ViewModel o en un caso de uso, donde se puede testear. Señal de alerta: `withContext`, `runCatching` o
-  `LaunchedEffect` con trabajo pesado dentro de una pantalla. Verificar: `grep -rn "withContext\|runCatching" ui/screens`.
-- **COD-05** Pantallas chicas: si un `Screen.kt` pasa de ~300 líneas, dividirlo en secciones (`HeaderSection`,
-  `ResultsList`…) en el mismo paquete. Cada sección recibe estado y lambdas, nunca el ViewModel.
+  `LaunchedEffect` con trabajo pesado dentro de una pantalla. Verificar:
+  `grep -rn "withContext\|runCatching" --include="*Screen.kt" ui/screens` (las funciones puras del mismo paquete no
+  cuentan).
+- **COD-05** Pantallas chicas: el límite es **por archivo**. Si un `Screen.kt` pasa de ~300 líneas, sus secciones
+  (`HeaderSection`, `ResultsList`…) van a archivos propios del mismo paquete. Secciones privadas en el mismo archivo
+  cuentan como ⚠️. Cada sección recibe estado y lambdas, nunca el ViewModel.
   Verificar: `wc -l ui/screens/*/*Screen.kt`.
 - **COD-06** Sin `!!` y sin `GlobalScope`. Verificar: `grep -rn '!!' src/*Main`.
 - **COD-07** Conventional Commits, sin atribución de IA. Un commit por paso lógico. Verificar: `git log`.
@@ -190,7 +196,8 @@ Otra opción: que Gradle **genere** un `Version.xcconfig` que `Config.xcconfig` 
 
 **Base de datos:**
 - **TST-07** Room y migraciones en `iosTest` (`iosSimulatorArm64Test`): la JVM host no tiene driver de SQLite.
-  Cada `AutoMigration` lleva su test. Verificar: un test por versión en `schemas/`.
+  Cada migración queda probada: un test por migración, o uno que parta de la primera versión publicada y verifique
+  el cambio de cada versión. Verificar: cada versión de `schemas/` tiene una aserción en algún test.
 
 **Flujos de UI, con Maestro:**
 - **TST-08** Al menos un smoke test del flujo principal en `.maestro/`, y uno por bug de navegación arreglado.
@@ -247,9 +254,10 @@ De menor a mayor costo:
 
 ## 1.10 Errores y observabilidad
 
-- **OBS-01** Desde el día 1, una interfaz común `CrashReporter` (`log(message)`, `recordNonFatal(throwable)`) en
-  `platformModule`, con una implementación vacía. Así, agregar Crashlytics u otro servicio no toca el código
-  común.
+- **OBS-01** Si la app registra errores no fatales o mensajes desde el código común, hacerlo por una interfaz
+  `CrashReporter` (`log(message)`, `recordNonFatal(throwable)`) en `platformModule`, con implementación vacía en
+  debug. Así, cambiar de servicio no toca el código común. Si solo se reportan crashes fatales (CRA-05), el SDK
+  basta y la regla es ➖.
 - **OBS-02** No reportar errores de red esperados (sin conexión, timeouts) si la app ya tiene respaldo: es ruido.
 - **OBS-03** En iOS, `setUnhandledExceptionHook` con `NSLog` de la traza antes del abort. Sin eso, el error de
   Kotlin no queda en el log del sistema. Verificar: `grep -rn setUnhandledExceptionHook iosMain`.
@@ -316,7 +324,9 @@ En una auditoría, cada trampa se marca ✅ si la app está protegida, ➖ si no
 
 ## 1.16 Ajustes estándar
 
-- **AJU-01** Ajustes trae estas filas, en este orden, con textos en `strings.xml`:
+- **AJU-01** Ajustes trae estas filas, con textos en `strings.xml`. El agrupamiento es una recomendación: la app
+  puede tener secciones propias, y "Compartir" y "Valorar" pueden vivir en una sub-pantalla "Sobre la app"
+  enlazada desde Ajustes.
   - **Privacidad:** "Preferencias de anuncios" (solo con anuncios, ADS-05), "Política de privacidad" y
     "Términos y condiciones".
   - **Comunidad:** "Compartir la app" y "Valorar la app".
@@ -404,7 +414,8 @@ En una auditoría, cada trampa se marca ✅ si la app está protegida, ➖ si no
 ## 1.22 Ficha de tienda y documentación del repo
 
 - **DOC-01** `CLAUDE.md` (comandos, estructura que engaña, zonas peligrosas), `docs/DECISIONES.md` y
-  `docs/PENDIENTES.md` al día. Skill: `project-memory`.
+  `docs/PENDIENTES.md` al día y **versionados en git** (`CLAUDE.md` no lleva secretos). Skill: `project-memory`.
+  Verificar: `git ls-files CLAUDE.md docs/DECISIONES.md docs/PENDIENTES.md`.
 - **DOC-02** `CHANGELOG.md` con una entrada por versión, de la que salen las notas de las tiendas. Skill:
   `changelog-update`.
 - **DOC-03** README con capturas reales, stack y versión. Skill: `readme-format`.
@@ -501,7 +512,10 @@ Cada sección empieza con la pregunta que decide si aplica. Si la respuesta es "
 - **PUSH-03** Canales de notificación en Android con nombres claros; el usuario puede apagarlos por tipo.
 - **PUSH-04** Tocar una notificación abre la pantalla correcta por deep link (DL-02).
 
-## 2.8 Deep links verificados · ¿Hay enlaces web que deban abrir la app?
+## 2.8 Deep links · ¿La app abre enlaces o deep links (web o esquema propio)?
+
+DL-01 aplica solo a enlaces web (`https://`); DL-02 y DL-03, a cualquier deep link.
+
 
 - **DL-01** App Links y Universal Links verificados: `/.well-known/assetlinks.json` y
   `/.well-known/apple-app-site-association` en el dominio, con el `applicationId`, la huella SHA-256 de Play App
@@ -511,12 +525,16 @@ Cada sección empieza con la pregunta que decide si aplica. Si la respuesta es "
 - **DL-03** Sin esquemas propios (`miapp://`) en lo que se comparte: las apps de mensajería no los abren como
   enlace (Cazadores D25).
 
-## 2.9 Actualización obligatoria · ¿Un cambio de API o de datos puede romper versiones viejas?
+## 2.9 Actualización y formato de datos · ¿Un cambio de API o de datos puede romper versiones viejas?
 
 - **UPD-01** Un archivo remoto (manifest, Remote Config o la propia API) publica la versión mínima soportada.
 - **UPD-02** Si la versión instalada es menor, la app muestra una pantalla que lleva a la tienda. Si el archivo
   no se puede leer, la app sigue normal (nunca bloquear por falta de red).
 - **UPD-03** Avisar de una versión nueva no obligatoria es opcional y nunca bloquea.
+- **UPD-04** Si la app lee archivos publicados por un proceso propio (p. ej. un padrón semanal en Storage), el
+  formato lleva una versión de esquema y la app ignora los campos que no conoce. Cambiar el formato sin romper las
+  versiones instaladas: campos nuevos opcionales; un cambio incompatible sube la versión de esquema y la versión
+  mínima (UPD-01).
 
 ## 2.10 Analítica · ¿La app mide uso?
 
@@ -631,6 +649,7 @@ copiar a mano en cada app.
 - Si una regla de aquí se rompe a propósito en una app, anotar por qué en el `DECISIONES.md` de esa app: en la
   auditoría cuenta como ➖ con esa referencia.
 - IDs nuevos al final de su prefijo; los retirados no se reutilizan.
+- Después de cada auditoría (Parte 7), aplicar aquí sus "Propuestas para la base" y subir la fecha de versión.
 
 ---
 
@@ -650,7 +669,7 @@ copiar a mano en cada app.
    | 2.5 PAY | ¿Cobra algo? | |
    | 2.6 ACC | ¿Tiene cuentas de usuario? | |
    | 2.7 PUSH | ¿Manda notificaciones? | |
-   | 2.8 DL | ¿Hay enlaces web que deban abrir la app? | |
+   | 2.8 DL | ¿Abre enlaces o deep links (web o esquema propio)? | |
    | 2.9 UPD | ¿Un cambio de API o de datos puede romper versiones viejas? | |
    | 2.10 ANA | ¿Mide uso? | |
    | 2.11 TAB | ¿Se publica para iPad o debe verse bien en tablets? | |
@@ -666,31 +685,53 @@ copiar a mano en cada app.
    - ❌ **Falta** — y la acción concreta.
    - ➖ **No aplica** — por qué (la sección no aplica, o la app lo rompe a propósito con su decisión anotada).
    - ❔ **No verificable desde el repo** — requiere dispositivo, consola de la tienda o un dato del dueño.
-4. **Decidir si un ❌ es necesario.** No toda regla vale para toda app: si no tiene sentido, se marca ➖ con el
+4. **Pruebas en dispositivo, en una sola sesión.** Desde el repo no se ven, y quedan ❔ hasta probarlas en el
+   emulador, el simulador o las consolas:
+   - Release (R8) y Release iOS en claro, oscuro, letra grande y modo avión (TST-09, PUB-02).
+   - TalkBack y VoiceOver por el flujo principal, zonas táctiles y descripciones (A11Y-02/03/04).
+   - Negar cada permiso y seguir usando la app (PERM-02).
+   - Emulador de tablet ≥ 600 dp en horizontal (TIE-04).
+   - Instalar la versión nueva encima de la publicada con datos (PUB-04).
+   - Política publicada, Data safety y privacidad de App Store frente a los SDKs (PRIV-03, PUB-10, PUB-12).
+   - Play App Signing activado (SEC-03).
+5. **Decidir si un ❌ es necesario.** No toda regla vale para toda app: si no tiene sentido, se marca ➖ con el
    motivo y se anota la decisión en el `DECISIONES.md` de la app, en vez de implementarla.
-5. **Entregar** el informe (7.2) y pasar cada ❌ y ⚠️ aceptado al `PENDIENTES.md` de la app, con su ID.
+6. **Entregar** el informe (7.2) en `docs/auditorias/<fecha>-base-kmp.md` de la app y pasar cada ❌ y ⚠️ aceptado
+   a su `PENDIENTES.md`, con su ID y prioridad. Las propuestas para la base se aplican aquí (Parte 6).
+7. **Contar** los estados con los IDs de la base (que ninguna regla quede sin estado) antes de dar los totales.
 
 ## 7.2 Formato del informe
+
+La tabla de detalle lleva solo lo que **no** es ✅; los ✅ van agrupados por tema con su evidencia. Con todas las
+reglas en la tabla el informe se vuelve ilegible.
 
 ```markdown
 # Auditoría de <App> contra BASE-CONOCIMIENTO-KMP (<fecha>, base del <fecha de la base>)
 
+Rama auditada: `<rama>` (`<commit>`).
+
+## Aplicabilidad
+| Sección | Pregunta | Respuesta | Evidencia |
+|---|---|---|---|
+
 ## Resumen
-- Aplican: 1.x completa, 2.1 ADS, 2.4 API… · No aplican: 2.5 PAY (no cobra), 2.6 ACC (sin cuentas)…
-- ✅ 54 · ⚠️ 6 · ❌ 9 · ➖ 31 · ❔ 4
+- Aplican: … · No aplican: 2.5 PAY (no cobra), …
+- Reglas: <total>. ✅ n · ⚠️ n · ❌ n · ➖ n (+n en bloque) · ❔ n
 - Lo más urgente (máx. 5): <ID> — <por qué>.
 
-## Detalle
+## Detalle (lo que no está ✅)
 | ID | Regla (resumen) | Estado | Evidencia | Acción |
 |---|---|---|---|---|
 | VER-02 | `check` falla si el xcconfig no coincide | ❌ | no existe `checkIosVersion` | Copiar la tarea de 1.6 |
-| PAY-01 | Compras con RevenueCat | ➖ | 2.5 no aplica: la app no cobra | — |
+
+## Hechos (✅)
+- **Arquitectura:** ARQ-01 a ARQ-07 (`AppResult.kt`, `Koin.kt`…).
 
 ## Para PENDIENTES.md
-- <ID> — <acción>, con prioridad.
+- Alta / Media / Baja: <ID> — <acción>.
 
 ## Propuestas para la base
-- Reglas que la app hace mejor o que faltan aquí (para la Parte 6).
+- Reglas mal escritas, difíciles de comprobar o que faltan.
 ```
 
 **Prioridad de los ❌:** primero lo que puede causar rechazo en tienda, pérdida de datos o un release roto (PUB-*,
@@ -700,5 +741,6 @@ TRP-*, PRIV-*, ACC-02, PAY-04), luego seguridad y privacidad, luego lo demás.
 
 > Lee `BASE-CONOCIMIENTO-KMP.md` y audita este repo contra la base siguiendo su Parte 7: primero la tabla de
 > aplicabilidad con evidencia, después cada regla con su estado y evidencia (`archivo:línea` o comando), y entrega
-> el informe en el formato 7.2. No cambies código. Si una regla no tiene sentido para esta app, márcala ➖ y
-> explica por qué. Al final, propón qué pasar a `PENDIENTES.md`.
+> el informe en el formato 7.2 en `docs/auditorias/<fecha>-base-kmp.md`. No cambies código. Si una regla no tiene
+> sentido para esta app, márcala ➖ y explica por qué. Lista aparte lo que necesita dispositivo (paso 4). Al final,
+> propón qué pasar a `PENDIENTES.md` y qué corregir en la base.
