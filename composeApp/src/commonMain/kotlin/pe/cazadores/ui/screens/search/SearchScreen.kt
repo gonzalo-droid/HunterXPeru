@@ -51,7 +51,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -87,7 +86,6 @@ import pe.cazadores.resources.sort_cd
 import pe.cazadores.resources.sort_name
 import pe.cazadores.resources.sort_reward
 import pe.cazadores.resources.sort_reward_asc
-import pe.cazadores.ui.components.AdaptiveWidth
 import pe.cazadores.ui.components.CriminalCard
 import pe.cazadores.ui.components.ErrorState
 import pe.cazadores.ui.components.ListSkeleton
@@ -169,40 +167,37 @@ fun SearchScreen(
     val listState = rememberLazyListState()
     LoadMoreEffect(listState, state.items.size, onLoadMore)
 
-    AdaptiveWidth(Modifier.fillMaxSize().background(Cz.colors.bg).statusBarsPadding()) { gutter, _ ->
-        Column(Modifier.fillMaxSize()) {
-            SearchHeader(state, gutter, focusSearch, onQueryChange, onClearQuery, onOpenFilters, onSortChange, onRemoveDepartment, onRemoveProvince, onRemoveCrime)
+    Column(Modifier.fillMaxSize().background(Cz.colors.bg).statusBarsPadding()) {
+        SearchHeader(state, focusSearch, onQueryChange, onClearQuery, onOpenFilters, onSortChange, onRemoveDepartment, onRemoveProvince, onRemoveCrime)
 
-            PullToRefreshBox(
-                isRefreshing = state.isRefreshing,
-                onRefresh = onRefresh,
-                modifier = Modifier.fillMaxSize(),
-            ) {
-                when {
-                    state.isLoading -> ListSkeleton(modifier = Modifier.padding(horizontal = gutter))
-                    state.error != null -> ErrorState(state.error, onRetry, onCall, Modifier.padding(horizontal = gutter))
-                    state.isEmpty -> MessageState(
-                        icon = CzIcons.Search,
-                        modifier = Modifier.padding(horizontal = gutter),
-                        title = stringResource(Res.string.empty_search_title),
-                        body = if (state.filters.query.isNotBlank()) {
-                            stringResource(Res.string.empty_search_body, state.filters.query)
-                        } else {
-                            stringResource(Res.string.empty_search_body_no_query)
-                        },
-                        action = if (state.filters.activeCount > 0 || state.filters.query.isNotBlank()) {
-                            {
-                                SecondaryButton(stringResource(Res.string.clear_filters), onClick = {
-                                    onClearQuery()
-                                    onClearFilters()
-                                })
-                            }
-                        } else {
-                            null
-                        },
-                    )
-                    else -> ResultsList(state, gutter, listState, onOpenDetail, onLoadMore)
-                }
+        PullToRefreshBox(
+            isRefreshing = state.isRefreshing,
+            onRefresh = onRefresh,
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            when {
+                state.isLoading -> ListSkeleton(modifier = Modifier.padding(horizontal = CazadoresDimens.screenPadding))
+                state.error != null -> ErrorState(state.error, onRetry, onCall)
+                state.isEmpty -> MessageState(
+                    icon = CzIcons.Search,
+                    title = stringResource(Res.string.empty_search_title),
+                    body = if (state.filters.query.isNotBlank()) {
+                        stringResource(Res.string.empty_search_body, state.filters.query)
+                    } else {
+                        stringResource(Res.string.empty_search_body_no_query)
+                    },
+                    action = if (state.filters.activeCount > 0 || state.filters.query.isNotBlank()) {
+                        {
+                            SecondaryButton(stringResource(Res.string.clear_filters), onClick = {
+                                onClearQuery()
+                                onClearFilters()
+                            })
+                        }
+                    } else {
+                        null
+                    },
+                )
+                else -> ResultsList(state, listState, onOpenDetail, onLoadMore)
             }
         }
     }
@@ -221,7 +216,6 @@ private fun LoadMoreEffect(listState: LazyListState, itemCount: Int, onLoadMore:
 @Composable
 private fun SearchHeader(
     state: SearchUiState,
-    gutter: Dp,
     focusSearch: Boolean,
     onQueryChange: (String) -> Unit,
     onClearQuery: () -> Unit,
@@ -243,7 +237,7 @@ private fun SearchHeader(
     }
 
     Column(
-        Modifier.padding(start = gutter, end = gutter, top = 16.dp, bottom = 8.dp),
+        Modifier.padding(start = CazadoresDimens.screenPadding, end = CazadoresDimens.screenPadding, top = 16.dp, bottom = 8.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         ScreenTitle(stringResource(Res.string.search_title))
@@ -411,7 +405,6 @@ private fun SortMenu(current: SortOrder, onSortChange: (SortOrder) -> Unit) {
 @Composable
 private fun ResultsList(
     state: SearchUiState,
-    gutter: Dp,
     listState: LazyListState,
     onOpenDetail: (String) -> Unit,
     onLoadMore: () -> Unit,
@@ -419,7 +412,7 @@ private fun ResultsList(
     LazyColumn(
         state = listState,
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(start = gutter, end = gutter, top = 4.dp, bottom = 24.dp),
+        contentPadding = PaddingValues(start = CazadoresDimens.screenPadding, end = CazadoresDimens.screenPadding, top = 4.dp, bottom = 24.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         itemsIndexed(state.items, key = { _, c -> c.hash }) { index, criminal ->

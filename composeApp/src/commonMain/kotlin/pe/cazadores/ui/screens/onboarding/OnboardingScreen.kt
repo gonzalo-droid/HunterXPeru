@@ -67,7 +67,6 @@ import pe.cazadores.resources.onboarding_note_2
 import pe.cazadores.resources.onboarding_skip
 import pe.cazadores.resources.onboarding_start
 import pe.cazadores.resources.onboarding_step
-import pe.cazadores.ui.components.AdaptiveWidth
 import pe.cazadores.ui.components.BrandMark
 import pe.cazadores.ui.components.RankBadge
 import pe.cazadores.ui.components.StatusBarAppearance
@@ -92,9 +91,10 @@ fun OnboardingScreen(onFinish: () -> Unit) {
     val scope = rememberCoroutineScope()
     val isLast = pager.currentPage == STEPS.lastIndex
 
-    AdaptiveWidth(Modifier.fillMaxSize().background(Cz.colors.header).statusBarsPadding().navigationBarsPadding()) { gutter, _ ->
-    // Onboarding usa 4 dp más que el margen común (24 dp en teléfonos).
-    Column(Modifier.fillMaxSize().padding(horizontal = gutter + 4.dp, vertical = 16.dp)) {
+    Column(
+        Modifier.fillMaxSize().background(Cz.colors.header).statusBarsPadding().navigationBarsPadding()
+            .padding(horizontal = 24.dp, vertical = 16.dp),
+    ) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             BrandMark(32.dp)
             Text(
@@ -145,7 +145,6 @@ fun OnboardingScreen(onFinish: () -> Unit) {
                 style = Cz.type.button,
             )
         }
-    }
     }
 }
 

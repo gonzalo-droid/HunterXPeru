@@ -19,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.max
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -41,11 +40,11 @@ import pe.cazadores.resources.about_why_body
 import pe.cazadores.resources.about_why_title
 import pe.cazadores.resources.back
 import pe.cazadores.resources.source_note
-import pe.cazadores.ui.components.AdaptiveWidth
 import pe.cazadores.ui.components.BrandMark
 import pe.cazadores.ui.components.PrimaryButton
 import pe.cazadores.ui.components.SecondaryButton
 import pe.cazadores.ui.components.StatusBarAppearance
+import pe.cazadores.ui.theme.CazadoresDimens
 import pe.cazadores.ui.theme.CazadoresShapes
 import pe.cazadores.ui.theme.Cz
 import pe.cazadores.ui.theme.CzIcons
@@ -72,10 +71,8 @@ fun AboutRoute(onBack: () -> Unit, actions: ExternalActions = koinInject()) {
 @Composable
 fun AboutScreen(onBack: () -> Unit, onShareApp: () -> Unit, onRate: () -> Unit) {
     StatusBarAppearance(lightIcons = true)
-    AdaptiveWidth(Modifier.fillMaxSize().background(Cz.colors.bg)) { gutter, _ ->
-    Column(Modifier.fillMaxSize()) {
-        Row(Modifier.fillMaxWidth().background(Cz.colors.header).statusBarsPadding()
-            .padding(horizontal = max(4.dp, gutter - 16.dp))) {
+    Column(Modifier.fillMaxSize().background(Cz.colors.bg)) {
+        Row(Modifier.fillMaxWidth().background(Cz.colors.header).statusBarsPadding().padding(horizontal = 4.dp)) {
             IconButton(onClick = onBack) {
                 Icon(CzIcons.Back, stringResource(Res.string.back), tint = Cz.colors.onHeader)
             }
@@ -84,7 +81,7 @@ fun AboutScreen(onBack: () -> Unit, onShareApp: () -> Unit, onRate: () -> Unit) 
         Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState())) {
             Column(
                 Modifier.fillMaxWidth().background(Cz.colors.header)
-                    .padding(start = gutter, end = gutter, bottom = 18.dp),
+                    .padding(start = CazadoresDimens.screenPadding, end = CazadoresDimens.screenPadding, bottom = 18.dp),
                 verticalArrangement = Arrangement.spacedBy(6.dp),
             ) {
                 BrandMark(56.dp, Modifier.padding(bottom = 8.dp))
@@ -99,7 +96,7 @@ fun AboutScreen(onBack: () -> Unit, onShareApp: () -> Unit, onRate: () -> Unit) 
 
             Column(
                 Modifier.fillMaxWidth().navigationBarsPadding()
-                    .padding(horizontal = gutter, vertical = 18.dp),
+                    .padding(horizontal = CazadoresDimens.screenPadding, vertical = 18.dp),
                 verticalArrangement = Arrangement.spacedBy(14.dp),
             ) {
                 BLOCKS.forEach { block ->
@@ -145,6 +142,5 @@ fun AboutScreen(onBack: () -> Unit, onShareApp: () -> Unit, onRate: () -> Unit) 
                 Text(stringResource(Res.string.source_note), style = Cz.type.caption, color = Cz.colors.inkMuted)
             }
         }
-    }
     }
 }
