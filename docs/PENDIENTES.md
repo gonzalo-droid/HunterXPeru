@@ -2,11 +2,25 @@
 
 Mejoras detectadas que quedaron para después. Las decisiones tomadas van en `DECISIONES.md`.
 
+## Antes de publicar la 2.0.3 (PR 12, `release/2.0.3` → `main`)
+
+- **Detectado:** 2026-11-25, al abrir el PR de la release.
+- Probar a mano el release de Android (R8) y de iOS: claro, oscuro, letra grande y modo avión.
+- **Migración de Room v2 → v3:** instalar la 2.0.3 encima de la 2.0.2 de la tienda con carteles guardados y
+  comprobar que siguen ahí. Es la primera versión que cambia la base de los guardados.
+- Ver en pantalla la marca "Ya no figura en el padrón" con un padrón que excluya a un guardado (hoy solo
+  la cubren los tests).
+- Correr `.maestro/smoke-guardar.yaml` en el simulador de iOS (solo se probó en Android).
+- Build de tienda con `ADS_ENABLED=true` en `local.properties`.
+- Al unir: merge normal (sin squash), tag `v2.0.3` y, si la 2.0.2 está publicada, tag `v2.0.2` en `5a9fbc7`.
+- Checkout principal: borrar o descartar las copias viejas sin commit de `docs/BASE-CONOCIMIENTO-KMP.md` y
+  `docs/PENDIENTES.md` antes de hacer pull de `main`, o el pull se detiene.
+
 ## Revisión de arquitectura (2026-11-25)
 
 - **Detectado:** al armar `docs/BASE-CONOCIMIENTO-KMP.md`. Lo general pasó a ese documento; aquí quedan
   solo los puntos propios de esta app.
-- **Resuelto el 2026-11-25** (rama `worktree-pendientes-arquitectura`):
+- **Resuelto el 2026-11-25** (ya en `release/2.0.3`):
   - Guardados desactualizados: `FavoritesRepositoryImpl.reconcile` los actualiza con cada padrón nuevo y
     marca "Ya no figura en el padrón" a quien salió (Room v3, columna `delistedAt`).
   - Fotos: si faltan ≤ 30 miniaturas se bajan sueltas; si no, el zip (`PadronStore.syncThumbs`).
@@ -17,12 +31,10 @@ Mejoras detectadas que quedaron para después. Las decisiones tomadas van en `DE
   - Tests de UI: `.maestro/smoke-guardar.yaml` (Inicio → Buscar → Ficha → Guardar → Carteles) pasa en el
     emulador Android con `ADS_ENABLED=false`.
 - **Sigue pendiente:**
-  - **Sin CI de build ni tests.** El único workflow es `test-api.yml`, que es manual. Ver "CI con poco
-    consumo" en la base de conocimiento: empezar con un hook `pre-push` local.
-  - Correr el flujo de Maestro en el simulador de iOS.
-  - Ver en pantalla la marca "Ya no figura en el padrón" con un padrón que excluya a un guardado (hoy solo
-    la cubren los tests).
-  - Que el flujo de Maestro maneje el formulario de UMP para poder correrlo con anuncios activos.
+  - **Sin CI de build ni tests.** El único workflow es `test-api.yml`, que es manual, y los PRs a la release
+    no tienen checks. Ver base §1.9 y §1.15: empezar con un hook `pre-push` local y, si se suma CI, que
+    corra solo en PRs a `release/**`.
+  - Maestro en iOS y la marca "Ya no figura" en pantalla: ver "Antes de publicar la 2.0.3".
 
 ## Contraste con la base de conocimiento (2026-11-25)
 
@@ -31,7 +43,7 @@ Mejoras detectadas que quedaron para después. Las decisiones tomadas van en `DE
 - **Apagar anuncios sin recompilar.** Hoy solo existe `ADS_ENABLED` (D35), que exige recompilar y volver a
   `true` antes de publicar. Sumar, solo en debug, un argumento de arranque `disableAds=true` (para Maestro y
   capturas) y un interruptor oculto en Ajustes. En release se ignoran. Con esto el flujo de Maestro podría
-  correr sobre el build normal.
+  correr sobre el build normal, sin tener que manejar el formulario de UMP.
 - **Un solo enlace al compartir la app.** Hoy `about_share_text` y `share_text` llevan dos enlaces
   (`PLAY_STORE_URL` y `APP_STORE_URL`), y la landing dice que Android "llega pronto": el enlace de Play
   puede no llevar a nada. Crear en `neko-dojo` la ruta `/apps/[slug]/descargar` (redirige según el
