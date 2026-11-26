@@ -23,6 +23,7 @@ su alias del version catalog (`room-version de 2.8.4 a 2.8.5`).
 - `./gradlew check` falla si la versión de `Config.xcconfig` no coincide con el catálogo (`checkIosVersion`)
 - Android respalda solo los guardados y los ajustes en la copia de Google y al pasar a un teléfono nuevo (D41)
 - La codificación del cartel para compartir sale de la pantalla a una función con tests
+- Las fuentes oficiales (recompensas.pe y gob.pe/mininter) se abren en el navegador dentro de la app en vez de la vista web con JavaScript (D42)
 
 ## [2.0.2] - <!-- TODO: fecha de publicación de la 2.0.2 -->
 

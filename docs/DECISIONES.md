@@ -3,7 +3,20 @@
 Registro de lo que se verificó contra la API real y de las decisiones que cambian o precisan
 `docs/kmp-migration/`. La más reciente va arriba.
 
-## 2026-11-26 · Respaldo de Android
+## 2026-11-26 · Fuentes oficiales en el navegador in-app
+
+### D42. recompensas.pe y gob.pe/mininter se abren en Custom Tabs / SFSafariViewController
+- Antes (D34, D36) se abrían en el WebView interno con JavaScript y DOM storage, porque recompensas.pe es Angular.
+  Era el único caso de contenido ajeno con JavaScript dentro de la app (auditoría LNK-01, LNK-02).
+- Ahora `ExternalActions.openInAppBrowser`: Custom Tabs en Android (intent con el extra de sesión, sin agregar
+  `androidx.browser`; si no hay navegador compatible, abre el normal) y `SFSafariViewController` en iOS. No sale de
+  la app, muestra la URL real y usa el motor del navegador.
+- El WebView queda solo para privacidad y términos, siempre sin JavaScript (`LegalPage` pierde `SOURCE` y
+  `MININTER`, y `PlatformWebView` el parámetro `javaScript`).
+- Play (D36) pide enlaces visibles a las fuentes: siguen en Ajustes con la URL a la vista. Si una revisión objeta
+  el navegador in-app, volver al WebView solo para esas dos.
+
+
 
 ### D41. Se respaldan los guardados y los ajustes, nada más
 - Antes: `allowBackup="true"` sin reglas, así que Android respaldaba todo sin que se hubiera decidido (auditoría

@@ -17,6 +17,7 @@ import platform.UIKit.UIApplication
 import platform.UIKit.UIImage
 import platform.UIKit.UIViewController
 import platform.UIKit.UIWindow
+import platform.SafariServices.SFSafariViewController
 import platform.UIKit.UIWindowScene
 import platform.UIKit.popoverPresentationController
 
@@ -52,6 +53,12 @@ class IosExternalActions : ExternalActions {
         if (isEmpty()) NSData() else usePinned { NSData.create(bytes = it.addressOf(0), length = size.toULong()) }
 
     override fun openUrl(url: String) = open(url)
+
+    override fun openInAppBrowser(url: String) {
+        val nsUrl = NSURL.URLWithString(url) ?: return
+        val presenter = topViewController() ?: return open(url)
+        presenter.presentViewController(SFSafariViewController(uRL = nsUrl), animated = true, completion = null)
+    }
 
     override fun openStoreReview() {
         if (AppConfig.IOS_APP_STORE_ID.isNotEmpty()) {

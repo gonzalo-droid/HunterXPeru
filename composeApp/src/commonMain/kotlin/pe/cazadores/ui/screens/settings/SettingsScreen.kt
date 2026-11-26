@@ -115,6 +115,7 @@ fun SettingsRoute(
         onOpenRanks = { showLegend = true },
         onOpenAbout = onOpenAbout,
         onOpenLegal = onOpenLegal,
+        onOpenWeb = actions::openInAppBrowser,
         onContact = { actions.email(AppConfig.SUPPORT_EMAIL, contactSubject, contactBody) },
         onOpenLicenses = onOpenLicenses,
         onVersionTap = {
@@ -142,6 +143,7 @@ fun SettingsScreen(
     onOpenRanks: () -> Unit,
     onOpenAbout: () -> Unit,
     onOpenLegal: (LegalPage) -> Unit,
+    onOpenWeb: (String) -> Unit,
     onContact: () -> Unit,
     onOpenLicenses: () -> Unit,
     onVersionTap: () -> Unit = {},
@@ -229,14 +231,14 @@ fun SettingsScreen(
             LinkRow(
                 stringResource(Res.string.settings_source),
                 CzIcons.ChevronRight,
-                onClick = { onOpenLegal(LegalPage.SOURCE) },
+                onClick = { onOpenWeb(AppConfig.SOURCE_URL) },
                 subtitle = stringResource(Res.string.settings_source_url),
             )
             Divider()
             LinkRow(
                 stringResource(Res.string.settings_source_mininter),
                 CzIcons.ChevronRight,
-                onClick = { onOpenLegal(LegalPage.MININTER) },
+                onClick = { onOpenWeb(AppConfig.MININTER_URL) },
                 subtitle = stringResource(Res.string.settings_source_mininter_url),
             )
         }
