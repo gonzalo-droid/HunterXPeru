@@ -67,7 +67,6 @@ import pe.cazadores.resources.settings_theme_light
 import pe.cazadores.resources.settings_theme_system
 import pe.cazadores.resources.settings_title
 import pe.cazadores.resources.settings_version
-import pe.cazadores.ui.components.AdaptiveWidth
 import pe.cazadores.ui.components.ScreenTitle
 import pe.cazadores.ui.components.SectionLabel
 import pe.cazadores.ui.screens.legal.LegalPage
@@ -116,10 +115,9 @@ fun SettingsScreen(
     onOpenAbout: () -> Unit,
     onOpenLegal: (LegalPage) -> Unit,
 ) {
-    AdaptiveWidth(Modifier.fillMaxSize().background(Cz.colors.bg).statusBarsPadding()) { gutter, _ ->
     Column(
-        Modifier.fillMaxSize().verticalScroll(rememberScrollState())
-            .padding(horizontal = gutter).padding(top = 16.dp, bottom = 32.dp),
+        Modifier.fillMaxSize().background(Cz.colors.bg).statusBarsPadding().verticalScroll(rememberScrollState())
+            .padding(horizontal = CazadoresDimens.screenPadding).padding(top = 16.dp, bottom = 32.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp),
     ) {
         ScreenTitle(stringResource(Res.string.settings_title))
@@ -226,7 +224,6 @@ fun SettingsScreen(
         }
 
         Text(stringResource(Res.string.settings_version, AppInfo.VERSION_NAME), style = Cz.type.mono, color = Cz.colors.inkMuted)
-    }
     }
 }
 

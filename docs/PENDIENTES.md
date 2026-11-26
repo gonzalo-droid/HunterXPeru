@@ -46,6 +46,18 @@ Mejoras detectadas que quedaron para después. Las decisiones tomadas van en `DE
   JavaScript cargando páginas de terceros. Privacidad y términos siguen en el WebView (D28). Revisar que
   Play acepte igual la fuente "dentro de la app" (D36) con el navegador in-app.
 
+## iPad (retirado de la 2.0.3)
+
+- **Detectado:** 2026-11-25. El PR 9 (`feat/ipad-adaptativo`: contenido centrado a 720 dp, 3 columnas de
+  carteles, hoja de compartir anclada, `TARGETED_DEVICE_FAMILY = "1,2"`) se unió a `release/2.0.3` y se
+  revirtió el mismo día: la 2.0.3 sigue solo para iPhone.
+- **Por qué:** publicar con iPad no tiene vuelta atrás (App Store no deja retirarlo) y faltaba la prueba
+  manual en iPad (letra 2×, oscuro, Stage Manager) y las capturas de iPad 13".
+- **Para retomarlo en una release propia (p. ej. `release/2.1.0`):** como el merge se revirtió, volver a unir
+  la rama no trae nada. Hay que revertir el commit de reversión ("Revert \"Merge pull request #9…\"")
+  en una rama nueva desde la release, o hacer cherry-pick de los commits del PR. La decisión iba como D40 y
+  el plan en `docs/superpowers/plans/2026-11-19-ipad-adaptativo.md` (ambos vuelven con la reversión).
+
 ## Compilar iOS con Xcode 27 antes de abril de 2027
 
 - **Detectado:** 2026-11-18, al subir el primer build (2.0.0 (2)) a TestFlight.

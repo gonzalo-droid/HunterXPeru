@@ -25,8 +25,8 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import pe.cazadores.ads.AD_EVERY_N_ITEMS
 import pe.cazadores.ads.AdPlacement
-import pe.cazadores.ads.adAfterRow
 import pe.cazadores.ads.InlineAdSlot
 import pe.cazadores.domain.model.Criminal
 import pe.cazadores.resources.Res
@@ -37,13 +37,13 @@ import pe.cazadores.resources.saved_removed
 import pe.cazadores.resources.saved_remove_hint
 import pe.cazadores.resources.saved_title
 import pe.cazadores.resources.undo
-import pe.cazadores.ui.components.AdaptiveWidth
 import pe.cazadores.ui.components.ListSkeleton
 import pe.cazadores.ui.components.MessageState
 import pe.cazadores.ui.components.PosterGridRow
 import pe.cazadores.ui.components.posterColumns
 import pe.cazadores.ui.components.PrimaryButton
 import pe.cazadores.ui.components.ScreenTitle
+import pe.cazadores.ui.theme.CazadoresDimens
 import pe.cazadores.ui.theme.Cz
 import pe.cazadores.ui.theme.CzIcons
 
@@ -85,39 +85,36 @@ fun SavedScreen(
     onRemove: (Criminal) -> Unit,
 ) {
     Scaffold(containerColor = Cz.colors.bg, snackbarHost = { SnackbarHost(snackbar) }) { padding ->
-        AdaptiveWidth(Modifier.fillMaxSize().padding(bottom = padding.calculateBottomPadding()).statusBarsPadding()) { gutter, contentWidth ->
-            Column(Modifier.fillMaxSize()) {
-                Column(
-                    Modifier.padding(start = gutter, end = gutter, top = 16.dp, bottom = 12.dp),
-                    verticalArrangement = Arrangement.spacedBy(6.dp),
-                ) {
-                    ScreenTitle(stringResource(Res.string.saved_title))
-                    if (state.items.isNotEmpty()) {
-                        Text(stringResource(Res.string.saved_remove_hint), style = Cz.type.caption, color = Cz.colors.inkMuted)
-                    }
+        Column(Modifier.fillMaxSize().padding(bottom = padding.calculateBottomPadding()).statusBarsPadding()) {
+            Column(
+                Modifier.padding(start = CazadoresDimens.screenPadding, end = CazadoresDimens.screenPadding, top = 16.dp, bottom = 12.dp),
+                verticalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+                ScreenTitle(stringResource(Res.string.saved_title))
+                if (state.items.isNotEmpty()) {
+                    Text(stringResource(Res.string.saved_remove_hint), style = Cz.type.caption, color = Cz.colors.inkMuted)
                 }
-                when {
-                    state.isLoading -> ListSkeleton(3, Modifier.padding(horizontal = gutter))
-                    state.items.isEmpty() -> MessageState(
-                        icon = CzIcons.Bookmark,
-                        modifier = Modifier.padding(horizontal = gutter),
-                        title = stringResource(Res.string.saved_empty_title),
-                        body = stringResource(Res.string.saved_empty_body),
-                        action = { PrimaryButton(stringResource(Res.string.saved_go_search), onGoSearch, icon = CzIcons.Search) },
-                    )
-                    else -> {
-                        val perRow = posterColumns(contentWidth)
-                        val rows = remember(state.items, perRow) { state.items.chunked(perRow) }
-                        LazyColumn(
-                            contentPadding = PaddingValues(start = gutter, end = gutter, bottom = 24.dp),
-                            verticalArrangement = Arrangement.spacedBy(12.dp),
-                        ) {
-                            itemsIndexed(rows, key = { _, row -> row.first().hash }) { index, row ->
-                                Column(Modifier.animateItem(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                                    PosterGridRow(row, perRow, onOpenDetail, onRemove = onRemove)
-                                    // Un anuncio cada AD_EVERY_N_ITEMS carteles, con cualquier número de columnas.
-                                    if (adAfterRow(index, perRow)) InlineAdSlot(AdPlacement.SAVED_INLINE)
-                                }
+            }
+            when {
+                state.isLoading -> ListSkeleton(3, Modifier.padding(horizontal = CazadoresDimens.screenPadding))
+                state.items.isEmpty() -> MessageState(
+                    icon = CzIcons.Bookmark,
+                    title = stringResource(Res.string.saved_empty_title),
+                    body = stringResource(Res.string.saved_empty_body),
+                    action = { PrimaryButton(stringResource(Res.string.saved_go_search), onGoSearch, icon = CzIcons.Search) },
+                )
+                else -> {
+                    val perRow = posterColumns()
+                    val rows = remember(state.items, perRow) { state.items.chunked(perRow) }
+                    LazyColumn(
+                        contentPadding = PaddingValues(start = CazadoresDimens.screenPadding, end = CazadoresDimens.screenPadding, bottom = 24.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                    ) {
+                        itemsIndexed(rows, key = { _, row -> row.first().hash }) { index, row ->
+                            Column(Modifier.animateItem(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                                PosterGridRow(row, perRow, onOpenDetail, onRemove = onRemove)
+                                // Misma cadencia que antes: un anuncio cada AD_EVERY_N_ITEMS carteles.
+                                if (((index + 1) * perRow) % AD_EVERY_N_ITEMS == 0) InlineAdSlot(AdPlacement.SAVED_INLINE)
                             }
                         }
                     }
