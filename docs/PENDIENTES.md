@@ -9,9 +9,8 @@ Mejoras detectadas que quedaron para después. Las decisiones tomadas van en `DE
 - Probar a mano el release de Android (R8) y de iOS: claro, oscuro, letra grande y modo avión, más una pasada
   con TalkBack y VoiceOver por el flujo principal (PUB-02, A11Y-04). Probar también negar el permiso de fotos
   y ATT (PERM-02).
-- **Política de privacidad (PRIV-03, CRA-06):** la publicada ya explica Crashlytics. Lo que faltaba (copia de
-  seguridad del sistema por D41, navegador integrado por D42 y los datos del correo de contacto) está en el PR 41 de
-  `neko-dojo`, sin unir: revisarlo y unirlo antes de subir la 2.0.3.
+- **Política de privacidad (PRIV-03, CRA-06): resuelto el 2026-11-27.** Publicada con fecha 27-11 (neko-dojo #41):
+  Crashlytics, copia de seguridad del sistema (D41), navegador integrado (D42) y datos del correo de contacto.
 - **Data safety y privacidad de App Store (PUB-10, PUB-12):** declarar Crashlytics como dice D38 ("A mano, antes
   de subir"). Es en las consolas.
 - **`CHANGELOG.md`:** poner la fecha de la 2.0.3 (y de la 2.0.2) al publicar.
@@ -19,7 +18,8 @@ Mejoras detectadas que quedaron para después. Las decisiones tomadas van en `DE
   de la primera apertura de la 2.0.3.
 - **Migración de Room v2 → v3:** probada el 2026-11-27 en el simulador de iOS (build de la 2.0.2 desde `5a9fbc7`,
   cartel guardado con Maestro, 2.0.3 instalada encima: el cartel sigue). En Android se guardó el cartel en la 2.0.2
-  y la 2.0.3 se instaló encima, pero el equipo se saturó antes de comprobarlo: repetir en Android.
+  y la 2.0.3 se instaló encima, pero el equipo se saturó antes de comprobarlo: repetir en Android. Las pruebas en el
+  emulador necesitan el equipo libre (el 2026-11-27 la carga pasó de 600 con cuatro simuladores y otra compilación).
 - Correr `.maestro/smoke-guardar.yaml` en Android con el argumento `disableAds`. En iOS pasa desde el 2026-11-27
   (el selector usa la descripción "Recompensa: …" y `tapOn: "Volver"` en vez de `back`).
 - **Probar en Android lo del 2026-11-26** (el emulador se cayó y solo se vio en iOS): filas Contacto y Licencias, el
