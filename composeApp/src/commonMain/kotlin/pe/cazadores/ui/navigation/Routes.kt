@@ -17,6 +17,9 @@ sealed interface Route {
     /** Propósito del proyecto y cómo apoyarlo (desde Ajustes). */
     @Serializable data object About : Route
 
+    /** Licencias de código abierto y SDK de terceros (desde Ajustes). */
+    @Serializable data object Licenses : Route
+
     /**
      * Política de privacidad o términos en una vista web dentro de la app (desde Ajustes).
      * El argumento viaja como el nombre del enum: en iOS, Navigation no trae `NavType` para enums

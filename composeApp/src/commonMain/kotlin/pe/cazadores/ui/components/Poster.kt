@@ -22,6 +22,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.customActions
+import pe.cazadores.resources.saved_delisted
 import pe.cazadores.resources.saved_remove_action
 import pe.cazadores.ui.theme.CazadoresDimens
 import pe.cazadores.ui.theme.CzIcons
@@ -223,6 +224,10 @@ fun PosterMini(criminal: Criminal, onClick: () -> Unit, modifier: Modifier = Mod
             }
         }
         CardName(name, color = Cz.colors.onPaper, mutedColor = Cz.colors.onPaperMuted, small = true)
+        // Texto y no solo color: el monto y el delito son los del último padrón en que figuró.
+        if (criminal.delisted) {
+            Text(stringResource(Res.string.saved_delisted), style = Cz.type.caption, color = Cz.colors.onPaperMuted)
+        }
         PosterAmount(criminal.reward, preferred = Cz.type.amountSmall)
         val crime = remember(criminal) { DangerLevelCalculator.assess(criminal.crimes).headlineCrime } ?: criminal.mainCrime
         // El cartel es papel en ambos temas: el filete vino siempre se ve.

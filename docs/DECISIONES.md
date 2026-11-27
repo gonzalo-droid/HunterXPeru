@@ -3,6 +3,65 @@
 Registro de lo que se verificó contra la API real y de las decisiones que cambian o precisan
 `docs/kmp-migration/`. La más reciente va arriba.
 
+## 2026-11-26 · Versión mínima del padrón
+
+### D43. El manifest puede pedir un build mínimo y la app avisa "Actualiza la app"
+- El manifest ya llevaba `schema`: un build que no entiende el esquema nuevo se queda con el padrón anterior. Pero
+  callado, con datos cada vez más viejos (auditoría UPD-01, UPD-02).
+- Ahora el manifest lleva `minAppVersionCode` (`MIN_APP_VERSION_CODE` en `sync/sync_requisitoriados.py`, hoy 0).
+  `PadronStore.updateRequired` se enciende si es mayor que `AppInfo.VERSION_CODE` (generado desde el catálogo), y
+  `App()` muestra `UpdateRequiredScreen` con "Ir a la tienda" (`ExternalActions.openStorePage`).
+- Se lee antes de validar el esquema, porque un esquema nuevo es justo el caso a avisar. Sin red no se sabe y la
+  app sigue normal. El aviso no se guarda: tras reabrir vuelve en la siguiente consulta (cada 6 h).
+- Al cambiar el formato de forma incompatible: subir `SCHEMA` y `MIN_APP_VERSION_CODE` juntos, después de publicar
+  el build que entiende el esquema nuevo.
+
+
+
+### D42. recompensas.pe y gob.pe/mininter se abren en Custom Tabs / SFSafariViewController
+- Antes (D34, D36) se abrían en el WebView interno con JavaScript y DOM storage, porque recompensas.pe es Angular.
+  Era el único caso de contenido ajeno con JavaScript dentro de la app (auditoría LNK-01, LNK-02).
+- Ahora `ExternalActions.openInAppBrowser`: Custom Tabs en Android (intent con el extra de sesión, sin agregar
+  `androidx.browser`; si no hay navegador compatible, abre el normal) y `SFSafariViewController` en iOS. No sale de
+  la app, muestra la URL real y usa el motor del navegador.
+- El WebView queda solo para privacidad y términos, siempre sin JavaScript (`LegalPage` pierde `SOURCE` y
+  `MININTER`, y `PlatformWebView` el parámetro `javaScript`).
+- Play (D36) pide enlaces visibles a las fuentes: siguen en Ajustes con la URL a la vista. Si una revisión objeta
+  el navegador in-app, volver al WebView solo para esas dos.
+
+
+
+### D41. Se respaldan los guardados y los ajustes, nada más
+- Antes: `allowBackup="true"` sin reglas, así que Android respaldaba todo sin que se hubiera decidido (auditoría
+  PRIV-01).
+- Ahora `data_extraction_rules.xml` (Android 12+) y `backup_rules.xml` (11 o menos) incluyen solo la base
+  `cazadores.db` (guardados + caché del padrón) y `cazadores.preferences_pb` (onboarding y tema), en la copia en la
+  nube y en la transferencia a un teléfono nuevo. La caché (imagen temporal de compartir) queda fuera.
+- Por qué los guardados sí: son carteles públicos que el usuario eligió; perderlos al cambiar de teléfono sería
+  peor. La caché del padrón viaja con la base; al abrir, `PadronStore` compara la versión y la actualiza.
+- La política de privacidad debe mencionar que los guardados entran en la copia de Google si el usuario la tiene
+  activa.
+- D40 queda reservado para el iPad (revertido de la 2.0.3, ver PENDIENTES).
+
+## 2026-11-25 · Ramas y versiones
+
+### D39. `main` solo tiene versiones publicadas; cada versión se arma en `release/X.Y.Z`
+- **`main`:** solo lo que está en las tiendas. Cada merge a `main` es una versión publicada y lleva el tag
+  `vX.Y.Z`. Nadie trabaja ni hace PRs directo a `main`.
+- **`release/X.Y.Z`:** la candidata. Se crea desde `main` y su primer commit sube la versión
+  (`chore: bump version to X.Y.Z (N)`: catálogo y `Config.xcconfig`; `checkIosVersion` lo verifica).
+  Todos los PRs de trabajo apuntan aquí. Los builds de TestFlight y de prueba interna salen de esta rama;
+  si hace falta otro build, solo sube el número de build. Se abre una sola release a la vez.
+- **Cierre:** con todo probado, PR `release/X.Y.Z` → `main` con merge normal (sin squash, para que `main`
+  y la release compartan historia), tag `vX.Y.Z` y subida a las tiendas. Después se borra la rama.
+- **Ramas de trabajo:** `feature/…`, `fix/…`, `chore/…` salen de la release abierta y vuelven a ella por PR
+  (squash permitido). Las ramas `feat/…` anteriores a esta decisión se dejan como están.
+- **`hotfix/…`:** para un error urgente en la versión publicada. Sale de `main`, se crea
+  `release/X.Y.(Z+1)` desde `main` y el hotfix va por PR a esa release, que se cierra como cualquier otra.
+  Si había otra release abierta, después se hace merge de `main` en ella para no perder el arreglo.
+- **Versión:** la misma en Android e iOS. Si un arreglo afecta a una sola plataforma, la versión sube igual
+  y se publica solo donde hace falta; la otra se salta ese número (anotarlo en el changelog).
+
 ## 2026-11-24 · Crashlytics
 
 ### D38. Crashlytics en Android e iOS, solo crashes fatales y solo en release

@@ -66,6 +66,18 @@ class AndroidExternalActions(private val context: Context) : ExternalActions {
         launch(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
     }
 
+    override fun openInAppBrowser(url: String) {
+        // Custom Tabs sin la biblioteca androidx.browser: basta el extra de sesión (vacío). Sin navegador que los
+        // soporte, el intent abre el navegador normal.
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).putExtras(
+            android.os.Bundle().apply { putBinder("android.support.customtabs.extra.SESSION", null) },
+        )
+        if (!launch(intent)) openUrl(url)
+    }
+
+    // En Play la ficha y la reseña son la misma página.
+    override fun openStorePage() = openStoreReview()
+
     override fun openStoreReview() {
         val pkg = context.packageName
         val market = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$pkg"))

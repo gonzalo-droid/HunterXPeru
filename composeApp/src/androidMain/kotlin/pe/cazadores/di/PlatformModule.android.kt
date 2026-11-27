@@ -17,6 +17,9 @@ import pe.cazadores.ads.NoAdsController
 import pe.cazadores.core.config.AppInfo
 import pe.cazadores.ads.AndroidAdUnits
 import pe.cazadores.ads.AndroidAdsController
+import pe.cazadores.ads.AndroidDebugAdsSwitch
+import pe.cazadores.ads.DebugAdsSwitch
+import pe.cazadores.ads.adsActive
 import pe.cazadores.domain.repository.NetworkMonitor
 import pe.cazadores.platform.AndroidExternalActions
 import pe.cazadores.platform.ExternalActions
@@ -25,7 +28,12 @@ import pe.cazadores.platform.AndroidNetworkMonitor
 actual val platformModule: Module = module {
     single {
         val flags = androidContext().applicationInfo.flags
-        AppEnvironment(platformName = "Android", isDebug = flags and ApplicationInfo.FLAG_DEBUGGABLE != 0)
+        AppEnvironment(
+            platformName = "Android",
+            isDebug = flags and ApplicationInfo.FLAG_DEBUGGABLE != 0,
+            deviceModel = "${android.os.Build.MANUFACTURER} ${android.os.Build.MODEL}",
+            osVersion = android.os.Build.VERSION.RELEASE,
+        )
     }
     // La confianza TLS para la API la define res/xml/network_security_config.xml (androidApp).
     single<HttpClientEngine> { OkHttp.create() }
@@ -44,5 +52,9 @@ actual val platformModule: Module = module {
             rewardedUnitId = get<AndroidAdUnits>().rewarded,
         )
     }
-    single<AdsController> { if (AppInfo.ADS_ENABLED) get<AndroidAdsController>() else NoAdsController }
+    single<DebugAdsSwitch> { AndroidDebugAdsSwitch(androidContext()) }
+    single<AdsController> {
+        val active = adsActive(AppInfo.ADS_ENABLED, get<AppEnvironment>().isDebug, get<DebugAdsSwitch>().adsDisabled)
+        if (active) get<AndroidAdsController>() else NoAdsController
+    }
 }

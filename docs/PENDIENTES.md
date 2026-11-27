@@ -2,6 +2,101 @@
 
 Mejoras detectadas que quedaron para después. Las decisiones tomadas van en `DECISIONES.md`.
 
+## Antes de publicar la 2.0.3 (PR 12, `release/2.0.3` → `main`)
+
+- **Detectado:** 2026-11-25, al abrir el PR de la release y en la auditoría contra la base
+  (`docs/auditorias/2026-11-25-base-kmp.md`). Los IDs son los de la base.
+- Probar a mano el release de Android (R8) y de iOS: claro, oscuro, letra grande y modo avión, más una pasada
+  con TalkBack y VoiceOver por el flujo principal (PUB-02, A11Y-04). Probar también negar el permiso de fotos
+  y ATT (PERM-02).
+- **Política de privacidad (PRIV-03, CRA-06): resuelto el 2026-11-27.** Publicada con fecha 27-11 (neko-dojo #41):
+  Crashlytics, copia de seguridad del sistema (D41), navegador integrado (D42) y datos del correo de contacto.
+- **Data safety y privacidad de App Store (PUB-10, PUB-12):** declarar Crashlytics como dice D38 ("A mano, antes
+  de subir"). Es en las consolas.
+- **`CHANGELOG.md`:** poner la fecha de la 2.0.3 (y de la 2.0.2) al publicar.
+- **Medidas (PERF-01):** anotar en `DECISIONES.md` el tamaño del AAB y del IPA, el arranque en frío y los datos
+  de la primera apertura de la 2.0.3.
+- **Migración de Room v2 → v3:** probada el 2026-11-27 en el simulador de iOS (build de la 2.0.2 desde `5a9fbc7`,
+  cartel guardado con Maestro, 2.0.3 instalada encima: el cartel sigue). En Android se guardó el cartel en la 2.0.2
+  y la 2.0.3 se instaló encima, pero el equipo se saturó antes de comprobarlo: repetir en Android. Las pruebas en el
+  emulador necesitan el equipo libre (el 2026-11-27 la carga pasó de 600 con cuatro simuladores y otra compilación).
+- Correr `.maestro/smoke-guardar.yaml` en Android con el argumento `disableAds`. En iOS pasa desde el 2026-11-27
+  (el selector usa la descripción "Recompensa: …" y `tapOn: "Volver"` en vez de `back`).
+- **Probar en Android lo del 2026-11-26** (el emulador se cayó y solo se vio en iOS): filas Contacto y Licencias, el
+  correo de contacto con sus datos, Custom Tabs para las fuentes oficiales, `adb shell am start --ez disableAds true`
+  y 7 toques en la versión, y el respaldo con `adb shell bmgr backupnow com.nekodojo.peruxhunter`.
+- **Compartir con el enlace único:** en los dos sistemas, compartir un cartel y "Compartir la app", y abrir
+  `nekodojo.app/apps/peruxhunter/download` desde el mensaje: en iPhone debe abrir el App Store; en Android, la
+  landing hasta que la app esté en Play. Solo se probó con `curl`.
+- Build de tienda con `ADS_ENABLED=true` en `local.properties`.
+- **Al publicar en Google Play:** poner la URL de la ficha en `stores` (`src/content/apps.ts` de `neko-dojo`)
+  para que `/apps/peruxhunter/download` mande Android a Play y la landing deje de decir "llega pronto". La app no
+  se toca.
+- Al unir: merge normal (sin squash), tag `v2.0.3` y, si la 2.0.2 está publicada, tag `v2.0.2` en `5a9fbc7`.
+- Checkout principal: `docs/BASE-CONOCIMIENTO-KMP.md` tiene sin commit el puntero a la skill `base-kmp-audit`
+  (se decidió no versionarlo). Guardarlo o descartarlo antes de cambiar a `main`, o el checkout se detiene.
+
+## Auditoría contra la base (2026-11-25)
+
+- **Detectado:** primera auditoría con la Parte 7 de la base (`docs/auditorias/2026-11-25-base-kmp.md`). Lo
+  urgente quedó en "Antes de publicar la 2.0.3".
+- **Resuelto el 2026-11-27:**
+  - A11Y-03 revisado en el código: todo lo tocable mide al menos 48 dp (`CazadoresDimens.touchTarget`,
+    `TextAction`, `IconButton`, filas de 56 dp). No se midió en pantalla con Accessibility Scanner.
+  - OBS-01 no aplica: D38 decidió solo crashes fatales y deja anotado cuándo sumar un `CrashReporter`.
+  - Marca "Ya no figura en el padrón" vista en el simulador de iOS (con un guardado de prueba que no está en el
+    padrón); al abrir la app, `reconcile` la mantiene, y la quita si la persona sigue en el padrón.
+- **Resuelto el 2026-11-26** (PRs 17 a 22 y 24, en `release/2.0.3`):
+  - CI-01 hook `pre-push`; DOC-01 `CLAUDE.md` en git; DOC-02 `CHANGELOG.md`; PRIV-01 reglas de respaldo (D41).
+  - COD-05 secciones de `DetailScreen` y `SearchScreen` en archivos propios; A11Y-02 revisado (los 20 `null` son
+    decorativos o su contenedor ya describe la acción).
+  - AJU-01/AJU-02 filas "Contacto y reportar un problema" y "Licencias de código abierto".
+  - ADS-06 anuncios apagables en debug sin recompilar; Maestro usa `disableAds`.
+  - LNK-01/LNK-02 fuentes oficiales en el navegador in-app; el WebView ya no usa JavaScript (D42).
+  - UPD-01/02/04 `minAppVersionCode` en el manifest y pantalla "Actualiza la app" (D43).
+  - AJU-04/NEK-02 un solo enlace al compartir: `AppConfig.DOWNLOAD_URL` = `nekodojo.app/apps/peruxhunter/download`,
+    que redirige según el dispositivo (neko-dojo #35, en producción).
+- **Sigue pendiente:**
+  - **Tablets Android (TIE-04):** con `targetSdk 36`, Android 16 ignora `screenOrientation="portrait"` en
+    pantallas de 600 dp o más. Probar en un emulador de tablet en horizontal; si se ve mal, retomar el diseño por
+    ancho (TAB-01) de `feat/ipad-adaptativo` sin declarar iPad.
+  - **Respaldo de llaves (SEC-04):** anotar en un lugar privado dónde están la keystore de subida y su
+    contraseña, la `.p8` de App Store Connect, `google-services.json`, `GoogleService-Info.plist` y los IDs de
+    AdMob; referenciarlo en `CLAUDE.md`.
+  - **Confirmar Play App Signing (SEC-03)** en Play Console.
+  - **Tag `v2.0.2` (GIT-01):** ver "Antes de publicar la 2.0.3".
+
+## Revisión de arquitectura (2026-11-25)
+
+- **Detectado:** al armar `docs/BASE-CONOCIMIENTO-KMP.md`. Lo general pasó a ese documento; aquí quedan
+  solo los puntos propios de esta app.
+- **Resuelto el 2026-11-25** (ya en `release/2.0.3`):
+  - Guardados desactualizados: `FavoritesRepositoryImpl.reconcile` los actualiza con cada padrón nuevo y
+    marca "Ya no figura en el padrón" a quien salió (Room v3, columna `delistedAt`).
+  - Fotos: si faltan ≤ 30 miniaturas se bajan sueltas; si no, el zip (`PadronStore.syncThumbs`).
+  - Lógica en Composables: compartir el cartel pasó a `PosterShare.kt`, con tests. `DetailScreen` y
+    `SearchScreen` ya estaban en secciones privadas; no se dividieron más.
+  - Versión de iOS: `./gradlew check` falla si `Config.xcconfig` no coincide con el catálogo
+    (`checkIosVersion`). El desfase anotado antes era falsa alarma: ambos estaban en 2.0.2 (8).
+  - Tests de UI: `.maestro/smoke-guardar.yaml` (Inicio → Buscar → Ficha → Guardar → Carteles) pasa en el
+    emulador Android con `ADS_ENABLED=false`.
+- **Sigue pendiente:**
+  - **Sin CI en la nube.** Hay hook `pre-push` local (CI-01). Si se suma CI, que corra solo en PRs a
+    `release/**` (CI-02).
+  - Maestro en Android con `disableAds`: ver "Antes de publicar la 2.0.3".
+
+## iPad (retirado de la 2.0.3)
+
+- **Detectado:** 2026-11-25. El PR 9 (`feat/ipad-adaptativo`: contenido centrado a 720 dp, 3 columnas de
+  carteles, hoja de compartir anclada, `TARGETED_DEVICE_FAMILY = "1,2"`) se unió a `release/2.0.3` y se
+  revirtió el mismo día: la 2.0.3 sigue solo para iPhone.
+- **Por qué:** publicar con iPad no tiene vuelta atrás (App Store no deja retirarlo) y faltaba la prueba
+  manual en iPad (letra 2×, oscuro, Stage Manager) y las capturas de iPad 13".
+- **Para retomarlo en una release propia (p. ej. `release/2.1.0`):** como el merge se revirtió, volver a unir
+  la rama no trae nada. Hay que revertir el commit de reversión ("Revert \"Merge pull request #9…\"")
+  en una rama nueva desde la release, o hacer cherry-pick de los commits del PR. La decisión iba como D40 y
+  el plan en `docs/superpowers/plans/2026-11-19-ipad-adaptativo.md` (ambos vuelven con la reversión).
+
 ## Compilar iOS con Xcode 27 antes de abril de 2027
 
 - **Detectado:** 2026-11-18, al subir el primer build (2.0.0 (2)) a TestFlight.
@@ -20,7 +115,7 @@ Mejoras detectadas que quedaron para después. Las decisiones tomadas van en `DE
     publica, cómo se reporta y quién responde por ello.
   - Backend para los aportes (cuentas, almacenamiento y moderación); hoy la app solo lee.
   - Cobro: compras dentro de la app en Google Play y App Store, y cómo se valida la compra.
-- El interruptor oculto de D30 no es esto: solo sirve para pruebas y capturas en un equipo.
+- El flag `ADS_ENABLED` de D35 no es esto: solo sirve para pruebas y capturas en un equipo.
 
 ## Sincronización semanal: huecos al cambiar datos o fotos
 
@@ -34,10 +129,10 @@ Mejoras detectadas que quedaron para después. Las decisiones tomadas van en `DE
     versión es mayor, borra las miniaturas que ya no están y baja las que faltan.
   - Si el zip falla, se reintenta al volver la red (D31).
 - **Huecos:**
-  1. **Se baja el zip entero aunque cambien pocas fotos.** Si en la semana cambian 5 miniaturas, se bajan
+  1. **(Resuelto 2026-11-25)** **Se baja el zip entero aunque cambien pocas fotos.** Si en la semana cambian 5 miniaturas, se bajan
      igual los 3,8 MB. Arreglo: si faltan pocas (por ejemplo menos de 30), bajarlas una a una con
      `download(key)`; si faltan muchas, el zip.
-  2. **Los guardados son una copia.** `FavoritesRepositoryImpl` guarda la persona como estaba (monto,
+  2. **(Resuelto 2026-11-25)** **Los guardados son una copia.** `FavoritesRepositoryImpl` guarda la persona como estaba (monto,
      foto en Base64). Por confirmar: si el padrón cambia el monto o la foto, o la persona sale del padrón,
      Guardados sigue mostrando lo viejo. Arreglo posible: al llegar una versión nueva, actualizar cada
      guardado por su `hash`. Si la persona ya no está, marcarla "ya no figura en el padrón" en vez de borrarla.

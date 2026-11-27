@@ -47,6 +47,7 @@ Requisitos: JDK 21, Android SDK 37, Xcode 26.
 ```bash
 cp local.properties.example local.properties   # ajusta sdk.dir
 cp iosApp/Configuration/Secrets.xcconfig.example iosApp/Configuration/Secrets.xcconfig   # opcional
+git config core.hooksPath .githooks   # corre ./gradlew check antes de cada push
 ```
 
 Sin IDs reales de AdMob, la app usa los **IDs de prueba de Google** (debug y release).

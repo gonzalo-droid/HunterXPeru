@@ -1,0 +1,37 @@
+# Smoke: Inicio → Buscar → Ficha → Guardar → Carteles. Corre igual en Android e iOS.
+# maestro test .maestro/   (ver docs/BASE-CONOCIMIENTO-KMP.md §1.8)
+# Corre sobre el build debug normal: `disableAds` apaga los anuncios (base ADS-06) para que el formulario de UMP
+# (geografía EEE forzada en debug) no tape Inicio. En release ese argumento se ignora.
+appId: com.nekodojo.peruxhunter
+name: Guardar un cartel desde Buscar
+---
+- launchApp:
+    clearState: true
+    arguments:
+      disableAds: true
+# Emulador lento: Android a veces muestra "System UI isn't responding" encima de la app.
+- runFlow:
+    when:
+      visible: ".*isn't responding"
+    commands:
+      - tapOn: "Wait"
+# Primera apertura tras clearState: el onboarding tarda en un emulador lento.
+- extendedWaitUntil:
+    visible: "Omitir"
+    timeout: 120000
+- tapOn: "Omitir"
+- tapOn: "Buscar"
+# Primer resultado: la descripción de la tarjeta ("…, Recompensa: 500000 soles, …"). En iOS la tarjeta es un solo
+# elemento de accesibilidad y el texto "S/ …" no se ve suelto. El padrón o la API pueden tardar en la primera apertura.
+- extendedWaitUntil:
+    visible: ".*Recompensa: .*"
+    timeout: 120000
+- tapOn:
+    text: ".*Recompensa: .*"
+    index: 0
+- tapOn: "Guardar"
+- assertVisible: "Guardado en tu lista"
+# "Volver" en vez de back: iOS no tiene botón atrás del sistema.
+- tapOn: "Volver"
+- tapOn: "Carteles"
+- assertNotVisible: "Aún no tienes carteles"

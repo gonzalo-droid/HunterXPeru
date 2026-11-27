@@ -16,6 +16,9 @@ object AppConfig {
     /** Correo de denuncias, confirmado como vigente. */
     const val REPORT_EMAIL = "denuncias@mininter.gob.pe"
 
+    /** Correo de soporte de la app (el mismo que publica nekodojo.app/apps/peruxhunter/support). */
+    const val SUPPORT_EMAIL = "contacto@gondroid.dev"
+
     /** ID numérico de App Store Connect (Información de la app → ID de Apple). */
     const val IOS_APP_STORE_ID = "6836196201"
 
@@ -23,9 +26,11 @@ object AppConfig {
     const val PRIVACY_POLICY_URL = "https://nekodojo.app/apps/peruxhunter/privacy"
     const val TERMS_URL = "https://nekodojo.app/apps/peruxhunter/terms"
 
-    /** Enlaces de descarga que acompañan a lo que se comparte (cartel y "Compartir la app"). */
-    const val PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=com.nekodojo.peruxhunter"
-    const val APP_STORE_URL = "https://apps.apple.com/app/id$IOS_APP_STORE_ID"
+    /**
+     * Enlace único de descarga que acompaña a lo que se comparte (cartel y "Compartir la app"): la web
+     * manda cada teléfono a su tienda y a la landing si esa tienda aún no está publicada (neko-dojo #35).
+     */
+    const val DOWNLOAD_URL = "https://nekodojo.app/apps/peruxhunter/download"
 
     const val SOURCE_URL = "https://recompensas.pe"
     const val MININTER_URL = "https://www.gob.pe/mininter"

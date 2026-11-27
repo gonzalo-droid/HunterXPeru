@@ -17,6 +17,7 @@ import androidx.navigation.toRoute
 import org.koin.compose.koinInject
 import pe.cazadores.ads.AdsController
 import pe.cazadores.ui.screens.about.AboutRoute
+import pe.cazadores.ui.screens.licenses.LicensesRoute
 import pe.cazadores.ui.screens.detail.DetailRoute
 import pe.cazadores.ui.screens.home.HomeRoute
 import pe.cazadores.ui.screens.legal.LegalRoute
@@ -103,6 +104,7 @@ fun AppNavHost(
                 SettingsRoute(
                     onOpenRegime = { navController.navigate(Route.SpecialRegime) },
                     onOpenAbout = { navController.navigate(Route.About) },
+                    onOpenLicenses = { navController.navigate(Route.Licenses) },
                     onOpenLegal = { navController.navigate(Route.Legal(it)) },
                 )
             }
@@ -115,6 +117,7 @@ fun AppNavHost(
             }
             composable<Route.SpecialRegime> { SpecialRegimeRoute(onBack = { navController.navigateUp() }) }
             composable<Route.About> { AboutRoute(onBack = { navController.navigateUp() }) }
+            composable<Route.Licenses> { LicensesRoute(onBack = { navController.navigateUp() }) }
             composable<Route.Legal> { entry ->
                 LegalRoute(page = entry.toRoute<Route.Legal>().page, onBack = { navController.navigateUp() })
             }

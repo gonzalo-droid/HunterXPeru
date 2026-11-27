@@ -41,7 +41,6 @@ import platform.darwin.NSObject
 @Composable
 internal actual fun PlatformWebView(
     url: String,
-    javaScript: Boolean,
     isDark: Boolean,
     onLoadingChange: (Boolean) -> Unit,
     onError: (WebLoadError) -> Unit,
@@ -59,8 +58,8 @@ internal actual fun PlatformWebView(
         modifier = modifier,
         factory = {
             val configuration = WKWebViewConfiguration().apply {
-                // Las legales se sirven ya renderizadas; recompensas.pe sí lo necesita (sin puente con la app).
-                defaultWebpagePreferences.allowsContentJavaScript = javaScript
+                // Solo páginas propias ya renderizadas (D28); los sitios ajenos van al navegador in-app (D42).
+                defaultWebpagePreferences.allowsContentJavaScript = false
                 // Sin cookies ni caché persistentes del sitio.
                 websiteDataStore = WKWebsiteDataStore.nonPersistentDataStore()
             }

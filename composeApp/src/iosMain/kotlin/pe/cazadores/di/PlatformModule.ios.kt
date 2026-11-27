@@ -14,6 +14,9 @@ import pe.cazadores.ads.AdsController
 import pe.cazadores.ads.NoAdsController
 import pe.cazadores.core.config.AppInfo
 import pe.cazadores.ads.IosAdsController
+import pe.cazadores.ads.DebugAdsSwitch
+import pe.cazadores.ads.IosDebugAdsSwitch
+import pe.cazadores.ads.adsActive
 import pe.cazadores.domain.repository.NetworkMonitor
 import pe.cazadores.platform.ExternalActions
 import pe.cazadores.platform.IosExternalActions
@@ -23,14 +26,28 @@ import kotlin.experimental.ExperimentalNativeApi
 
 @OptIn(ExperimentalNativeApi::class)
 actual val platformModule: Module = module {
-    single { AppEnvironment(platformName = "iOS", isDebug = Platform.isDebugBinary) }
+    single {
+        val device = platform.UIKit.UIDevice.currentDevice
+        AppEnvironment(
+            platformName = "iOS",
+            isDebug = Platform.isDebugBinary,
+            deviceModel = device.model,
+            osVersion = device.systemVersion,
+        )
+    }
     // iOS valida la cadena TLS de la API sin ayuda (verificado): no hace falta handleChallenge.
     single<HttpClientEngine> { Darwin.create() }
     single { Room.databaseBuilder<AppDatabase>(name = documentsPath(AppDatabase.FILE_NAME)).buildCazadoresDatabase() }
     single { createDataStore(documentsPath(SETTINGS_FILE_NAME)) }
     single<NetworkMonitor> { IosNetworkMonitor() }
     single<ExternalActions> { IosExternalActions() }
+    single<DebugAdsSwitch> { IosDebugAdsSwitch() }
     single<AdsController> {
-        if (AppInfo.ADS_ENABLED) IosAdsController(bridge = get(), isDebug = get<AppEnvironment>().isDebug) else NoAdsController
+        val isDebug = get<AppEnvironment>().isDebug
+        if (adsActive(AppInfo.ADS_ENABLED, isDebug, get<DebugAdsSwitch>().adsDisabled)) {
+            IosAdsController(bridge = get(), isDebug = isDebug)
+        } else {
+            NoAdsController
+        }
     }
 }
