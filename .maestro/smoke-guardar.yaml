@@ -21,15 +21,17 @@ name: Guardar un cartel desde Buscar
     timeout: 120000
 - tapOn: "Omitir"
 - tapOn: "Buscar"
-# Primer resultado: cualquier tarjeta con monto (el formato usa espacio de no separación: "S/.*"). El padrón o la API pueden tardar en la primera apertura.
+# Primer resultado: la descripción de la tarjeta ("…, Recompensa: 500000 soles, …"). En iOS la tarjeta es un solo
+# elemento de accesibilidad y el texto "S/ …" no se ve suelto. El padrón o la API pueden tardar en la primera apertura.
 - extendedWaitUntil:
-    visible: "S/.*"
+    visible: ".*Recompensa: .*"
     timeout: 120000
 - tapOn:
-    text: "S/.*"
+    text: ".*Recompensa: .*"
     index: 0
 - tapOn: "Guardar"
 - assertVisible: "Guardado en tu lista"
-- back
+# "Volver" en vez de back: iOS no tiene botón atrás del sistema.
+- tapOn: "Volver"
 - tapOn: "Carteles"
 - assertNotVisible: "Aún no tienes carteles"
