@@ -9,21 +9,19 @@ Mejoras detectadas que quedaron para después. Las decisiones tomadas van en `DE
 - Probar a mano el release de Android (R8) y de iOS: claro, oscuro, letra grande y modo avión, más una pasada
   con TalkBack y VoiceOver por el flujo principal (PUB-02, A11Y-04). Probar también negar el permiso de fotos
   y ATT (PERM-02).
-- **Política de privacidad y Crashlytics (PRIV-03, CRA-06):** D38 dejó como tarea quitar "No usamos
-  herramientas de analítica ni de reportes de errores" y explicar el informe de crash. Confirmar que la página
-  publicada ya lo dice, y que Data safety y la privacidad de App Store declaran Crashlytics. Si no, actualizarlas
-  antes de subir.
-  La política también debe decir que, en Android, los guardados entran en la copia de Google si el usuario la tiene
-  activa (D41).
+- **Política de privacidad (PRIV-03, CRA-06):** la publicada ya explica Crashlytics. Lo que faltaba (copia de
+  seguridad del sistema por D41, navegador integrado por D42 y los datos del correo de contacto) está en el PR 41 de
+  `neko-dojo`, sin unir: revisarlo y unirlo antes de subir la 2.0.3.
+- **Data safety y privacidad de App Store (PUB-10, PUB-12):** declarar Crashlytics como dice D38 ("A mano, antes
+  de subir"). Es en las consolas.
 - **`CHANGELOG.md`:** poner la fecha de la 2.0.3 (y de la 2.0.2) al publicar.
 - **Medidas (PERF-01):** anotar en `DECISIONES.md` el tamaño del AAB y del IPA, el arranque en frío y los datos
   de la primera apertura de la 2.0.3.
-- **Migración de Room v2 → v3:** instalar la 2.0.3 encima de la 2.0.2 de la tienda con carteles guardados y
-  comprobar que siguen ahí. Es la primera versión que cambia la base de los guardados.
-- Ver en pantalla la marca "Ya no figura en el padrón" con un padrón que excluya a un guardado (hoy solo
-  la cubren los tests).
-- Correr `.maestro/smoke-guardar.yaml` en el simulador de iOS (solo se probó en Android) y otra vez en Android con
-  el argumento `disableAds` (ya no hace falta `ADS_ENABLED=false`).
+- **Migración de Room v2 → v3:** probada el 2026-11-27 en el simulador de iOS (build de la 2.0.2 desde `5a9fbc7`,
+  cartel guardado con Maestro, 2.0.3 instalada encima: el cartel sigue). En Android se guardó el cartel en la 2.0.2
+  y la 2.0.3 se instaló encima, pero el equipo se saturó antes de comprobarlo: repetir en Android.
+- Correr `.maestro/smoke-guardar.yaml` en Android con el argumento `disableAds`. En iOS pasa desde el 2026-11-27
+  (el selector usa la descripción "Recompensa: …" y `tapOn: "Volver"` en vez de `back`).
 - **Probar en Android lo del 2026-11-26** (el emulador se cayó y solo se vio en iOS): filas Contacto y Licencias, el
   correo de contacto con sus datos, Custom Tabs para las fuentes oficiales, `adb shell am start --ez disableAds true`
   y 7 toques en la versión, y el respaldo con `adb shell bmgr backupnow com.nekodojo.peruxhunter`.
@@ -42,6 +40,12 @@ Mejoras detectadas que quedaron para después. Las decisiones tomadas van en `DE
 
 - **Detectado:** primera auditoría con la Parte 7 de la base (`docs/auditorias/2026-11-25-base-kmp.md`). Lo
   urgente quedó en "Antes de publicar la 2.0.3".
+- **Resuelto el 2026-11-27:**
+  - A11Y-03 revisado en el código: todo lo tocable mide al menos 48 dp (`CazadoresDimens.touchTarget`,
+    `TextAction`, `IconButton`, filas de 56 dp). No se midió en pantalla con Accessibility Scanner.
+  - OBS-01 no aplica: D38 decidió solo crashes fatales y deja anotado cuándo sumar un `CrashReporter`.
+  - Marca "Ya no figura en el padrón" vista en el simulador de iOS (con un guardado de prueba que no está en el
+    padrón); al abrir la app, `reconcile` la mantiene, y la quita si la persona sigue en el padrón.
 - **Resuelto el 2026-11-26** (PRs 17 a 22 y 24, en `release/2.0.3`):
   - CI-01 hook `pre-push`; DOC-01 `CLAUDE.md` en git; DOC-02 `CHANGELOG.md`; PRIV-01 reglas de respaldo (D41).
   - COD-05 secciones de `DetailScreen` y `SearchScreen` en archivos propios; A11Y-02 revisado (los 20 `null` son
@@ -60,7 +64,6 @@ Mejoras detectadas que quedaron para después. Las decisiones tomadas van en `DE
     contraseña, la `.p8` de App Store Connect, `google-services.json`, `GoogleService-Info.plist` y los IDs de
     AdMob; referenciarlo en `CLAUDE.md`.
   - **Confirmar Play App Signing (SEC-03)** en Play Console.
-  - **Zonas táctiles (A11Y-03):** revisar los íconos sueltos con Accessibility Scanner / Accessibility Inspector.
   - **Tag `v2.0.2` (GIT-01):** ver "Antes de publicar la 2.0.3".
 
 ## Revisión de arquitectura (2026-11-25)
@@ -80,7 +83,7 @@ Mejoras detectadas que quedaron para después. Las decisiones tomadas van en `DE
 - **Sigue pendiente:**
   - **Sin CI en la nube.** Hay hook `pre-push` local (CI-01). Si se suma CI, que corra solo en PRs a
     `release/**` (CI-02).
-  - Maestro en iOS y la marca "Ya no figura" en pantalla: ver "Antes de publicar la 2.0.3".
+  - Maestro en Android con `disableAds`: ver "Antes de publicar la 2.0.3".
 
 ## iPad (retirado de la 2.0.3)
 
